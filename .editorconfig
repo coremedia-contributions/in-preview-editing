@@ -1,0 +1,16 @@
+# EditorConfig configuration for CoreMedia Studio-Client Workspace
+# https://editorconfig.org
+
+# To apply the EditorConfig settings in IDEA, check Preferences | Editor | Code Style | Enable EditorConfig support.
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 2
+indent_style = space
+insert_final_newline = true
+max_line_length = 120
+trim_trailing_whitespace = true
+
+[{*.markdown,*.md}]
+trim_trailing_whitespace = false
