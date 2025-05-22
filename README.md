@@ -9,6 +9,7 @@ If a project is inactive it means that the development has been discontinued and
 
 This Blueprint extension enables in-preview editing in Studio.
 
+![In-Preview-Editing in Studio](/docs/images/in-preview-editing-studio.png "In-Preview-Editing in Studio")
 
 ## Installation
 
