@@ -1,0 +1,10 @@
+.pde-highlight-marker {
+  box-sizing: border-box;
+  position: absolute;
+  background: lightseagreen;
+}
+
+/* fix z-index for preview element highlighting */
+.secondaryPreviewIntegrationHighlightDom {
+  z-index: 2147483646 !important;
+}

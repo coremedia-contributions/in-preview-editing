@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Example Frontent - Plain HTML</title>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main>
+  <h1>Example Frontend - Plain HTML Example</h1>
+
+  <p>This is an example frontend that demonstrates how to load the required JS and what metadata needs to be included in the markup to show the edit menu.</p>
+
+  <section data-cm-metadata="[{&quot;_&quot;:{&quot;$Ref&quot;:&quot;content/1234&quot;}}]">
+    <h2>Menu Test</h2>
+    <div data-cm-metadata="[{&quot;_&quot;:&quot;properties.title&quot;},{&quot;editable&quot;:true}]">This element is editable and will show the edit menu on hover.</div>
+  </section>
+</main>
+
+<script src="../node_modules/@coremedia-contributions/in-preview-editing-support/dist/coremedia.in-preview-editing-support.js"></script>
+<script>
+  CoreMediaInPreviewEditing.init();
+  window.com.coremedia.pde.activateInPageEditing();
+</script>
+
+</body>
+</html>
