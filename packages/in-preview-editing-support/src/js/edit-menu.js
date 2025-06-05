@@ -16,7 +16,7 @@ import {
   MESSAGE_TYPE_PROPERTY_UPDATE_REQUEST, MESSAGE_TYPE_OPEN_CONTENT, MESSAGE_TYPE_SHOW_EDITOR
 } from "./messaging";
 
-const HIDE_AFTER_IDLE = 0; // hide edit menu after 5 seconds of inactivity, set to 0 to disable
+const HIDE_AFTER_IDLE = 2000; // hide edit menu after 2 seconds of inactivity, set to 0 to disable
 
 export let editMenu;
 export let menuElement = null;
