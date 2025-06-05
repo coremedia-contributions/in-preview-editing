@@ -63,3 +63,7 @@ overlays/
 # Temporary files
 tmp/
 temp/
+
+# archives
+*.zip
+*.tgz
