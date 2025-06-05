@@ -21,7 +21,7 @@ export function initElementHighlightMarkers() {
 }
 
 export function highlightElement(element) {
-  if (document.body.dataset[PDE_EDITING_FLAG] === "off") {
+  if (!element || document.body.dataset[PDE_EDITING_FLAG] === "off") {
     return;
   }
 
