@@ -1,0 +1,50 @@
+name: Create and Upload PNPM Package as Release Artifact
+
+on:
+  workflow_dispatch:  # Manual trigger for flexibility
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          path: packages  # packages repo root is "packages"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        working-directory: packages
+        run: pnpm install
+
+      - name: Build package
+        working-directory: packages/in-preview-editing-support
+        run: pnpm build
+
+      - name: Pack package
+        working-directory: packages/in-preview-editing-support
+        run: pnpm pack
+
+      - name: Get version from package.json
+        id: get_version
+        working-directory: packages/in-preview-editing-support
+        run: |
+          VERSION=$(jq -r .version package.json)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release and Upload Artifact
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.get_version.outputs.version }}
+          name: in-preview-editing-support v${{ steps.get_version.outputs.version }}
+          files: packages/in-preview-editing-support/*.tgz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

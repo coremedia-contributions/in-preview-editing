@@ -1,0 +1,26 @@
+{
+  "name": "frontend-client-example",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "build": "webpack",
+    "start": "webpack serve --mode=development --open"
+  },
+  "keywords": [],
+  "author": "sebastian.buettner@coremedia.com",
+  "license": "CoreMedia Open Source License",
+  "dependencies": {
+    "@coremedia-contributions/in-preview-editing-support": "workspace:*"
+  },
+  "devDependencies": {
+    "css-loader": "^7.1.2",
+    "html-webpack-plugin": "^5.6.3",
+    "mini-css-extract-plugin": "^2.9.2",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.1",
+    "webpack-merge": "^6.0.1"
+  }
+}
