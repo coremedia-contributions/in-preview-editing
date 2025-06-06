@@ -5,7 +5,7 @@ import PreviewMessageTypes from "@coremedia/studio-client.main.editor-components
 import session from "@coremedia/studio-client.cap-rest-client/common/session";
 import ContentPropertyNames from "@coremedia/studio-client.cap-rest-client/content/ContentPropertyNames";
 import ValueExpressionFactory from "@coremedia/studio-client.client-core/data/ValueExpressionFactory";
-import { ContentType } from "@coremedia/studio-client.cap-rest-client";
+import { ContentType, Right } from "@coremedia/studio-client.cap-rest-client";
 import VariantKeyUtil from "@coremedia/studio-client.main.image-editor-components/VariantKeyUtil";
 import Content from "@coremedia/studio-client.cap-rest-client/content/Content";
 import ContentLocalizationUtil from "@coremedia/studio-client.cap-base-models/content/ContentLocalizationUtil";
@@ -171,6 +171,7 @@ class InPreviewEditingManager {
         this.#loadContentName(content),
         this.#loadContentTypeName(content),
         this.#loadContentStatus(content),
+        this.#loadUserMayPerformPublish(content),
         this.#loadContentThumbnail(content),
         this.#loadPropertyMetadata(content, propertyName),
       ])
@@ -259,6 +260,23 @@ class InPreviewEditingManager {
     });
   }
 
+  #loadUserMayPerformPublish(content: Content) {
+    return new Promise((resolve, reject) => {
+      if (!content) {
+        reject();
+      } else {
+        ValueExpressionFactory.createFromFunction(() => {
+          return (
+            !content.isCheckedOutByOther() &&
+            content.getRepository().getAccessControl().mayPerform(content, Right.PUBLISH)
+          );
+        }).loadValue((mayPerformPublish) => {
+          resolve({ userMayPerformPublish: mayPerformPublish });
+        });
+      }
+    });
+  }
+
   #loadContentThumbnail(content: Content) {
     return new Promise((resolve, reject) => {
       if (!content) {
@@ -312,6 +330,7 @@ class InPreviewEditingManager {
     const data = {
       metadata: metadata,
     };
+    console.log("[InPreviewEditingManager] Sending content metadata response: ", data);
     messageService.sendMessage(contentWindow, InPreviewEditingManager.MESSAGE_TYPE_CONTENT_METADATA_RESPONSE, data);
   }
 
