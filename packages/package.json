@@ -2,5 +2,9 @@
   "name": "@coremedia-contributions/in-preview-editing-workspace",
   "version": "1.0.0",
   "private": true,
-  "license": "CoreMedia Open Source License"
+  "license": "CoreMedia Open Source License",
+  "scripts": {
+    "build": "pnpm -r build",
+    "frontend-client-example:start": "cd frontend-client-example && pnpm start"
+  }
 }
