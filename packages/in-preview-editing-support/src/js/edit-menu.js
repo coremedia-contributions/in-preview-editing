@@ -391,7 +391,8 @@ export function receivedContentMetadata(message) {
       editMenu.querySelector(".pde-status-label").innerHTML = `<span>${metadata.status}</span>`
 
       // show/hide publish button
-      editMenu.querySelector(".pde-action--publish").style.display = metadata.status !== "published" ? "inline-flex" : "none";
+      const showPublishButton = metadata.status !== "published" && metadata.userMayPerformPublish;
+      editMenu.querySelector(".pde-action--publish").style.display = showPublishButton ? "inline-flex" : "none";
     }
 
     // show inline edit or floating editor button
