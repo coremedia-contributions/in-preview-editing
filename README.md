@@ -26,44 +26,8 @@ git submodule add https://github.com/coremedia-contributions/in-preview-editing 
 mvn -f workspace-configuration/extensions com.coremedia.maven:extensions-maven-plugin:LATEST:sync -Denable=in-preview-editing
 ```
 
-## Registration of specific property editors for the editor overlay
-
-For some properties, you might want to register a specific property editor, such as the image editor for pictures or the taxonomy editors for taxonomy properties. You can do this by adding the following to your Studio plugin code:
-
-```typescript
-class MyStudioPlugin extends StudioPlugin {
-  
-  override init(editorContext: IEditorContext) {
-    super.init(editorContext);
-
-    // registers the ImageEditorPropertyField for the "data" property of CMPicture.
-    propertyEditorRegistry.registerEditor(
-      "CMPicture",
-      "data",
-      Config(ImageEditorPropertyField, {
-        imageSettingsPropertyName: "localSettings",
-      }),
-    );
-
-    // registers the TaxonomyPropertyField for the "subjectTaxonomy" and "locationTaxonomy" properties of CMTeasable
-    propertyEditorRegistry.registerEditor(
-      "CMTeasable",
-      "subjectTaxonomy",
-      Config(TaxonomyPropertyField, {
-        taxonomyIdExpression: ValueExpressionFactory.createFromValue("Subject"),
-      }),
-    );
-    propertyEditorRegistry.registerEditor(
-      "CMTeasable",
-      "locationTaxonomy",
-      Config(TaxonomyPropertyField, {
-        taxonomyIdExpression: ValueExpressionFactory.createFromValue("Location"),
-      }),
-    );
-    
-  }
-  
-}
-```
-
-See `InPreviewEditingStudioPlugin.ts` for the default property editor registrations.
+## How to enable In-Preview Editing
+1. To enable in-preview editing, you need to add the `InPreviewEditingStudioPlugin` to your Studio plugin configuration. This can be done by following the installation steps above.
+    - See [In-Preview-Editing Studio Plugin](apps/studio-client/apps/main/in-preview-editing/README.md) for more details on how to register custom property editors for the editor overlay
+2. As a second step, you need to add the `in-preview-editing-support` package to your frontend client. This package provides the necessary frontend functionality to support in-preview editing in Studio preview.
+    - See [In-Preview-Editing Support](packages/in-preview-editing-support/README.md) for more details on how to install and use this package.
