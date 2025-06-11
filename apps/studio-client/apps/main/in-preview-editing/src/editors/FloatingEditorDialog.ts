@@ -20,6 +20,7 @@ import Item from "@jangaroo/ext-ts/menu/Item";
 import ApprovePublishAction from "@coremedia/studio-client.ext.cap-base-components/actions/ApprovePublishAction";
 import ContentActions_properties from "@coremedia/studio-client.ext.cap-base-components/actions/ContentActions_properties";
 import InPreviewEditingUtil from "../utils/InPreviewEditingUtil";
+import Labels_properties from "../Labels_properties";
 
 interface FloatingEditorDialogConfig extends Config<StudioDialog> {}
 
@@ -37,7 +38,7 @@ class FloatingEditorDialog extends StudioDialog {
     super(
       ConfigUtils.apply(
         Config(FloatingEditorDialog, {
-          title: "Floating Editor",
+          title: Labels_properties.FloatingEditorDialog_title,
           stateId: "floatingEditorState",
           cls: "floating-editor",
           stateful: true,
@@ -63,7 +64,7 @@ class FloatingEditorDialog extends StudioDialog {
           }),
           buttons: [
             Config(TextLinkButton, {
-              text: "Open in Tab",
+              text: Labels_properties.FloatingEditorDialog_openInTabAction_text,
               handler: bind(this$, this$.#openContentInTabAndClose),
             }),
             Config(TbFill),
@@ -71,12 +72,12 @@ class FloatingEditorDialog extends StudioDialog {
               itemId: "finishButton",
               ui: ButtonSkin.FOOTER_PRIMARY.getSkin(),
               scale: "small",
-              text: "Close",
+              text: Labels_properties.FloatingEditorDialog_finishAction_text,
               handler: bind(this$, this$.close),
               menu: Config(Menu, {
                 items: [
                   Config(Item, {
-                    text: "Close & Publish",
+                    text: Labels_properties.FloatingEditorDialog_finishAndPublishAction_text,
                     handler: bind(this$, this$.#closeAndPublish),
                     iconCls: ContentActions_properties.Action_approvePublish_icon,
                   }),
