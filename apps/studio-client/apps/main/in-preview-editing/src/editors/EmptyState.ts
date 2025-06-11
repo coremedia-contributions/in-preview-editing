@@ -3,6 +3,7 @@ import ConfigUtils from "@jangaroo/runtime/ConfigUtils";
 import TitledStudioAnimation from "@coremedia/studio-client.ext.base-components/animations/TitledStudioAnimation";
 import Animations from "@coremedia/studio-client.ext.animation-components/components/Animations";
 import AnimationImages from "@coremedia/studio-client.ext.animation-components/components/AnimationImages";
+import Labels_properties from "../Labels_properties";
 
 interface EmptyStateConfig extends Config<TitledStudioAnimation> {}
 
@@ -15,8 +16,8 @@ class EmptyState extends TitledStudioAnimation {
         Config(EmptyState, {
           svgs: AnimationImages.EMPTY_SEARCH_IMAGES,
           animations: Animations.EMPTY_SEARCH_ANIMATIONS,
-          title: "Ooops!",
-          text: "Editing for this property is not supported yet.",
+          title: Labels_properties.FloatingEditorDialog_emptyState_title,
+          text: Labels_properties.FloatingEditorDialog_emptyState_text,
         }),
         config,
       ),
