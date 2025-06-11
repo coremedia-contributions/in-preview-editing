@@ -38,6 +38,7 @@ import PageGridUtil from "@coremedia/studio-client.main.bpbase-pagegrid-studio-p
 import ImageMapEditor from "@coremedia/studio-client.main.image-map-editor-components/ImageMapEditor";
 import EmptyState from "../editors/EmptyState";
 import propertyEditorRegistry from "../editors/propertyEditorRegistry";
+import LocaleUtil from "@coremedia/studio-client.cap-base-models/locale/LocaleUtil";
 
 class InPreviewEditingUtil {
   static readonly MESSAGE_TYPE_ACTIVATE_IN_PREVIEW_EDITING: string = "com.coremedia.pde.editing.on";
@@ -58,12 +59,15 @@ class InPreviewEditingUtil {
       `[InPreviewEditingManager] Sending ${activate ? "activate" : "deactivate"} editing message to content window: `,
       contentWindow,
     );
+    let data = {
+      lang: LocaleUtil.getLocale()
+    };
     messageService.sendMessage(
       contentWindow,
       activate
         ? InPreviewEditingUtil.MESSAGE_TYPE_ACTIVATE_IN_PREVIEW_EDITING
         : InPreviewEditingUtil.MESSAGE_TYPE_DEACTIVATE_IN_PREVIEW_EDITING,
-      {},
+      data,
       (responseBody: any): void => {
         console.log("[InPreviewEditingManager] Message response response: ", responseBody);
       },

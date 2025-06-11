@@ -5,14 +5,18 @@ import {
 } from "./utils";
 import { hideElementHighlightMarkers } from "./highlighting";
 import { hideEditMenu, showEditMenu, updateEditMenu } from "./edit-menu";
+import { setLang } from "./translations";
 
 const PDE_OBSERVED_ELEMENT_FLAG = "pdeObservedElement";
 
 /**
  * Activates in-page-editing for all elements marked as editable.
  */
-export function activateInPageEditing() {
+export function activateInPageEditing(lang = "en") {
   if (document.body.dataset[PDE_EDITING_FLAG] !== "on") {
+
+    // set the lang for translations
+    setLang(lang);
 
     // make all elements with specific metadata editable
     // console.log("[PDE] make elements editable ...");
