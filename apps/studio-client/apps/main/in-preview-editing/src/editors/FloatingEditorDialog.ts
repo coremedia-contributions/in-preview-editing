@@ -49,7 +49,7 @@ class FloatingEditorDialog extends StudioDialog {
           autoScroll: true,
           x: 200,
           y: 200,
-          ui: WindowSkin.GRID_400.getSkin(),
+          ui: WindowSkin.GRID_200.getSkin(),
           constrainHeader: true,
           closeAction: "hide",
           bodyPadding: 5,

@@ -1,21 +1,17 @@
 import Config from "@jangaroo/runtime/Config";
 import ConfigUtils from "@jangaroo/runtime/ConfigUtils";
-import TitledStudioAnimation from "@coremedia/studio-client.ext.base-components/animations/TitledStudioAnimation";
-import Animations from "@coremedia/studio-client.ext.animation-components/components/Animations";
-import AnimationImages from "@coremedia/studio-client.ext.animation-components/components/AnimationImages";
 import Labels_properties from "../Labels_properties";
+import EmptyContainer from "@coremedia/studio-client.ext.ui-components/components/EmptyContainer";
 
-interface EmptyStateConfig extends Config<TitledStudioAnimation> {}
+interface EmptyStateConfig extends Config<EmptyContainer> {}
 
-class EmptyState extends TitledStudioAnimation {
+class EmptyState extends EmptyContainer {
   declare Config: EmptyStateConfig;
 
   constructor(config: Config<EmptyState> = null) {
     super(
       ConfigUtils.apply(
         Config(EmptyState, {
-          svgs: AnimationImages.EMPTY_SEARCH_IMAGES,
-          animations: Animations.EMPTY_SEARCH_ANIMATIONS,
           title: Labels_properties.FloatingEditorDialog_emptyState_title,
           text: Labels_properties.FloatingEditorDialog_emptyState_text,
         }),

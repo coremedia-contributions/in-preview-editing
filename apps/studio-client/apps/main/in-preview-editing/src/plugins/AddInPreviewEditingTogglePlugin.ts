@@ -2,7 +2,7 @@ import AddItemsPlugin from "@coremedia/studio-client.ext.ui-components/plugins/A
 import ButtonSkin from "@coremedia/studio-client.ext.ui-components/skins/ButtonSkin";
 import PreviewIFrameToolbarBase from "@coremedia/studio-client.main.editor-components/sdk/preview/PreviewIFrameToolbarBase";
 import Component from "@jangaroo/ext-ts/Component";
-import { Config } from "@jangaroo/runtime";
+import Config from "@jangaroo/runtime/Config";
 import ConfigUtils from "@jangaroo/runtime/ConfigUtils";
 import ToggleInPreviewEditingButton from "../components/ToggleInPreviewEditingButton";
 

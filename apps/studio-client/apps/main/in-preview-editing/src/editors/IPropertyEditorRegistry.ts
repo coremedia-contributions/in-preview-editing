@@ -1,6 +1,6 @@
 import Config from "@jangaroo/runtime/Config";
 import Component from "@jangaroo/ext-ts/Component";
-import { ContentType } from "@coremedia/studio-client.cap-rest-client";
+import ContentType from "@coremedia/studio-client.cap-rest-client/content/ContentType";
 
 abstract class IPropertyEditorRegistry {
   abstract registerEditor(contentTypeName: string, propertyName: string, editor: Config<Component>): void;

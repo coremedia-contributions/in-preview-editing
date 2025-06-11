@@ -1,31 +1,38 @@
 import Content from "@coremedia/studio-client.cap-rest-client/content/Content";
-import { AnyFunction, as, cast, is } from "@jangaroo/runtime";
+import { AnyFunction } from "@jangaroo/runtime/types";
+import { as, cast, is } from "@jangaroo/runtime";
 import ContentPropertyNames from "@coremedia/studio-client.cap-rest-client/content/ContentPropertyNames";
-import {
-  BlobPropertyDescriptor,
-  CapPropertyDescriptor,
-  CapPropertyDescriptorType,
-  ContentType,
-  MarkupPropertyDescriptor,
-} from "@coremedia/studio-client.cap-rest-client";
+import CapPropertyDescriptor from "@coremedia/studio-client.cap-rest-client/common/CapPropertyDescriptor";
+import ContentType from "@coremedia/studio-client.cap-rest-client/content/ContentType";
+import CapPropertyDescriptorType from "@coremedia/studio-client.cap-rest-client/common/CapPropertyDescriptorType";
+import BlobPropertyDescriptor from "@coremedia/studio-client.cap-rest-client/common/descriptors/BlobPropertyDescriptor";
+import MarkupPropertyDescriptor
+  from "@coremedia/studio-client.cap-rest-client/common/descriptors/MarkupPropertyDescriptor";
 import Config from "@jangaroo/runtime/Config";
 import BlobPropertyField from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/BlobPropertyField";
-import TextBlobPropertyField from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/TextBlobPropertyField";
-import IntegerPropertyField from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/IntegerPropertyField";
-import DateTimePropertyField from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/DateTimePropertyField";
-import StringPropertyField from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/StringPropertyField";
-import LinkListPropertyField from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/LinkListPropertyField";
-import markupPropertyFieldConfigMap from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/struct/markup/markupPropertyFieldConfigMap/markupPropertyFieldConfigMap";
+import TextBlobPropertyField
+  from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/TextBlobPropertyField";
+import IntegerPropertyField
+  from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/IntegerPropertyField";
+import DateTimePropertyField
+  from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/DateTimePropertyField";
+import StringPropertyField
+  from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/StringPropertyField";
+import LinkListPropertyField
+  from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/LinkListPropertyField";
+import markupPropertyFieldConfigMap
+  from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/struct/markup/markupPropertyFieldConfigMap/markupPropertyFieldConfigMap";
 import ContentTypeImpl from "@coremedia/studio-client.cap-rest-client-impl/content/impl/ContentTypeImpl";
 import ValueExpressionFactory from "@coremedia/studio-client.client-core/data/ValueExpressionFactory";
 import ValueExpression from "@coremedia/studio-client.client-core/data/ValueExpression";
 import editorPreferences from "@coremedia/studio-client.cap-base-models/preferences/editorPreferences";
 import messageService from "@coremedia/studio-client.main.editor-components/sdk/messageService";
 import PreviewIFrame from "@coremedia/studio-client.main.editor-components/sdk/preview/PreviewIFrame";
-import { getServiceAgent } from "@coremedia/service-agent";
-import { createContentFormServiceDescriptor } from "@coremedia/studio-client.content-services-api";
+import getServiceAgent, { serviceAgent } from "@coremedia/service-agent";
+import { createWorkAreaServiceDescriptor } from "@coremedia/studio-client.form-services-api/WorkAreaServiceDescriptor";
 import PlacementField from "@coremedia/studio-client.main.bpbase-pagegrid-studio-plugin/pagegrid/PlacementField";
-import cmNavigationTreeRelation from "@coremedia/studio-client.main.bpbase-pagegrid-studio-plugin/tree/cmNavigationTreeRelation";
+import cmNavigationTreeRelation
+  from "@coremedia/studio-client.main.bpbase-pagegrid-studio-plugin/tree/cmNavigationTreeRelation";
 import ValidityColumn from "@coremedia-blueprint/studio-client.main.blueprint-forms/forms/columns/ValidityColumn";
 import NameColumn from "@coremedia/studio-client.ext.cap-base-components/columns/NameColumn";
 import TypeIconColumn from "@coremedia/studio-client.ext.cap-base-components/columns/TypeIconColumn";
@@ -33,7 +40,8 @@ import ViewtypeRenderer from "@coremedia-blueprint/studio-client.main.blueprint-
 import StatusColumn from "@coremedia/studio-client.ext.cap-base-components/columns/StatusColumn";
 import DataField from "@coremedia/studio-client.ext.ui-components/store/DataField";
 import Column from "@jangaroo/ext-ts/grid/column/Column";
-import LinkListThumbnailColumn from "@coremedia/studio-client.ext.content-link-list-components/columns/LinkListThumbnailColumn";
+import LinkListThumbnailColumn
+  from "@coremedia/studio-client.ext.content-link-list-components/columns/LinkListThumbnailColumn";
 import PageGridUtil from "@coremedia/studio-client.main.bpbase-pagegrid-studio-plugin/pagegrid/PageGridUtil";
 import ImageMapEditor from "@coremedia/studio-client.main.image-map-editor-components/ImageMapEditor";
 import EmptyState from "../editors/EmptyState";
@@ -47,27 +55,27 @@ class InPreviewEditingUtil {
 
   static inPreviewEditingPreferenceExpr(): ValueExpression {
     return ValueExpressionFactory.create(
-      InPreviewEditingUtil.IN_PREVIEW_EDITING_PREFERENCE,
-      editorPreferences.getPreferences(),
+            InPreviewEditingUtil.IN_PREVIEW_EDITING_PREFERENCE,
+            editorPreferences.getPreferences(),
     );
   }
 
   static toggleInPageEditing(previewIframe: PreviewIFrame, activate: boolean): void {
     const contentWindow = previewIframe.getContentWindow();
     console.log(
-      `[InPreviewEditingManager] Sending ${activate ? "activate" : "deactivate"} editing message to content window: `,
-      contentWindow,
+            `[InPreviewEditingManager] Sending ${activate ? "activate" : "deactivate"} editing message to content window: `,
+            contentWindow,
     );
     messageService.sendMessage(
-      contentWindow,
-      activate
-        ? InPreviewEditingUtil.MESSAGE_TYPE_ACTIVATE_IN_PREVIEW_EDITING
-        : InPreviewEditingUtil.MESSAGE_TYPE_DEACTIVATE_IN_PREVIEW_EDITING,
-      {},
-      (responseBody: any): void => {
-        console.log("[InPreviewEditingManager] Message response response: ", responseBody);
-      },
-      previewIframe,
+            contentWindow,
+            activate
+                    ? InPreviewEditingUtil.MESSAGE_TYPE_ACTIVATE_IN_PREVIEW_EDITING
+                    : InPreviewEditingUtil.MESSAGE_TYPE_DEACTIVATE_IN_PREVIEW_EDITING,
+            {},
+            (responseBody: any): void => {
+              console.log("[InPreviewEditingManager] Message response response: ", responseBody);
+            },
+            previewIframe,
     );
   }
 
@@ -85,7 +93,7 @@ class InPreviewEditingUtil {
             // try fallback to generic editor
             const contentType = as(content.getType(), ContentTypeImpl);
             editor = InPreviewEditingUtil.#getGenericEditor(
-              InPreviewEditingUtil.getPropertyDescriptor(contentType, propertyName),
+                    InPreviewEditingUtil.getPropertyDescriptor(contentType, propertyName),
             );
           }
 
@@ -119,7 +127,7 @@ class InPreviewEditingUtil {
     return new Promise((resolve, reject) => {
       const placementName = propertyPath.replace("placement-", "");
       const layoutPropertyPath =
-        ContentPropertyNames.PROPERTIES + "." + PageGridUtil.getLayoutPropertyPath("placement");
+              ContentPropertyNames.PROPERTIES + "." + PageGridUtil.getLayoutPropertyPath("placement");
 
       ValueExpressionFactory.create(layoutPropertyPath, content).loadValue((layout: Content) => {
         try {
@@ -191,25 +199,23 @@ class InPreviewEditingUtil {
   }
 
   static openContentInTab(
-    contentUri: string,
-    onSuccess: AnyFunction = () => {},
-    onError: AnyFunction = () => {},
+          contentUri: string,
+          onSuccess: AnyFunction = () => {},
+          onError: AnyFunction = () => {},
   ): void {
     if (!contentUri) {
       return;
     }
 
-    getServiceAgent()
-      .getService(createContentFormServiceDescriptor())
-      ?.fetch()
-      .then((contentFormService) => {
-        contentFormService.openContentForm(contentUri).then((success) => {
-          if (success) {
-            onSuccess();
-          }
-        });
-      })
-      .catch(onError);
+    serviceAgent.fetchService(createWorkAreaServiceDescriptor())
+            .then(workAreaService => {
+              workAreaService.openEntitiesInTabs([contentUri]).then((success) => {
+                if (success) {
+                  onSuccess();
+                }
+              });
+            })
+            .catch(onError);
   }
 
   static #getGenericEditor(descriptor: CapPropertyDescriptor) {
@@ -217,41 +223,41 @@ class InPreviewEditingUtil {
 
     if (descriptor) {
       switch (descriptor.type) {
-        case CapPropertyDescriptorType.BLOB:
-          const blobPropertyDescriptor = cast(BlobPropertyDescriptor, descriptor);
-          const mimeParts = blobPropertyDescriptor.contentType.split("/");
-          switch (mimeParts[0]) {
-            case "text":
-              propertyField = Config(TextBlobPropertyField);
-              break;
-            default:
-              propertyField = Config(BlobPropertyField);
-              cast(BlobPropertyField, propertyField).contentType = blobPropertyDescriptor.contentType;
-          }
-          break;
-        case CapPropertyDescriptorType.INTEGER:
-          propertyField = Config(IntegerPropertyField);
-          break;
-        case CapPropertyDescriptorType.DATE:
-          propertyField = Config(DateTimePropertyField);
-          as(propertyField, DateTimePropertyField).timeZoneHidden = true;
-          break;
-        case CapPropertyDescriptorType.STRING:
-          propertyField = Config(StringPropertyField);
-          break;
-        case CapPropertyDescriptorType.LINK:
-          propertyField = Config(LinkListPropertyField, {
-            showThumbnails: true,
-          });
-          break;
-        case CapPropertyDescriptorType.MARKUP:
-          const markupGrammar = cast(MarkupPropertyDescriptor, descriptor).grammar;
-          if (markupGrammar) {
-            propertyField = markupPropertyFieldConfigMap.getConfig(markupGrammar);
-          }
+      case CapPropertyDescriptorType.BLOB:
+        const blobPropertyDescriptor = cast(BlobPropertyDescriptor, descriptor);
+        const mimeParts = blobPropertyDescriptor.contentType.split("/");
+        switch (mimeParts[0]) {
+        case "text":
+          propertyField = Config(TextBlobPropertyField);
           break;
         default:
-          propertyField = Config(EmptyState);
+          propertyField = Config(BlobPropertyField);
+          cast(BlobPropertyField, propertyField).contentType = blobPropertyDescriptor.contentType;
+        }
+        break;
+      case CapPropertyDescriptorType.INTEGER:
+        propertyField = Config(IntegerPropertyField);
+        break;
+      case CapPropertyDescriptorType.DATE:
+        propertyField = Config(DateTimePropertyField);
+        as(propertyField, DateTimePropertyField).timeZoneHidden = true;
+        break;
+      case CapPropertyDescriptorType.STRING:
+        propertyField = Config(StringPropertyField);
+        break;
+      case CapPropertyDescriptorType.LINK:
+        propertyField = Config(LinkListPropertyField, {
+          showThumbnails: true,
+        });
+        break;
+      case CapPropertyDescriptorType.MARKUP:
+        const markupGrammar = cast(MarkupPropertyDescriptor, descriptor).grammar;
+        if (markupGrammar) {
+          propertyField = markupPropertyFieldConfigMap.getConfig(markupGrammar);
+        }
+        break;
+      default:
+        propertyField = Config(EmptyState);
       }
     }
 

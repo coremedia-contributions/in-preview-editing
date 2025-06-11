@@ -1,4 +1,4 @@
-import { SvgIconUtil } from "@coremedia/studio-client.base-models";
+import SvgIconUtil from "@coremedia/studio-client.base-models/util/SvgIconUtil";
 import { openWcsInTab } from "@coremedia/studio-client.common-icons";
 
 interface Labels_properties {

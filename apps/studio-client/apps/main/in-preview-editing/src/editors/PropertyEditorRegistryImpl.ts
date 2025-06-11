@@ -1,7 +1,7 @@
 import Component from "@jangaroo/ext-ts/Component";
 import { mixin } from "@jangaroo/runtime";
 import Config from "@jangaroo/runtime/Config";
-import { ContentType } from "@coremedia/studio-client.cap-rest-client";
+import ContentType from "@coremedia/studio-client.cap-rest-client/content/ContentType";
 import IPropertyEditorRegistry from "./IPropertyEditorRegistry";
 
 class PropertyEditorRegistryImpl implements IPropertyEditorRegistry {

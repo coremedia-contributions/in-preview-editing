@@ -5,7 +5,8 @@ import PreviewMessageTypes from "@coremedia/studio-client.main.editor-components
 import session from "@coremedia/studio-client.cap-rest-client/common/session";
 import ContentPropertyNames from "@coremedia/studio-client.cap-rest-client/content/ContentPropertyNames";
 import ValueExpressionFactory from "@coremedia/studio-client.client-core/data/ValueExpressionFactory";
-import { ContentType, Right } from "@coremedia/studio-client.cap-rest-client";
+import ContentType from "@coremedia/studio-client.cap-rest-client/content/ContentType";
+import Right from "@coremedia/studio-client.cap-rest-client/content/authorization/Right";
 import VariantKeyUtil from "@coremedia/studio-client.main.image-editor-components/VariantKeyUtil";
 import Content from "@coremedia/studio-client.cap-rest-client/content/Content";
 import ContentLocalizationUtil from "@coremedia/studio-client.cap-base-models/content/ContentLocalizationUtil";
@@ -15,7 +16,7 @@ import thumbnailService from "@coremedia/studio-client.cap-base-models/thumbnail
 import toastService from "@coremedia/studio-client.ext.toast-components/toastService";
 import ValidationState from "@coremedia/studio-client.ext.ui-components/mixins/ValidationState";
 import PublicationResult from "@coremedia/studio-client.cap-rest-client/content/results/PublicationResult";
-import { Publisher_properties } from "@coremedia/studio-client.cap-base-models";
+import Publisher_properties from "@coremedia/studio-client.cap-base-models/publication/Publisher_properties";
 import StringUtil from "@jangaroo/ext-ts/String";
 import FloatingEditorDialog from "./editors/FloatingEditorDialog";
 import InPreviewEditingUtil from "./utils/InPreviewEditingUtil";
