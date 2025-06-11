@@ -38,4 +38,4 @@ const IPETranslations = {
 
 export const setLang = (newLang) => IPETranslations.setLang(newLang);
 export const getLang = () => IPETranslations.getLang();
-export const t = (key) => IPETranslations.t[key];
+export const t = (key) => IPETranslations.t(key);

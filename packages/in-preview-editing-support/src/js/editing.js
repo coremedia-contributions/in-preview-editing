@@ -3,8 +3,8 @@ import {
   PDE_METADATA_ATTRIBUTE,
   PDE_EDITING_FLAG,
 } from "./utils";
-import { hideElementHighlightMarkers } from "./highlighting";
-import { hideEditMenu, showEditMenu, updateEditMenu } from "./edit-menu";
+import { hideElementHighlightMarkers, initElementHighlightMarkers } from "./highlighting";
+import { hideEditMenu, showEditMenu, updateEditMenu, initEditMenu } from "./edit-menu";
 import { setLang } from "./translations";
 
 const PDE_OBSERVED_ELEMENT_FLAG = "pdeObservedElement";
@@ -15,8 +15,16 @@ const PDE_OBSERVED_ELEMENT_FLAG = "pdeObservedElement";
 export function activateInPageEditing(lang = "en") {
   if (document.body.dataset[PDE_EDITING_FLAG] !== "on") {
 
+    console.log(`[PDE] activate in-page-editing (lang=${lang}) ...`);
+
     // set the lang for translations
     setLang(lang);
+
+    // attach PDE edit menu
+    initEditMenu();
+
+    // attach markers for highlighting
+    initElementHighlightMarkers();
 
     // make all elements with specific metadata editable
     // console.log("[PDE] make elements editable ...");
