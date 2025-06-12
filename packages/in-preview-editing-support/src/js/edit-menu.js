@@ -178,9 +178,9 @@ export function updateEditMenu(event) {
 
   } else {
     console.warn("[PDE] cannot update menu for element: ", event.target);
-    menuElement = null;
-    hideElementHighlightMarkers();
-    hideEditMenu(event.target);
+    // menuElement = null;
+    // hideElementHighlightMarkers();
+    // hideEditMenu(event.target);
   }
 }
 
@@ -440,6 +440,7 @@ function postPropertyUpdate(contentId, propertyName, propertyValue) {
 
 function onIdle() {
   if (!inlineEditingActive) {
+    //console.log("[PDE] Idle timeout reached. Hiding edit menu.");
     hideEditMenu();
     hideElementHighlightMarkers();
   }
