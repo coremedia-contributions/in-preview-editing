@@ -15,6 +15,7 @@ import {
   MESSAGE_TYPE_PUBLISH_REQUEST,
   MESSAGE_TYPE_PROPERTY_UPDATE_REQUEST, MESSAGE_TYPE_OPEN_CONTENT, MESSAGE_TYPE_SHOW_EDITOR
 } from "./messaging";
+import { t } from "./translations";
 
 const HIDE_AFTER_IDLE = 2000; // hide edit menu after 2 seconds of inactivity, set to 0 to disable
 
@@ -59,7 +60,7 @@ export function initEditMenu() {
   // Content name label
   const contentNameLabel = document.createElement("div");
   contentNameLabel.classList.add("pde-content-name-label");
-  contentNameLabel.innerHTML = "Loading ...";
+  contentNameLabel.innerHTML = t("loading");
   contentInfo.appendChild(contentNameLabel);
 
   // status label
@@ -77,14 +78,14 @@ export function initEditMenu() {
   // add edit in floating editor action
   const editAction = document.createElement("button");
   // editAction.innerHTML = `<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.5 1C6.22386 1 6 1.22386 6 1.5C6 1.77614 6.22386 2 6.5 2C7.12671 2 7.45718 2.20028 7.65563 2.47812C7.8781 2.78957 8 3.28837 8 4V11C8 11.7116 7.8781 12.2104 7.65563 12.5219C7.45718 12.7997 7.12671 13 6.5 13C6.22386 13 6 13.2239 6 13.5C6 13.7761 6.22386 14 6.5 14C7.37329 14 8.04282 13.7003 8.46937 13.1031C8.47976 13.0886 8.48997 13.0739 8.5 13.0591C8.51003 13.0739 8.52024 13.0886 8.53063 13.1031C8.95718 13.7003 9.62671 14 10.5 14C10.7761 14 11 13.7761 11 13.5C11 13.2239 10.7761 13 10.5 13C9.87329 13 9.54282 12.7997 9.34437 12.5219C9.1219 12.2104 9 11.7116 9 11V4C9 3.28837 9.1219 2.78957 9.34437 2.47812C9.54282 2.20028 9.87329 2 10.5 2C10.7761 2 11 1.77614 11 1.5C11 1.22386 10.7761 1 10.5 1C9.62671 1 8.95718 1.29972 8.53063 1.89688C8.52024 1.91143 8.51003 1.92611 8.5 1.9409C8.48997 1.92611 8.47976 1.91143 8.46937 1.89688C8.04282 1.29972 7.37329 1 6.5 1ZM14 5H11V4H14C14.5523 4 15 4.44772 15 5V10C15 10.5523 14.5523 11 14 11H11V10H14V5ZM6 4V5H1L1 10H6V11H1C0.447715 11 0 10.5523 0 10V5C0 4.44772 0.447715 4 1 4H6Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg> Edit`;
-  editAction.innerHTML = `<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 16 16" xml:space="preserve"><g><rect x="1.43" y="5.38" transform="matrix(0.7071 -0.7071 0.7071 0.7071 -2.8137 8.2071)" fill="#fff" width="14.14" height="4.24"/><polygon fill="#fff" points="1,15 4,15 1,12 \t"/></g></svg> Edit`;
+  editAction.innerHTML = `<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 16 16" xml:space="preserve"><g><rect x="1.43" y="5.38" transform="matrix(0.7071 -0.7071 0.7071 0.7071 -2.8137 8.2071)" fill="#fff" width="14.14" height="4.24"/><polygon fill="#fff" points="1,15 4,15 1,12 \t"/></g></svg> ${t("edit")}`;
   editAction.classList.add("pde-action", "pde-action--edit");
   actions.appendChild(editAction);
 
 
   // add edit inline action
   const editInlineAction = document.createElement("button");
-  editInlineAction.innerHTML = `<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.5 1C6.22386 1 6 1.22386 6 1.5C6 1.77614 6.22386 2 6.5 2C7.12671 2 7.45718 2.20028 7.65563 2.47812C7.8781 2.78957 8 3.28837 8 4V11C8 11.7116 7.8781 12.2104 7.65563 12.5219C7.45718 12.7997 7.12671 13 6.5 13C6.22386 13 6 13.2239 6 13.5C6 13.7761 6.22386 14 6.5 14C7.37329 14 8.04282 13.7003 8.46937 13.1031C8.47976 13.0886 8.48997 13.0739 8.5 13.0591C8.51003 13.0739 8.52024 13.0886 8.53063 13.1031C8.95718 13.7003 9.62671 14 10.5 14C10.7761 14 11 13.7761 11 13.5C11 13.2239 10.7761 13 10.5 13C9.87329 13 9.54282 12.7997 9.34437 12.5219C9.1219 12.2104 9 11.7116 9 11V4C9 3.28837 9.1219 2.78957 9.34437 2.47812C9.54282 2.20028 9.87329 2 10.5 2C10.7761 2 11 1.77614 11 1.5C11 1.22386 10.7761 1 10.5 1C9.62671 1 8.95718 1.29972 8.53063 1.89688C8.52024 1.91143 8.51003 1.92611 8.5 1.9409C8.48997 1.92611 8.47976 1.91143 8.46937 1.89688C8.04282 1.29972 7.37329 1 6.5 1ZM14 5H11V4H14C14.5523 4 15 4.44772 15 5V10C15 10.5523 14.5523 11 14 11H11V10H14V5ZM6 4V5H1L1 10H6V11H1C0.447715 11 0 10.5523 0 10V5C0 4.44772 0.447715 4 1 4H6Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg> Edit`;
+  editInlineAction.innerHTML = `<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.5 1C6.22386 1 6 1.22386 6 1.5C6 1.77614 6.22386 2 6.5 2C7.12671 2 7.45718 2.20028 7.65563 2.47812C7.8781 2.78957 8 3.28837 8 4V11C8 11.7116 7.8781 12.2104 7.65563 12.5219C7.45718 12.7997 7.12671 13 6.5 13C6.22386 13 6 13.2239 6 13.5C6 13.7761 6.22386 14 6.5 14C7.37329 14 8.04282 13.7003 8.46937 13.1031C8.47976 13.0886 8.48997 13.0739 8.5 13.0591C8.51003 13.0739 8.52024 13.0886 8.53063 13.1031C8.95718 13.7003 9.62671 14 10.5 14C10.7761 14 11 13.7761 11 13.5C11 13.2239 10.7761 13 10.5 13C9.87329 13 9.54282 12.7997 9.34437 12.5219C9.1219 12.2104 9 11.7116 9 11V4C9 3.28837 9.1219 2.78957 9.34437 2.47812C9.54282 2.20028 9.87329 2 10.5 2C10.7761 2 11 1.77614 11 1.5C11 1.22386 10.7761 1 10.5 1C9.62671 1 8.95718 1.29972 8.53063 1.89688C8.52024 1.91143 8.51003 1.92611 8.5 1.9409C8.48997 1.92611 8.47976 1.91143 8.46937 1.89688C8.04282 1.29972 7.37329 1 6.5 1ZM14 5H11V4H14C14.5523 4 15 4.44772 15 5V10C15 10.5523 14.5523 11 14 11H11V10H14V5ZM6 4V5H1L1 10H6V11H1C0.447715 11 0 10.5523 0 10V5C0 4.44772 0.447715 4 1 4H6Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg> ${t("edit_inline")}`;
   editInlineAction.classList.add("pde-action", "pde-action--edit-inline");
   editInlineAction.style.display = "none";
   actions.appendChild(editInlineAction);
@@ -92,25 +93,25 @@ export function initEditMenu() {
   // publish button
   const publishAction = document.createElement("button");
   publishAction.style.display = "none";
-  publishAction.innerHTML = "Publish";
+  publishAction.innerHTML = t("publish");
   publishAction.classList.add("pde-action", "pde-action--publish");
   actions.appendChild(publishAction);
 
   // add save action
   const saveAction = document.createElement("button");
   // saveAction.innerHTML = `<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.4669 3.72684C11.7558 3.91574 11.8369 4.30308 11.648 4.59198L7.39799 11.092C7.29783 11.2452 7.13556 11.3467 6.95402 11.3699C6.77247 11.3931 6.58989 11.3355 6.45446 11.2124L3.70446 8.71241C3.44905 8.48022 3.43023 8.08494 3.66242 7.82953C3.89461 7.57412 4.28989 7.55529 4.5453 7.78749L6.75292 9.79441L10.6018 3.90792C10.7907 3.61902 11.178 3.53795 11.4669 3.72684Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg> Save`;
-  saveAction.innerHTML = "Save";
+  saveAction.innerHTML = t("save");
   saveAction.classList.add("pde-action", "pde-action--save");
   actions.appendChild(saveAction);
 
   // add cancel action
   const cancelAction = document.createElement("button");
   // cancelAction.innerHTML = `<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.8536 2.85355C13.0488 2.65829 13.0488 2.34171 12.8536 2.14645C12.6583 1.95118 12.3417 1.95118 12.1464 2.14645L7.5 6.79289L2.85355 2.14645C2.65829 1.95118 2.34171 1.95118 2.14645 2.14645C1.95118 2.34171 1.95118 2.65829 2.14645 2.85355L6.79289 7.5L2.14645 12.1464C1.95118 12.3417 1.95118 12.6583 2.14645 12.8536C2.34171 13.0488 2.65829 13.0488 2.85355 12.8536L7.5 8.20711L12.1464 12.8536C12.3417 13.0488 12.6583 13.0488 12.8536 12.8536C13.0488 12.6583 13.0488 12.3417 12.8536 12.1464L8.20711 7.5L12.8536 2.85355Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg> Cancel`;
-  cancelAction.innerHTML = "Cancel";
+  cancelAction.innerHTML = t("cancel");
   cancelAction.classList.add("pde-action", "pde-action--cancel");
   cancelAction.onclick = (event) => {
     event.preventDefault();
-    endEditing(element, false);
+    endEditing(menuElement, false);
   };
   actions.appendChild(cancelAction);
 
@@ -127,7 +128,7 @@ export function updateEditMenu(event) {
   if (metadataElement && isMarkedAsEditable(metadataElement)) {
 
     if (menuElement !== metadataElement) {
-      console.log("[PDE] update edit menu for element: ", metadataElement);
+      //console.log("[PDE] update edit menu for element: ", metadataElement);
       const propertyName = findPropertyName(metadataElement);
       const contentId = findContentId(metadataElement);
 
@@ -150,7 +151,7 @@ export function updateEditMenu(event) {
         };
 
         const publishButton = editMenu.querySelector(".pde-action--publish");
-        publishButton.innerHTML = "Publish";
+        publishButton.innerHTML = t("publish");
         publishButton.onclick = (event) => {
           event.preventDefault();
           requestContentPublication(contentId, propertyName);
@@ -177,9 +178,9 @@ export function updateEditMenu(event) {
 
   } else {
     console.warn("[PDE] cannot update menu for element: ", event.target);
-    menuElement = null;
-    hideElementHighlightMarkers();
-    hideEditMenu(event.target);
+    // menuElement = null;
+    // hideElementHighlightMarkers();
+    // hideEditMenu(event.target);
   }
 }
 
@@ -191,7 +192,8 @@ export function updateEditMenuPosition(element) {
   const scrollPosition = getScrollPosition();
 
   let top = Math.round(metadataElementBoundingRect.top + scrollPosition.scrollTop - editMenuBoundingRect.height);
-  let left = Math.round(event.clientX - 20); // subtract 10px for padding
+  // let left = Math.round(event.clientX - 20); // subtract 10px for padding
+  let left = Math.round(metadataElementBoundingRect.left); // subtract 10px for padding
 
   if (left < 0) {
     left = 0;
@@ -217,7 +219,7 @@ export function updateEditMenuPosition(element) {
   }
 
   // console.log("[PDE] Edit menu visible: ", editMenu.classList);
-  // console.log(`[PDE] Edit menu position: (left: ${left}, top: ${top})`);
+  //console.log(`[PDE] Edit menu position: (left: ${left}, top: ${top})`);
 
   editMenu.style.top = `${top}px`;
   editMenu.style.left = `${left}px`;
@@ -338,7 +340,7 @@ function requestContentPublication(contentRef, propertyName) {
   if (contentRef && propertyName) {
     const publishButton = editMenu.querySelector(".pde-action--publish");
     publishButton.disabled = true;
-    publishButton.innerHTML = "Publishing ...";
+    publishButton.innerHTML = t("publishing");
 
     sendMessageToParent(MESSAGE_TYPE_PUBLISH_REQUEST, { contentRef: contentRef, propertyName: propertyName });
   }
@@ -438,6 +440,7 @@ function postPropertyUpdate(contentId, propertyName, propertyValue) {
 
 function onIdle() {
   if (!inlineEditingActive) {
+    //console.log("[PDE] Idle timeout reached. Hiding edit menu.");
     hideEditMenu();
     hideElementHighlightMarkers();
   }

@@ -2,8 +2,6 @@ import {
   activateInPageEditing,
   deactivateInPageEditing,
 } from "./editing";
-import { initElementHighlightMarkers } from "./highlighting";
-import { initEditMenu } from "./edit-menu";
 import { dispatchMessage } from "./messaging";
 
 export function init() {
@@ -12,12 +10,6 @@ export function init() {
       // Enable post-message handling
       window.addEventListener("message", dispatchMessage);
     }
-
-    // attach PDE edit menu
-    initEditMenu();
-
-    // attach markers for highlighting
-    initElementHighlightMarkers();
 
     window.PDE_IN_PREVIEW_EDITING_INITIALIZED = true;
     console.log("[PDE] In-Preview-Editing initialized.");

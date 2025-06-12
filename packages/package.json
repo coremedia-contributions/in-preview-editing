@@ -5,6 +5,7 @@
   "license": "CoreMedia Open Source License",
   "scripts": {
     "build": "pnpm -r build",
+    "build:dev": "pnpm -r build --mode=development",
     "frontend-client-example:start": "cd frontend-client-example && pnpm start"
   }
 }

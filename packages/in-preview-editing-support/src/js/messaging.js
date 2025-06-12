@@ -39,7 +39,7 @@ export function dispatchMessage(event) {
   switch (msgData.type) {
 
     case MESSAGE_TYPE_ACTIVATE_IN_PAGE_EDITING:
-      activateInPageEditing();
+      activateInPageEditing(msgData.lang);
       break;
 
     case MESSAGE_TYPE_DEACTIVATE_IN_PAGE_EDITING:
