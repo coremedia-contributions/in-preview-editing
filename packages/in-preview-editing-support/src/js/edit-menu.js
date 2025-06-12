@@ -128,7 +128,7 @@ export function updateEditMenu(event) {
   if (metadataElement && isMarkedAsEditable(metadataElement)) {
 
     if (menuElement !== metadataElement) {
-      console.log("[PDE] update edit menu for element: ", metadataElement);
+      //console.log("[PDE] update edit menu for element: ", metadataElement);
       const propertyName = findPropertyName(metadataElement);
       const contentId = findContentId(metadataElement);
 
@@ -219,7 +219,7 @@ export function updateEditMenuPosition(element) {
   }
 
   // console.log("[PDE] Edit menu visible: ", editMenu.classList);
-  console.log(`[PDE] Edit menu position: (left: ${left}, top: ${top})`);
+  //console.log(`[PDE] Edit menu position: (left: ${left}, top: ${top})`);
 
   editMenu.style.top = `${top}px`;
   editMenu.style.left = `${left}px`;
