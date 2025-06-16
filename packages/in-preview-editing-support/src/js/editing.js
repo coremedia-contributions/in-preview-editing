@@ -3,7 +3,7 @@ import {
   PDE_METADATA_ATTRIBUTE,
   PDE_EDITING_FLAG,
 } from "./utils";
-import { hideElementHighlightMarkers, initElementHighlightMarkers } from "./highlighting";
+import { hideElementHighlightMarkers, initElementHighlightMarkers, highlightElement } from "./highlighting";
 import { hideEditMenu, showEditMenu, updateEditMenu, initEditMenu } from "./edit-menu";
 import { setLang } from "./translations";
 
@@ -69,8 +69,9 @@ function makeElementEditable(element) {
 
     element.dataset[PDE_OBSERVED_ELEMENT_FLAG] = true;
 
-    //element.addEventListener("mouseenter", elementMouseEnterHandler);
+    element.addEventListener("mouseenter", elementMouseEnterHandler);
     element.addEventListener("mouseover", elementMouseOverHandler);
+    element.addEventListener("mousemove", elementMouseMoveHandler);
   }
 }
 
@@ -82,6 +83,7 @@ function makeElementNonEditable(element) {
 
     element.removeEventListener("mouseenter", elementMouseEnterHandler);
     element.removeEventListener("mouseover", elementMouseOverHandler);
+    element.removeEventListener("mousemove", elementMouseMoveHandler);
   }
 }
 
@@ -93,7 +95,7 @@ function elementMouseEnterHandler(event) {
   if (document.body.dataset[PDE_EDITING_FLAG] === "off") {
     return;
   }
-  showEditMenu(event.target);
+  updateEditMenu(event);
 }
 
 function elementMouseOverHandler(event) {
@@ -103,6 +105,15 @@ function elementMouseOverHandler(event) {
   }
   showEditMenu(event.target);
   updateEditMenu(event);
+}
+
+function elementMouseMoveHandler(event) {
+  //console.log("[PDE] element mouse move:", event.target);
+  if (document.body.dataset[PDE_EDITING_FLAG] === "off") {
+    return;
+  }
+  showEditMenu(event.target);
+  highlightElement(event.target);
 }
 
 
