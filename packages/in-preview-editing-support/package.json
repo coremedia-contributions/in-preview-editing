@@ -4,6 +4,9 @@
   "description": "In-Preview-Editing-Support for frontends integrated in CoreMedia Studio Preview.",
   "author": "sebastian.buettner@coremedia.com",
   "license": "CoreMedia Open Source License",
+  "publishConfig": {
+    "registry": "https://npm.coremedia.io/"
+  },
   "scripts": {
     "build": "webpack --mode=production",
     "build:dev": "webpack --mode=development"
