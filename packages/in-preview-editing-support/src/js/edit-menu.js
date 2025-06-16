@@ -226,7 +226,7 @@ export function updateEditMenuPosition(element) {
 }
 
 export function showEditMenu(element) {
-  //console.log("Show edit menu for element: ", element);
+  //console.log("[PDE] Show edit menu for element: ", element);
   if (inlineEditingActive || !editMenu.classList.contains("pde-edit-menu--hidden")) {
     return;
   }

@@ -36,10 +36,11 @@ export function dispatchMessage(event) {
     msgData = JSON.parse(event.data);
   }
 
+  //console.log("[PDE] messaging: received message with data: ", msgData);
   switch (msgData.type) {
 
     case MESSAGE_TYPE_ACTIVATE_IN_PAGE_EDITING:
-      activateInPageEditing(msgData.lang);
+      activateInPageEditing(msgData.body?.lang);
       break;
 
     case MESSAGE_TYPE_DEACTIVATE_IN_PAGE_EDITING:
