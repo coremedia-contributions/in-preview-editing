@@ -55,10 +55,10 @@ jobs:
           echo "Authenticating with npm.coremedia.io..."
           echo "::debug::Requesting token for user: $NPM_USER"
 
-          USERNAME="$NPM_USER:0:3"
+          USERNAME="${NPM_USER:0:3}"
           echo "NPM user is: $USERNAME"
 
-          PW="$NPM_PASSWORD:0:3"
+          PW="${NPM_PASSWORD:0:3}"
           echo "NPM password is: $PW"
 
           NPM_TOKEN=$(curl -s \
@@ -73,7 +73,7 @@ jobs:
             exit 1
           fi
 
-          TK="$NPM_TOKEN:0:5"
+          TK="${NPM_TOKEN:0:5}"
           echo "NPM token is: $TK"
 
           echo "//npm.coremedia.io/:_authToken=${NPM_TOKEN}" > ~/.npmrc
