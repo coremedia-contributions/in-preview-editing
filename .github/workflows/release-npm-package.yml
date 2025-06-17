@@ -83,6 +83,11 @@ jobs:
           pnpm config set //npm.coremedia.io/:_authToken ${NPM_TOKEN}
 
           echo "✅ Authenticated successfully"
+
+          echo ".npmrc file content:"
+          echo "---------------------------------"
+          echo "$(cat ~/.npmrc)"
+          echo "---------------------------------"
         env:
           NPM_USER: ${{ secrets.CM_NPM_USER }}
           NPM_PASSWORD: ${{ secrets.CM_NPM_PASSWORD }}
