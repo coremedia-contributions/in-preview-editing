@@ -1,4 +1,4 @@
-name: Create and Upload PNPM Package as Release Artifact
+name: Create and publish frontend package
 
 on:
   workflow_dispatch:  # Manual trigger for flexibility
