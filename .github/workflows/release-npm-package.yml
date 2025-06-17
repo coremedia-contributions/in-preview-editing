@@ -22,20 +22,19 @@ jobs:
         run: npm install -g pnpm
 
       - name: Install dependencies
-        working-directory: packages
         run: pnpm install
 
       - name: Build package
-        working-directory: packages/in-preview-editing-support
+        working-directory: in-preview-editing-support
         run: pnpm build
 
       - name: Pack package
-        working-directory: packages/in-preview-editing-support
+        working-directory: in-preview-editing-support
         run: pnpm pack
 
       - name: Get version from package.json
         id: get_version
-        working-directory: packages/in-preview-editing-support
+        working-directory: in-preview-editing-support
         run: |
           VERSION=$(jq -r .version package.json)
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
@@ -45,6 +44,6 @@ jobs:
         with:
           tag_name: v${{ steps.get_version.outputs.version }}
           name: in-preview-editing-support v${{ steps.get_version.outputs.version }}
-          files: packages/in-preview-editing-support/*.tgz
+          files: in-preview-editing-support/*.tgz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
