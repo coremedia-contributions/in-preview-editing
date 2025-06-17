@@ -53,8 +53,8 @@ jobs:
       - name: Authenticate at npm.coremedia.io
         run: |
           echo "Authenticating with npm.coremedia.io..."
+          echo "::debug::Requesting token for user: $NPM_USER"
 
-          echo "Requesting token for user: $NPM_USER"
           NPM_TOKEN=$(curl -s \
             -H "Accept: application/json" \
             -H "Content-Type:application/json" \
