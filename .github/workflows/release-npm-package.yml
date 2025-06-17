@@ -69,6 +69,7 @@ jobs:
 
           echo "//npm.coremedia.io/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           echo "registry=https://npm.coremedia.io/" >> ~/.npmrc
+          echo "@coremedia-contributions:registry=https://npm.coremedia.io/" >> ~/.npmrc
           echo "✅ Authenticated successfully"
         env:
           NPM_USER: ${{ secrets.CM_NPM_USER }}
