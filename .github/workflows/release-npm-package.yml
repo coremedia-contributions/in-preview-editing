@@ -94,4 +94,9 @@ jobs:
 
       - name: Publish package to npm.coremedia.io
         working-directory: packages/in-preview-editing-support
-        run: pnpm publish --no-git-checks --registry=https://npm.coremedia.io/
+        run: |
+          echo ".npmrc file content:"
+          echo "---------------------------------"
+          echo "$(cat ~/.npmrc)"
+          echo "---------------------------------"
+          pnpm publish --no-git-checks --registry=https://npm.coremedia.io/
