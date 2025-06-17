@@ -55,6 +55,12 @@ jobs:
           echo "Authenticating with npm.coremedia.io..."
           echo "::debug::Requesting token for user: $NPM_USER"
 
+          USERNAME="$NPM_USER"
+          echo "NPM user is: $USERNAME"
+
+          PW="$NPM_PASSWORD"
+          echo "NPM password is: $PW"
+
           NPM_TOKEN=$(curl -s \
             -H "Accept: application/json" \
             -H "Content-Type:application/json" \
@@ -66,6 +72,9 @@ jobs:
             echo "❌ Failed to get token from npm.coremedia.io"
             exit 1
           fi
+
+          TK="$NPM_TOKEN"
+          echo "NPM token is: $TK"
 
           echo "//npm.coremedia.io/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           echo "registry=https://npm.coremedia.io/" >> ~/.npmrc
