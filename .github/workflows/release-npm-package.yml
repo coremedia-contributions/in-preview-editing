@@ -52,10 +52,24 @@ jobs:
 
       - name: Authenticate at npm.coremedia.io
         run: |
-          NPM_TOKEN=$(curl -s -H "Accept: application/json" -H "Content-Type:application/json" -X PUT --data '{"name": "${{ secrets.CM_NPM_USER }}", "password": "${{ secrets.CM_NPM_PASSWORD }}"}' https://npm.coremedia.io/-/user/org.couchdb.user:${{ secrets.CM_NPM_USER }} | jq -r .token)
-          echo "::add-mask::$NPM_TOKEN"
+          echo "Authenticating with npm.coremedia.io..."
+
+          echo "Requesting token for user: $NPM_USER"
+          NPM_TOKEN=$(curl -s \
+            -H "Accept: application/json" \
+            -H "Content-Type:application/json" \
+            -X PUT \
+            --data "{\"name\": \"$NPM_USER\", \"password\": \"$NPM_PASSWORD\"}" \
+            https://npm.coremedia.io/-/user/org.couchdb.user:$NPM_USER | jq -r .token)
+
+          if [ -z "$NPM_TOKEN" ] || [ "$NPM_TOKEN" = "null" ]; then
+            echo "❌ Failed to get token from npm.coremedia.io"
+            exit 1
+          fi
+
           echo "//npm.coremedia.io/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           echo "registry=https://npm.coremedia.io/" >> ~/.npmrc
+          echo "✅ Authenticated successfully"
         env:
           NPM_USER: ${{ secrets.CM_NPM_USER }}
           NPM_PASSWORD: ${{ secrets.CM_NPM_PASSWORD }}
