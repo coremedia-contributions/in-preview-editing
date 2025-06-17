@@ -52,10 +52,13 @@ jobs:
 
       - name: Authenticate at npm.coremedia.io
         run: |
+          NPM_TOKEN=$(curl -s -H "Accept: application/json" -H "Content-Type:application/json" -X PUT --data '{"name": "${{ secrets.CM_NPM_USER }}", "password": "${{ secrets.CM_NPM_PASSWORD }}"}' https://npm.coremedia.io/-/user/org.couchdb.user:${{ secrets.CM_NPM_USER }} | jq -r .token)
+          echo "::add-mask::$NPM_TOKEN"
           echo "//npm.coremedia.io/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           echo "registry=https://npm.coremedia.io/" >> ~/.npmrc
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_USER: ${{ secrets.CM_NPM_USER }}
+          NPM_PASSWORD: ${{ secrets.CM_NPM_PASSWORD }}
 
       - name: Publish package to npm.coremedia.io
         working-directory: packages/in-preview-editing-support
