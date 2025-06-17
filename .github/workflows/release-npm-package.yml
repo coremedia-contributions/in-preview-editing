@@ -44,5 +44,19 @@ jobs:
           tag_name: v${{ steps.get_version.outputs.version }}
           name: in-preview-editing-support v${{ steps.get_version.outputs.version }}
           files: packages/in-preview-editing-support/*.tgz
+          body: |
+            Frontend package for CoreMedia in-preview editing support.
+            Please refer to the [documentation](packages/in-preview-editing-support/README.md) for details.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Authenticate at npm.coremedia.io
+        run: |
+          echo "//npm.coremedia.io/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          echo "registry=https://npm.coremedia.io/" >> ~/.npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish package to npm.coremedia.io
+        working-directory: packages/in-preview-editing-support
+        run: pnpm publish --no-git-checks --registry=https://npm.coremedia.io/
