@@ -10,12 +10,11 @@ import VariantKeyUtil from "@coremedia/studio-client.main.image-editor-component
 import Content from "@coremedia/studio-client.cap-rest-client/content/Content";
 import ContentLocalizationUtil from "@coremedia/studio-client.cap-base-models/content/ContentLocalizationUtil";
 import PropertyEditorUtil from "@coremedia/studio-client.main.editor-components/sdk/util/PropertyEditorUtil";
-import ImageUtil from "@coremedia/studio-client.cap-base-models/util/ImageUtil";
 import thumbnailService from "@coremedia/studio-client.cap-base-models/thumbnails/thumbnailService";
 import toastService from "@coremedia/studio-client.ext.toast-components/toastService";
 import ValidationState from "@coremedia/studio-client.ext.ui-components/mixins/ValidationState";
 import PublicationResult from "@coremedia/studio-client.cap-rest-client/content/results/PublicationResult";
-import { Publisher_properties } from "@coremedia/studio-client.cap-base-models";
+import { getCroppingOperation, Publisher_properties } from "@coremedia/studio-client.cap-base-models";
 import StringUtil from "@jangaroo/ext-ts/String";
 import FloatingEditorDialog from "./editors/FloatingEditorDialog";
 import InPreviewEditingUtil from "./utils/InPreviewEditingUtil";
@@ -283,7 +282,7 @@ class InPreviewEditingManager {
         reject();
       } else {
         ValueExpressionFactory.createFromFunction(() =>
-          thumbnailService._.getThumbnailUri(content, ImageUtil.getCroppingOperation(50, 50)),
+          thumbnailService._.getThumbnailUri(content, getCroppingOperation(50, 50)),
         ).loadValue((thumbUri) => {
           resolve({ contentThumbnail: thumbUri ? `${window.location.origin}/${thumbUri}` : null });
         });
