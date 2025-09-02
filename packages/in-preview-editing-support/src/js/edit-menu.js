@@ -17,11 +17,12 @@ import {
 } from "./messaging";
 import { t } from "./translations";
 
-const HIDE_AFTER_IDLE = 2000; // hide edit menu after 2 seconds of inactivity, set to 0 to disable
+const HIDE_AFTER_IDLE = 0; // hide edit menu after 6 seconds of inactivity, set to 0 to disable
 
 export let editMenu;
 export let menuElement = null;
 
+let contextMenu;
 let currentMetadata = null;
 let idleTimeout;
 let inlineEditingActive = false;
@@ -115,6 +116,66 @@ export function initEditMenu() {
   };
   actions.appendChild(cancelAction);
 
+  // add additional actions menu
+  contextMenu = document.createElement("ul");
+  contextMenu.classList.add("pde-context-menu", "pde-context-menu--hidden");
+  window.document.body.appendChild(contextMenu)
+
+  const openInTabAction = document.createElement("li");
+  openInTabAction.innerHTML = "Open in Tab";
+  contextMenu.appendChild(openInTabAction);
+
+  const openInLibraryAction = document.createElement("li");
+  openInLibraryAction.innerHTML = "Open in Library";
+  contextMenu.appendChild(openInLibraryAction);
+
+  let contextMenuSeparator1 = document.createElement("li");
+  contextMenuSeparator1.classList.add("pde-context-menu-separator")
+  contextMenu.appendChild(contextMenuSeparator1);
+
+  const startLocalizationAction = document.createElement("li");
+  startLocalizationAction.innerHTML = "Start Localization";
+  startLocalizationAction.setAttribute("data-disabled", "");
+  contextMenu.appendChild(startLocalizationAction);
+
+  let contextMenuSeparator2 = document.createElement("li");
+  contextMenuSeparator2.classList.add("pde-context-menu-separator")
+  contextMenu.appendChild(contextMenuSeparator2);
+
+  const openNavigationManagerAction = document.createElement("li");
+  openNavigationManagerAction.innerHTML = "Open Navigation Manager";
+  openNavigationManagerAction.setAttribute("data-disabled", "");
+  contextMenu.appendChild(openNavigationManagerAction);
+
+  let contextMenuSeparator3 = document.createElement("li");
+  contextMenuSeparator3.classList.add("pde-context-menu-separator")
+  contextMenu.appendChild(contextMenuSeparator3);
+
+  let moveUpAction = document.createElement("li");
+  moveUpAction.innerHTML = "Move Up";
+  moveUpAction.setAttribute("data-disabled", "");
+  contextMenu.appendChild(moveUpAction);
+
+  let moveDownAction = document.createElement("li");
+  moveDownAction.innerHTML = "Move Down";
+  moveDownAction.setAttribute("data-disabled", "");
+  contextMenu.appendChild(moveDownAction);
+
+  const contextMenuAction = document.createElement("button");
+  contextMenuAction.innerHTML = "...";
+  contextMenuAction.classList.add("pde-action", "pde-action--menu");
+  contextMenuAction.onclick = (event) => {
+    event.preventDefault();
+    const eventTarget = event.target;
+    const boundingRect = eventTarget.getBoundingClientRect();
+    const top = boundingRect.bottom;
+    const left = boundingRect.left;
+    contextMenu.style.top = `${top}px`;
+    contextMenu.style.left = `${left}px`;
+    toggleContextMenu();
+  };
+  actions.appendChild(contextMenuAction);
+
   // initialize idle timer to close edit menu after a while
   initIdleTimer();
 }
@@ -123,6 +184,9 @@ export function updateEditMenu(event) {
   if (inlineEditingActive) {
     return;
   }
+
+  // hide context menu
+  hideContextMenu();
 
   const metadataElement = findClosestMetadataElement(event.target);
   if (metadataElement && isMarkedAsEditable(metadataElement)) {
@@ -258,6 +322,10 @@ export function hideEditMenu(element) {
     if (editMenu.classList.contains("pde-edit-menu--hidden")) {
       return;
     }
+
+    // hide context menu as well
+    hideContextMenu();
+
     //console.log("[PDE] hide edit menu. trigger: ", element);
     fadeOut(editMenu, "pde-edit-menu");
   }
@@ -460,4 +528,21 @@ function initIdleTimer() {
   // Listen for mouse movement
   window.addEventListener("mousemove", resetIdleTimer);
   resetIdleTimer();
+}
+
+// context menu
+function showContextMenu() {
+  contextMenu.classList.remove("pde-context-menu--hidden");
+}
+
+function hideContextMenu() {
+  contextMenu.classList.add("pde-context-menu--hidden");
+}
+
+function toggleContextMenu() {
+  if (contextMenu.classList.contains("pde-context-menu--hidden")) {
+    showContextMenu();
+  } else {
+    hideContextMenu();
+  }
 }
