@@ -13,11 +13,17 @@ import {
   sendMessageToParent,
   MESSAGE_TYPE_CONTENT_METADATA_REQUEST,
   MESSAGE_TYPE_PUBLISH_REQUEST,
-  MESSAGE_TYPE_PROPERTY_UPDATE_REQUEST, MESSAGE_TYPE_OPEN_CONTENT, MESSAGE_TYPE_SHOW_EDITOR
+  MESSAGE_TYPE_PROPERTY_UPDATE_REQUEST,
+  MESSAGE_TYPE_OPEN_CONTENT,
+  MESSAGE_TYPE_SHOW_EDITOR,
+  MESSAGE_TYPE_SHOW_IN_LIBRARY,
+  MESSAGE_TYPE_OPEN_NAVIGATION_MANAGER,
+  MESSAGE_TYPE_START_LOCALIZATION,
+  MESSAGE_TYPE_START_PUBLICATION
 } from "./messaging";
 import { t } from "./translations";
 
-const HIDE_AFTER_IDLE = 0; // hide edit menu after 6 seconds of inactivity, set to 0 to disable
+const HIDE_AFTER_IDLE_SECONDS = 6; // hide edit menu after 6 seconds of inactivity, set to 0 to disable
 
 export let editMenu;
 export let menuElement = null;
@@ -117,64 +123,7 @@ export function initEditMenu() {
   actions.appendChild(cancelAction);
 
   // add additional actions menu
-  contextMenu = document.createElement("ul");
-  contextMenu.classList.add("pde-context-menu", "pde-context-menu--hidden");
-  window.document.body.appendChild(contextMenu)
-
-  const openInTabAction = document.createElement("li");
-  openInTabAction.innerHTML = "Open in Tab";
-  contextMenu.appendChild(openInTabAction);
-
-  const openInLibraryAction = document.createElement("li");
-  openInLibraryAction.innerHTML = "Open in Library";
-  contextMenu.appendChild(openInLibraryAction);
-
-  let contextMenuSeparator1 = document.createElement("li");
-  contextMenuSeparator1.classList.add("pde-context-menu-separator")
-  contextMenu.appendChild(contextMenuSeparator1);
-
-  const startLocalizationAction = document.createElement("li");
-  startLocalizationAction.innerHTML = "Start Localization";
-  startLocalizationAction.setAttribute("data-disabled", "");
-  contextMenu.appendChild(startLocalizationAction);
-
-  let contextMenuSeparator2 = document.createElement("li");
-  contextMenuSeparator2.classList.add("pde-context-menu-separator")
-  contextMenu.appendChild(contextMenuSeparator2);
-
-  const openNavigationManagerAction = document.createElement("li");
-  openNavigationManagerAction.innerHTML = "Open Navigation Manager";
-  openNavigationManagerAction.setAttribute("data-disabled", "");
-  contextMenu.appendChild(openNavigationManagerAction);
-
-  let contextMenuSeparator3 = document.createElement("li");
-  contextMenuSeparator3.classList.add("pde-context-menu-separator")
-  contextMenu.appendChild(contextMenuSeparator3);
-
-  let moveUpAction = document.createElement("li");
-  moveUpAction.innerHTML = "Move Up";
-  moveUpAction.setAttribute("data-disabled", "");
-  contextMenu.appendChild(moveUpAction);
-
-  let moveDownAction = document.createElement("li");
-  moveDownAction.innerHTML = "Move Down";
-  moveDownAction.setAttribute("data-disabled", "");
-  contextMenu.appendChild(moveDownAction);
-
-  const contextMenuAction = document.createElement("button");
-  contextMenuAction.innerHTML = "...";
-  contextMenuAction.classList.add("pde-action", "pde-action--menu");
-  contextMenuAction.onclick = (event) => {
-    event.preventDefault();
-    const eventTarget = event.target;
-    const boundingRect = eventTarget.getBoundingClientRect();
-    const top = boundingRect.bottom;
-    const left = boundingRect.left;
-    contextMenu.style.top = `${top}px`;
-    contextMenu.style.left = `${left}px`;
-    toggleContextMenu();
-  };
-  actions.appendChild(contextMenuAction);
+  initContextMenu();
 
   // initialize idle timer to close edit menu after a while
   initIdleTimer();
@@ -421,11 +370,47 @@ export function receivedContentMetadata(message) {
     currentMetadata = metadata;
 
     const openContentHandler = () => {
+      hideContextMenu();
       if (metadata.contentRef) {
         let messageData = {
           contentRef: metadata.contentRef,
         };
         sendMessageToParent(MESSAGE_TYPE_OPEN_CONTENT, messageData);
+      }
+    }
+
+    const showInLibraryHandler = () => {
+      hideContextMenu();
+      if (metadata.contentRef) {
+        let messageData = {
+          contentRef: metadata.contentRef,
+        };
+        sendMessageToParent(MESSAGE_TYPE_SHOW_IN_LIBRARY, messageData);
+      }
+    }
+
+    const openNavigationManagerHandler = () => {
+      hideContextMenu();
+      sendMessageToParent(MESSAGE_TYPE_OPEN_NAVIGATION_MANAGER, {});
+    }
+
+    const startLocalizationWorkflowHandler = () => {
+      hideContextMenu();
+      if (metadata.contentRef) {
+        let messageData = {
+          contentRef: metadata.contentRef,
+        };
+        sendMessageToParent(MESSAGE_TYPE_START_LOCALIZATION, messageData);
+      }
+    }
+
+    const startPublicationWorkflowHandler = () => {
+      hideContextMenu();
+      if (metadata.contentRef) {
+        let messageData = {
+          contentRef: metadata.contentRef,
+        };
+        sendMessageToParent(MESSAGE_TYPE_START_PUBLICATION, messageData);
       }
     }
 
@@ -463,6 +448,39 @@ export function receivedContentMetadata(message) {
       // show/hide publish button
       const showPublishButton = metadata.status !== "published" && metadata.userMayPerformPublish;
       editMenu.querySelector(".pde-action--publish").style.display = showPublishButton ? "inline-flex" : "none";
+    }
+
+    // Update context menu actions
+    contextMenu.querySelectorAll(".pde-context-menu-action").forEach(action => {
+      // disable all actions before update
+      action.setAttribute("data-disabled", "");
+      // remove handlers
+      action.onclick = null;
+    });
+
+    const openInTabAction = contextMenu.querySelector(".pde-context-menu-action--open-in-tab");
+    openInTabAction.onclick = openContentHandler;
+    openInTabAction.removeAttribute("data-disabled");
+
+    const showInLibraryAction = contextMenu.querySelector(".pde-context-menu-action--show-in-library");
+    showInLibraryAction.onclick = showInLibraryHandler;
+    showInLibraryAction.removeAttribute("data-disabled");
+
+    const openNavigationManagerAction = contextMenu.querySelector(".pde-context-menu-action--open-navigation-manager");
+    openNavigationManagerAction.onclick = openNavigationManagerHandler;
+    openNavigationManagerAction.removeAttribute("data-disabled");
+
+    const startLocalizationAction = contextMenu.querySelector(".pde-context-menu-action--start-localization");
+    startLocalizationAction.onclick = startLocalizationWorkflowHandler;
+    startLocalizationAction.removeAttribute("data-disabled");
+
+    if (metadata.status) {
+      const publishEnabled = metadata.status !== "published" && metadata.userMayPerformPublish;
+      if (publishEnabled) {
+        const startPublicationAction = contextMenu.querySelector(".pde-context-menu-action--start-publication");
+        startPublicationAction.onclick = startPublicationWorkflowHandler;
+        startPublicationAction.removeAttribute("data-disabled");
+      }
     }
 
     // show inline edit or floating editor button
@@ -515,15 +533,15 @@ function onIdle() {
 }
 
 function resetIdleTimer() {
-  if (HIDE_AFTER_IDLE > 0) {
+  if (HIDE_AFTER_IDLE_SECONDS > 0) {
     clearTimeout(idleTimeout);
-    idleTimeout = setTimeout(onIdle, HIDE_AFTER_IDLE);
+    idleTimeout = setTimeout(onIdle, HIDE_AFTER_IDLE_SECONDS * 1000);
   }
 }
 
 function initIdleTimer() {
-  if (HIDE_AFTER_IDLE <= 0) {
-    return; // do not initialize idle timer if HIDE_AFTER_IDLE is set to 0
+  if (HIDE_AFTER_IDLE_SECONDS <= 0) {
+    return; // do not initialize idle timer if HIDE_AFTER_IDLE_SECONDS is set to 0
   }
   // Listen for mouse movement
   window.addEventListener("mousemove", resetIdleTimer);
@@ -531,6 +549,81 @@ function initIdleTimer() {
 }
 
 // context menu
+function initContextMenu() {
+  if (!contextMenu) {
+    contextMenu = document.createElement("ul");
+    contextMenu.classList.add("pde-context-menu", "pde-context-menu--hidden");
+    window.document.body.appendChild(contextMenu)
+
+    const openInTabAction = document.createElement("li");
+    openInTabAction.innerHTML = t("open_in_tab");
+    openInTabAction.classList.add("pde-context-menu-action", "pde-context-menu-action--open-in-tab");
+    contextMenu.appendChild(openInTabAction);
+
+    const showInLibraryAction = document.createElement("li");
+    showInLibraryAction.classList.add("pde-context-menu-action", "pde-context-menu-action--show-in-library");
+    showInLibraryAction.innerHTML = t("show_in_library");
+    contextMenu.appendChild(showInLibraryAction);
+
+    let contextMenuSeparator1 = document.createElement("li");
+    contextMenuSeparator1.classList.add("pde-context-menu-separator")
+    contextMenu.appendChild(contextMenuSeparator1);
+
+    const startLocalizationAction = document.createElement("li");
+    startLocalizationAction.classList.add("pde-context-menu-action", "pde-context-menu-action--start-localization");
+    startLocalizationAction.innerHTML = t("start_localization_workflow");
+    contextMenu.appendChild(startLocalizationAction);
+
+    const startPublicationAction = document.createElement("li");
+    startPublicationAction.classList.add("pde-context-menu-action", "pde-context-menu-action--start-publication");
+    startPublicationAction.innerHTML = t("start_publication_workflow");
+    contextMenu.appendChild(startPublicationAction);
+
+    let contextMenuSeparator2 = document.createElement("li");
+    contextMenuSeparator2.classList.add("pde-context-menu-separator")
+    contextMenu.appendChild(contextMenuSeparator2);
+
+    const openNavigationManagerAction = document.createElement("li");
+    openNavigationManagerAction.classList.add("pde-context-menu-action", "pde-context-menu-action--open-navigation-manager");
+    openNavigationManagerAction.innerHTML = t("open_navigation_manager");
+    contextMenu.appendChild(openNavigationManagerAction);
+
+    // let contextMenuSeparator3 = document.createElement("li");
+    // contextMenuSeparator3.classList.add("pde-context-menu-separator")
+    // contextMenu.appendChild(contextMenuSeparator3);
+    //
+    // let moveUpAction = document.createElement("li");
+    // moveUpAction.classList.add("pde-context-menu-action", "pde-context-menu-action--move-up");
+    // moveUpAction.innerHTML = t("move_up");
+    // contextMenu.appendChild(moveUpAction);
+    //
+    // let moveDownAction = document.createElement("li");
+    // moveDownAction.classList.add("pde-context-menu-action", "pde-context-menu-action--move-down");
+    // moveDownAction.innerHTML = t("move_down");
+    // contextMenu.appendChild(moveDownAction);
+
+    const contextMenuAction = document.createElement("button");
+    contextMenuAction.innerHTML = "...";
+    contextMenuAction.classList.add("pde-action", "pde-action--secondary", "pde-action--menu");
+    contextMenuAction.onclick = (event) => {
+      event.preventDefault();
+      const eventTarget = event.target;
+      const boundingRect = eventTarget.getBoundingClientRect();
+      const top = boundingRect.bottom + 4; // add 4px for margin
+      const left = boundingRect.left;
+      contextMenu.style.top = `${top}px`;
+      contextMenu.style.left = `${left}px`;
+      toggleContextMenu();
+    };
+
+    // disable all actions initially
+    contextMenu.querySelectorAll(".pde-context-menu-action").forEach(action => action.setAttribute("data-disabled", ""));
+
+    const actions = editMenu.querySelector(".pde-actions");
+    actions.appendChild(contextMenuAction);
+  }
+}
+
 function showContextMenu() {
   contextMenu.classList.remove("pde-context-menu--hidden");
 }

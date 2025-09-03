@@ -134,7 +134,7 @@ body[data-pbe-editing="on"] .pde-editing-actions-attached.pde-is-editing > .pde-
   background: #006cae;
   /*padding: 0 6px;*/
   padding: 7px 22px;
-  border: none;
+  border: 1px solid #006cae;
   color: white;
   display: inline-flex;
   align-items: center;
@@ -160,6 +160,52 @@ body[data-pbe-editing="on"] .pde-editing-actions-attached.pde-is-editing > .pde-
 
 .pde-action:active {
   transform: scale(0.98);
+}
+
+.pde-action:hover {
+  background-color: #025b91;
+  border-color: #025b91;
+}
+
+.pde-action--primary {
+  background: #006cae;
+  border: none;
+  color: white;
+}
+
+.pde-action--secondary {
+  background: #fff;
+  border: 1px solid #006cae;
+  color: #006cae;
+}
+
+.pde-action--secondary:hover {
+  background-color: #d6f0ff;
+}
+
+.pde-action--save,
+.pde-action--cancel {
+  display: none;
+}
+
+.pde-action--cancel {
+  background-color: #ef4444;
+  border-color: #ef4444;
+}
+
+.pde-action--cancel:hover {
+  background-color: #dc2626;
+  border-color: #dc2626;
+}
+
+.pde-action--publish {
+  background-color: #16A34B;
+  border-color: #16A34B;
+}
+
+.pde-action--publish:hover {
+  background-color: #138f41;
+  border-color: #138f41;
 }
 
 .pde-property-label,
@@ -247,32 +293,6 @@ body[data-pbe-editing="on"] .pde-editing-actions-attached.pde-is-editing > .pde-
   color: #fff;
 }
 
-.pde-action:hover {
-  background-color: #025b91;
-}
-
-.pde-action--save,
-.pde-action--cancel {
-  display: none;
-}
-
-.pde-action--cancel {
-  background-color: #ef4444;
-}
-
-.pde-action--cancel:hover {
-  background-color: #dc2626;
-}
-
-.pde-action--publish {
-  background-color: #16A34B;
-}
-
-
-.pde-action--publish:hover {
-  background-color: #138f41;
-}
-
 .pde-context-menu {
   position: fixed;
   display: flex;
@@ -283,7 +303,7 @@ body[data-pbe-editing="on"] .pde-editing-actions-attached.pde-is-editing > .pde-
   padding: 4px;
   border: 1px solid #E1E3E8;
   border-radius: 4px;
-  box-shadow: rgba(100, 100, 111, 0.2) 0 7px 29px 0;
+  box-shadow: rgba(100, 100, 111, 0.5) 0 7px 29px 0;
   cursor: default;
   font-family: 'Roboto', 'Segoe UI', 'Trebuchet MS', 'Lucida Grande', 'Helvetica', sans-serif;
   font-size: 13px;
@@ -299,7 +319,7 @@ body[data-pbe-editing="on"] .pde-editing-actions-attached.pde-is-editing > .pde-
   }
 
   li:hover {
-    background: #efefef;
+    background: #d6f0ff;
   }
 
   li[data-disabled] {

@@ -8,6 +8,10 @@ export const MESSAGE_TYPE_CONTENT_METADATA_REQUEST = "com.coremedia.pde.content.
 export const MESSAGE_TYPE_CONTENT_METADATA_RESPONSE = "com.coremedia.pde.content.metadata.response";
 export const MESSAGE_TYPE_SHOW_EDITOR = "com.coremedia.pde.showEditor";
 export const MESSAGE_TYPE_OPEN_CONTENT = "com.coremedia.pde.openContent";
+export const MESSAGE_TYPE_SHOW_IN_LIBRARY = "com.coremedia.pde.showInLibrary";
+export const MESSAGE_TYPE_OPEN_NAVIGATION_MANAGER = "com.coremedia.pde.openNavigationManager";
+export const MESSAGE_TYPE_START_LOCALIZATION = "com.coremedia.pde.startLocalization";
+export const MESSAGE_TYPE_START_PUBLICATION = "com.coremedia.pde.startPublication";
 export const MESSAGE_TYPE_PUBLISH_REQUEST = "com.coremedia.pde.content.publish.request";
 export const MESSAGE_TYPE_PROPERTY_UPDATE_REQUEST = "com.coremedia.pde.propertyUpdate";
 
