@@ -36,9 +36,13 @@ import Column from "@jangaroo/ext-ts/grid/column/Column";
 import LinkListThumbnailColumn from "@coremedia/studio-client.ext.content-link-list-components/columns/LinkListThumbnailColumn";
 import PageGridUtil from "@coremedia/studio-client.main.bpbase-pagegrid-studio-plugin/pagegrid/PageGridUtil";
 import ImageMapEditor from "@coremedia/studio-client.main.image-map-editor-components/ImageMapEditor";
-import EmptyState from "../editors/EmptyState";
-import propertyEditorRegistry from "../editors/propertyEditorRegistry";
 import LocaleUtil from "@coremedia/studio-client.cap-base-models/locale/LocaleUtil";
+import editorContext from "@coremedia/studio-client.main.editor-components/sdk/editorContext";
+import CollectionViewExtension from "@coremedia/studio-client.main.editor-components/sdk/collectionview/CollectionViewExtension";
+import session from "@coremedia/studio-client.cap-rest-client/common/session";
+import OpenNavigationEditorDialogAction from "@coremedia-blueprint/studio-client.main.navigation-manager-studio/actions/OpenNavigationEditorDialogAction";
+import propertyEditorRegistry from "../editors/propertyEditorRegistry";
+import EmptyState from "../editors/EmptyState";
 
 class InPreviewEditingUtil {
   static readonly MESSAGE_TYPE_ACTIVATE_IN_PREVIEW_EDITING: string = "com.coremedia.pde.editing.on";
@@ -59,8 +63,8 @@ class InPreviewEditingUtil {
       `[InPreviewEditingManager] Sending ${activate ? "activate" : "deactivate"} editing message to content window: `,
       contentWindow,
     );
-    let data = {
-      lang: LocaleUtil.getLocale()
+    const data = {
+      lang: LocaleUtil.getLocale(),
     };
     messageService.sendMessage(
       contentWindow,
@@ -214,6 +218,30 @@ class InPreviewEditingUtil {
         });
       })
       .catch(onError);
+  }
+
+  static showContentInLibrary(
+    contentUri: string,
+    onSuccess: AnyFunction = () => {},
+    onError: AnyFunction = () => {},
+  ): void {
+    if (!contentUri) {
+      return;
+    }
+
+    const content = session._.getConnection().getContentRepository().getContent(contentUri);
+    editorContext._.getCollectionViewExtender().findExtension(content, (extension: CollectionViewExtension): void => {
+      if (extension) {
+        extension.showInTree([content]);
+        onSuccess && onSuccess();
+      } else {
+        onError && onError();
+      }
+    });
+  }
+
+  static openNavigationManager(): void {
+    new OpenNavigationEditorDialogAction().execute();
   }
 
   static #getGenericEditor(descriptor: CapPropertyDescriptor) {

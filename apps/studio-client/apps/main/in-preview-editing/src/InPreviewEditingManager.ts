@@ -1,6 +1,6 @@
 import messageService from "@coremedia/studio-client.main.editor-components/sdk/messageService";
 import PreviewIFrame from "@coremedia/studio-client.main.editor-components/sdk/preview/PreviewIFrame";
-import { as, bind } from "@jangaroo/runtime";
+import { as, bind, cast } from "@jangaroo/runtime";
 import PreviewMessageTypes from "@coremedia/studio-client.main.editor-components/sdk/preview/PreviewMessageTypes";
 import session from "@coremedia/studio-client.cap-rest-client/common/session";
 import ContentPropertyNames from "@coremedia/studio-client.cap-rest-client/content/ContentPropertyNames";
@@ -10,13 +10,16 @@ import VariantKeyUtil from "@coremedia/studio-client.main.image-editor-component
 import Content from "@coremedia/studio-client.cap-rest-client/content/Content";
 import ContentLocalizationUtil from "@coremedia/studio-client.cap-base-models/content/ContentLocalizationUtil";
 import PropertyEditorUtil from "@coremedia/studio-client.main.editor-components/sdk/util/PropertyEditorUtil";
-import ImageUtil from "@coremedia/studio-client.cap-base-models/util/ImageUtil";
 import thumbnailService from "@coremedia/studio-client.cap-base-models/thumbnails/thumbnailService";
 import toastService from "@coremedia/studio-client.ext.toast-components/toastService";
 import ValidationState from "@coremedia/studio-client.ext.ui-components/mixins/ValidationState";
 import PublicationResult from "@coremedia/studio-client.cap-rest-client/content/results/PublicationResult";
-import { Publisher_properties } from "@coremedia/studio-client.cap-base-models";
+import { getCroppingOperation, Publisher_properties } from "@coremedia/studio-client.cap-base-models";
 import StringUtil from "@jangaroo/ext-ts/String";
+import ShowStartTranslationWorkflowWindowAction from "@coremedia/studio-client.main.control-room-editor-components/actions/ShowStartTranslationWorkflowWindowAction";
+import editorContext from "@coremedia/studio-client.main.editor-components/sdk/editorContext";
+import EditorContextImpl from "@coremedia/studio-client.main.editor-components/sdk/EditorContextImpl";
+import GlobalShowStartPublicationWorkflowWindowAction from "@coremedia/studio-client.main.control-room-editor-components/actions/GlobalShowStartPublicationWorkflowWindowAction";
 import FloatingEditorDialog from "./editors/FloatingEditorDialog";
 import InPreviewEditingUtil from "./utils/InPreviewEditingUtil";
 
@@ -29,6 +32,10 @@ class InPreviewEditingManager {
   static readonly MESSAGE_TYPE_PROPERTY_UPDATE: string = "com.coremedia.pde.propertyUpdate";
   static readonly MESSAGE_TYPE_SHOW_EDITOR: string = "com.coremedia.pde.showEditor";
   static readonly MESSAGE_TYPE_OPEN_CONTENT: string = "com.coremedia.pde.openContent";
+  static readonly MESSAGE_TYPE_SHOW_IN_LIBRARY: string = "com.coremedia.pde.showInLibrary";
+  static readonly MESSAGE_TYPE_OPEN_NAVIGATION_MANAGER: string = "com.coremedia.pde.openNavigationManager";
+  static readonly MESSAGE_TYPE_START_LOCALIZATION: string = "com.coremedia.pde.startLocalization";
+  static readonly MESSAGE_TYPE_START_PUBLICATION: string = "com.coremedia.pde.startPublication";
   static readonly MESSAGE_TYPE_PUBLISH_REQUEST: string = "com.coremedia.pde.content.publish.request";
 
   constructor(previewIFrame: PreviewIFrame) {
@@ -76,6 +83,34 @@ class InPreviewEditingManager {
           iframeEl,
           InPreviewEditingManager.MESSAGE_TYPE_OPEN_CONTENT,
           bind(this, this.#openContentListener),
+        );
+
+        // register show in library listener
+        messageService.registerMessageListener(
+          iframeEl,
+          InPreviewEditingManager.MESSAGE_TYPE_SHOW_IN_LIBRARY,
+          bind(this, this.#showInLibraryListener),
+        );
+
+        // register open navigation manager listener
+        messageService.registerMessageListener(
+          iframeEl,
+          InPreviewEditingManager.MESSAGE_TYPE_OPEN_NAVIGATION_MANAGER,
+          bind(this, this.#openNavigationManagerListener),
+        );
+
+        // register start localization workflow listener
+        messageService.registerMessageListener(
+          iframeEl,
+          InPreviewEditingManager.MESSAGE_TYPE_START_LOCALIZATION,
+          bind(this, this.#openLocalizationWorkflowDialogListener),
+        );
+
+        // register start publication workflow listener
+        messageService.registerMessageListener(
+          iframeEl,
+          InPreviewEditingManager.MESSAGE_TYPE_START_PUBLICATION,
+          bind(this, this.#openPublicationWorkflowDialogListener),
         );
 
         // register publish request listener
@@ -149,6 +184,33 @@ class InPreviewEditingManager {
 
   #openContentListener(event: { contentRef: string }) {
     InPreviewEditingUtil.openContentInTab(event.contentRef);
+  }
+
+  #showInLibraryListener(event: { contentRef: string }) {
+    InPreviewEditingUtil.showContentInLibrary(event.contentRef);
+  }
+
+  #openNavigationManagerListener() {
+    InPreviewEditingUtil.openNavigationManager();
+  }
+
+  #openLocalizationWorkflowDialogListener(event: { contentRef: string }) {
+    const content = session._.getConnection().getContentRepository().getContent(event.contentRef);
+    const processDefinitions = cast(EditorContextImpl, editorContext._).getTranslationProcessDefinitions();
+    const action = new ShowStartTranslationWorkflowWindowAction({
+      contentValueExpression: ValueExpressionFactory.createFromValue(content),
+      workflowNameValueExpression: ValueExpressionFactory.createFromValue(null),
+      selectedProcessDefinition: processDefinitions[0],
+    });
+    action.execute();
+  }
+
+  #openPublicationWorkflowDialogListener(event: { contentRef: string }) {
+    const content = session._.getConnection().getContentRepository().getContent(event.contentRef);
+    const action = new GlobalShowStartPublicationWorkflowWindowAction({
+      contentValueExpression: ValueExpressionFactory.createFromValue(content),
+    });
+    action.execute();
   }
 
   #contentMetadataListener(event: { contentRef: string; propertyName: string }): void {
@@ -283,7 +345,7 @@ class InPreviewEditingManager {
         reject();
       } else {
         ValueExpressionFactory.createFromFunction(() =>
-          thumbnailService._.getThumbnailUri(content, ImageUtil.getCroppingOperation(50, 50)),
+          thumbnailService._.getThumbnailUri(content, getCroppingOperation(50, 50)),
         ).loadValue((thumbUri) => {
           resolve({ contentThumbnail: thumbUri ? `${window.location.origin}/${thumbUri}` : null });
         });
