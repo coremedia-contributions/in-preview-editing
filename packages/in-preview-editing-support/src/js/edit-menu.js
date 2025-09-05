@@ -7,7 +7,7 @@ import {
   isMarkedAsEditable,
   findContentId,
   findPropertyName,
-  getScrollPosition, getCurrentValue, getPropertyNameFromMetadata, getPreviousValue, fadeOut, fadeIn
+  getScrollPosition, getCurrentValue, getPropertyNameFromMetadata, getPreviousValue, fadeOut, fadeIn, isNavNode
 } from "./utils";
 import {
   sendMessageToParent,
@@ -466,9 +466,12 @@ export function receivedContentMetadata(message) {
     showInLibraryAction.onclick = showInLibraryHandler;
     showInLibraryAction.removeAttribute("data-disabled");
 
-    const openNavigationManagerAction = contextMenu.querySelector(".pde-context-menu-action--open-navigation-manager");
-    openNavigationManagerAction.onclick = openNavigationManagerHandler;
-    openNavigationManagerAction.removeAttribute("data-disabled");
+    if (isNavNode(menuElement)) {
+      const openNavigationManagerAction = contextMenu.querySelector(".pde-context-menu-action--open-navigation-manager");
+      openNavigationManagerAction.onclick = openNavigationManagerHandler;
+      openNavigationManagerAction.removeAttribute("data-disabled");
+      openNavigationManagerAction.classList.remove("pde-context-menu-action--hidden");
+    }
 
     const startLocalizationAction = contextMenu.querySelector(".pde-context-menu-action--start-localization");
     startLocalizationAction.onclick = startLocalizationWorkflowHandler;
@@ -550,78 +553,78 @@ function initIdleTimer() {
 
 // context menu
 function initContextMenu() {
-  if (!contextMenu) {
-    contextMenu = document.createElement("ul");
-    contextMenu.classList.add("pde-context-menu", "pde-context-menu--hidden");
-    window.document.body.appendChild(contextMenu)
+  console.log("Init context menu");
 
-    const openInTabAction = document.createElement("li");
-    openInTabAction.innerHTML = t("open_in_tab");
-    openInTabAction.classList.add("pde-context-menu-action", "pde-context-menu-action--open-in-tab");
-    contextMenu.appendChild(openInTabAction);
+  contextMenu = document.createElement("ul");
+  contextMenu.classList.add("pde-context-menu", "pde-context-menu--hidden");
+  window.document.body.appendChild(contextMenu)
 
-    const showInLibraryAction = document.createElement("li");
-    showInLibraryAction.classList.add("pde-context-menu-action", "pde-context-menu-action--show-in-library");
-    showInLibraryAction.innerHTML = t("show_in_library");
-    contextMenu.appendChild(showInLibraryAction);
+  const openInTabAction = document.createElement("li");
+  openInTabAction.innerHTML = t("open_in_tab");
+  openInTabAction.classList.add("pde-context-menu-action", "pde-context-menu-action--open-in-tab");
+  contextMenu.appendChild(openInTabAction);
 
-    let contextMenuSeparator1 = document.createElement("li");
-    contextMenuSeparator1.classList.add("pde-context-menu-separator")
-    contextMenu.appendChild(contextMenuSeparator1);
+  const showInLibraryAction = document.createElement("li");
+  showInLibraryAction.classList.add("pde-context-menu-action", "pde-context-menu-action--show-in-library");
+  showInLibraryAction.innerHTML = t("show_in_library");
+  contextMenu.appendChild(showInLibraryAction);
 
-    const startLocalizationAction = document.createElement("li");
-    startLocalizationAction.classList.add("pde-context-menu-action", "pde-context-menu-action--start-localization");
-    startLocalizationAction.innerHTML = t("start_localization_workflow");
-    contextMenu.appendChild(startLocalizationAction);
+  const openNavigationManagerAction = document.createElement("li");
+  openNavigationManagerAction.classList.add("pde-context-menu-action", "pde-context-menu-action--open-navigation-manager", "pde-context-menu-action--hidden");
+  openNavigationManagerAction.innerHTML = t("open_navigation_manager");
+  contextMenu.appendChild(openNavigationManagerAction);
 
-    const startPublicationAction = document.createElement("li");
-    startPublicationAction.classList.add("pde-context-menu-action", "pde-context-menu-action--start-publication");
-    startPublicationAction.innerHTML = t("start_publication_workflow");
-    contextMenu.appendChild(startPublicationAction);
+  let contextMenuSeparator1 = document.createElement("li");
+  contextMenuSeparator1.classList.add("pde-context-menu-separator")
+  contextMenu.appendChild(contextMenuSeparator1);
 
-    let contextMenuSeparator2 = document.createElement("li");
-    contextMenuSeparator2.classList.add("pde-context-menu-separator")
-    contextMenu.appendChild(contextMenuSeparator2);
+  const startLocalizationAction = document.createElement("li");
+  startLocalizationAction.classList.add("pde-context-menu-action", "pde-context-menu-action--start-localization");
+  startLocalizationAction.innerHTML = t("start_localization_workflow");
+  contextMenu.appendChild(startLocalizationAction);
 
-    const openNavigationManagerAction = document.createElement("li");
-    openNavigationManagerAction.classList.add("pde-context-menu-action", "pde-context-menu-action--open-navigation-manager");
-    openNavigationManagerAction.innerHTML = t("open_navigation_manager");
-    contextMenu.appendChild(openNavigationManagerAction);
+  const startPublicationAction = document.createElement("li");
+  startPublicationAction.classList.add("pde-context-menu-action", "pde-context-menu-action--start-publication");
+  startPublicationAction.innerHTML = t("start_publication_workflow");
+  contextMenu.appendChild(startPublicationAction);
 
-    // let contextMenuSeparator3 = document.createElement("li");
-    // contextMenuSeparator3.classList.add("pde-context-menu-separator")
-    // contextMenu.appendChild(contextMenuSeparator3);
-    //
-    // let moveUpAction = document.createElement("li");
-    // moveUpAction.classList.add("pde-context-menu-action", "pde-context-menu-action--move-up");
-    // moveUpAction.innerHTML = t("move_up");
-    // contextMenu.appendChild(moveUpAction);
-    //
-    // let moveDownAction = document.createElement("li");
-    // moveDownAction.classList.add("pde-context-menu-action", "pde-context-menu-action--move-down");
-    // moveDownAction.innerHTML = t("move_down");
-    // contextMenu.appendChild(moveDownAction);
+  // let contextMenuSeparator2 = document.createElement("li");
+  // contextMenuSeparator2.classList.add("pde-context-menu-separator")
+  // contextMenu.appendChild(contextMenuSeparator2);
 
-    const contextMenuAction = document.createElement("button");
-    contextMenuAction.innerHTML = "...";
-    contextMenuAction.classList.add("pde-action", "pde-action--secondary", "pde-action--menu");
-    contextMenuAction.onclick = (event) => {
-      event.preventDefault();
-      const eventTarget = event.target;
-      const boundingRect = eventTarget.getBoundingClientRect();
-      const top = boundingRect.bottom + 4; // add 4px for margin
-      const left = boundingRect.left;
-      contextMenu.style.top = `${top}px`;
-      contextMenu.style.left = `${left}px`;
-      toggleContextMenu();
-    };
+  // let contextMenuSeparator3 = document.createElement("li");
+  // contextMenuSeparator3.classList.add("pde-context-menu-separator")
+  // contextMenu.appendChild(contextMenuSeparator3);
+  //
+  // let moveUpAction = document.createElement("li");
+  // moveUpAction.classList.add("pde-context-menu-action", "pde-context-menu-action--move-up");
+  // moveUpAction.innerHTML = t("move_up");
+  // contextMenu.appendChild(moveUpAction);
+  //
+  // let moveDownAction = document.createElement("li");
+  // moveDownAction.classList.add("pde-context-menu-action", "pde-context-menu-action--move-down");
+  // moveDownAction.innerHTML = t("move_down");
+  // contextMenu.appendChild(moveDownAction);
 
-    // disable all actions initially
-    contextMenu.querySelectorAll(".pde-context-menu-action").forEach(action => action.setAttribute("data-disabled", ""));
+  const contextMenuAction = document.createElement("button");
+  contextMenuAction.innerHTML = "...";
+  contextMenuAction.classList.add("pde-action", "pde-action--secondary", "pde-action--menu");
+  contextMenuAction.onclick = (event) => {
+    event.preventDefault();
+    const eventTarget = event.target;
+    const boundingRect = eventTarget.getBoundingClientRect();
+    const top = boundingRect.bottom + 4; // add 4px for margin
+    const left = boundingRect.left;
+    contextMenu.style.top = `${top}px`;
+    contextMenu.style.left = `${left}px`;
+    toggleContextMenu();
+  };
 
-    const actions = editMenu.querySelector(".pde-actions");
-    actions.appendChild(contextMenuAction);
-  }
+  // disable all actions initially
+  contextMenu.querySelectorAll(".pde-context-menu-action").forEach(action => action.setAttribute("data-disabled", ""));
+
+  const actions = editMenu.querySelector(".pde-actions");
+  actions.appendChild(contextMenuAction);
 }
 
 function showContextMenu() {

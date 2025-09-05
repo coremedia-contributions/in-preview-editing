@@ -77,6 +77,11 @@ function getParentNodesWithMetadata(startElement) {
   return nodes;
 }
 
+export function isNavNode(element) {
+  let closestNavNode = element.closest("nav") || element.closest("[role=navigation]");
+  return closestNavNode !== null;
+}
+
 /**
  * Get the current scroll position of the document.
  * @returns {{scrollLeft: number, scrollTop: number}}

@@ -331,7 +331,8 @@ body[data-pbe-editing="on"] .pde-editing-actions-attached.pde-is-editing > .pde-
   }
 }
 
-.pde-context-menu--hidden {
+.pde-context-menu--hidden,
+.pde-context-menu-action--hidden {
   display: none;
 }
 
