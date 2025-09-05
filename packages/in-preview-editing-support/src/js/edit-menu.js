@@ -466,11 +466,13 @@ export function receivedContentMetadata(message) {
     showInLibraryAction.onclick = showInLibraryHandler;
     showInLibraryAction.removeAttribute("data-disabled");
 
+    const openNavigationManagerAction = contextMenu.querySelector(".pde-context-menu-action--open-navigation-manager");
     if (isNavNode(menuElement)) {
-      const openNavigationManagerAction = contextMenu.querySelector(".pde-context-menu-action--open-navigation-manager");
       openNavigationManagerAction.onclick = openNavigationManagerHandler;
       openNavigationManagerAction.removeAttribute("data-disabled");
       openNavigationManagerAction.classList.remove("pde-context-menu-action--hidden");
+    } else {
+      openNavigationManagerAction.classList.add("pde-context-menu-action--hidden");
     }
 
     const startLocalizationAction = contextMenu.querySelector(".pde-context-menu-action--start-localization");
