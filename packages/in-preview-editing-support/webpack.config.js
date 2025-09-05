@@ -9,10 +9,10 @@ module.exports = {
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
-    // library: {
-    //   name: 'CoreMediaInPreviewEditing',
-    //   type: 'umd'
-    // },
+    library: {
+      name: 'CoreMediaInPreviewEditing',
+      type: 'umd'
+    },
     globalObject: 'this',
     clean: true,
   },
