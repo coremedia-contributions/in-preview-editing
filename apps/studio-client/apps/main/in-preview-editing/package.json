@@ -6,6 +6,7 @@
   "private": true,
   "dependencies": {
     "@coremedia-blueprint/studio-client.main.blueprint-forms": "workspace:*",
+    "@coremedia-blueprint/studio-client.main.create-from-template-studio-plugin": "workspace:*",
     "@coremedia-blueprint/studio-client.main.taxonomy-studio": "workspace:*",
     "@coremedia-blueprint/studio-client.main.navigation-manager-studio": "workspace:*",
     "@coremedia/service-agent": "^2.1.2",
@@ -23,11 +24,13 @@
     "@coremedia/studio-client.ext.form-services-toolkit": "^2506.0.0",
     "@coremedia/studio-client.ext.toast-components": "^2506.0.0",
     "@coremedia/studio-client.ext.ui-components": "^2506.0.0",
+    "@coremedia/studio-client.ext.workflow-components": "^2506.0.0",
     "@coremedia/studio-client.main.image-map-editor-components": "^2506.0.0",
     "@coremedia/studio-client.main.bpbase-pagegrid-studio-plugin": "^2506.0.0",
     "@coremedia/studio-client.main.control-room-editor-components": "^2506.0.0",
     "@coremedia/studio-client.main.editor-components": "^2506.0.0",
     "@coremedia/studio-client.main.image-editor-components": "^2506.0.0",
+    "@coremedia/studio-client.multi-site-models": "^2506.0.0",
     "@jangaroo/ext-ts": "^2.1.0",
     "@jangaroo/runtime": "^3.3.1"
   },

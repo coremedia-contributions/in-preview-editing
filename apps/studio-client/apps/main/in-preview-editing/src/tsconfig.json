@@ -14,6 +14,9 @@
       "path": "../../../../../../../../../apps/studio-client/apps/main/blueprint-forms/src"
     },
     {
+      "path": "../../../../../../../../../apps/studio-client/apps/main/extensions/create-from-template/src"
+    },
+    {
       "path": "../../../../../../../navigation-manager/apps/studio-client/apps/main/navigation-manager/src"
     },
     {
