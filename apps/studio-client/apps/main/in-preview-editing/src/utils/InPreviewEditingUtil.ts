@@ -85,6 +85,9 @@ class InPreviewEditingUtil {
         if (propertyPath.startsWith("placement-")) {
           // special case for page grid placements
           InPreviewEditingUtil.createPlacementEditor(content, propertyPath).then((editor) => resolve(editor));
+        } else if (propertyPath.startsWith("gridform")) {
+          // special case for page grid placements
+          InPreviewEditingUtil.createFormPageGridEditor(content, propertyPath).then((editor) => resolve(editor));
         } else {
           // lookup registered editor for content and property name
           const propertyName = InPreviewEditingUtil.sanitizePropertyName(propertyPath);
@@ -120,6 +123,25 @@ class InPreviewEditingUtil {
       } catch (e) {
         reject();
       }
+    });
+  }
+
+  static createFormPageGridEditor(content: Content, propertyPath: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const editor: Config<any> = propertyEditorRegistry.getEditor(content.getType(), propertyPath);
+
+      // configure editor
+      const bindTo = ValueExpressionFactory.createFromValue(content);
+      //      editor.propertyName = propertyName;
+      editor.bindTo = bindTo;
+      editor.forceReadOnlyValueExpression = ValueExpressionFactory.createFromValue(false); // TODO: Take access rights into consideration
+      if (editor.items) {
+        editor.items.forEach((item) => {
+          item.bindTo = bindTo;
+          item.forceReadOnlyValueExpression = ValueExpressionFactory.createFromValue(false); // TODO: Take access rights into consideration
+        });
+      }
+      resolve(editor);
     });
   }
 
