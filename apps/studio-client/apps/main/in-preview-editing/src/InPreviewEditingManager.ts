@@ -201,6 +201,7 @@ class InPreviewEditingManager {
     dialog.setXY([posX, posY]);
     dialog.setPropertyName(event.propertyName);
     dialog.setContentRef(event.contentId, true);
+    dialog.setShowBreadcrumb(false);
     dialog.updateEditor();
   }
 
