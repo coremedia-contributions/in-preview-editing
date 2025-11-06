@@ -33,6 +33,7 @@ class FloatingEditorDialog extends StudioDialog {
   #boundContentExpr: ValueExpression = null;
   #propertyNameExpr: ValueExpression = null;
   breadcrumb: string[] = [];
+  showBreadcrumb: boolean = false;
 
   constructor(config: Config<FloatingEditorDialog> = null) {
     // @ts-expect-error Ext JS semantics
@@ -156,6 +157,10 @@ class FloatingEditorDialog extends StudioDialog {
     this.getPropertyNameExpression().setValue(propertyName);
   }
 
+  setShowBreadcrumb(show: boolean): void {
+    this.showBreadcrumb = show;
+  }
+
   updateEditor(): void {
     // console.log(
     //   "[FloatingEditorDialog] Updating property field.",
@@ -165,18 +170,20 @@ class FloatingEditorDialog extends StudioDialog {
     this.removeAll();
 
     // add breadcrumb
-    this.breadcrumb.forEach((item) => {
-      const content = session._.getConnection().getContentRepository().getContent(item);
-      const crumb = Config(Button, {
-        style: "text",
-        text: content.getName(),
-        handler: () => {
-          this.setContentRef(item, false);
-          this.updateEditor();
-        },
+    if (this.showBreadcrumb) {
+      this.breadcrumb.forEach((item) => {
+        const content = session._.getConnection().getContentRepository().getContent(item);
+        const crumb = Config(Button, {
+          style: "text",
+          text: content.getName(),
+          handler: () => {
+            this.setContentRef(item, false);
+            this.updateEditor();
+          },
+        });
+        this.add(crumb);
       });
-      this.add(crumb);
-    });
+    }
 
     const propertyName = this.#propertyNameExpr.getValue();
     this.#boundContentExpr.extendBy(ContentPropertyNames.TYPE).loadValue((ct) => {
