@@ -19,38 +19,41 @@ import Item from "@jangaroo/ext-ts/menu/Item";
 import ApprovePublishAction from "@coremedia/studio-client.ext.cap-base-components/actions/ApprovePublishAction";
 import ContentActions_properties from "@coremedia/studio-client.ext.cap-base-components/actions/ContentActions_properties";
 import Button from "@jangaroo/ext-ts/button/Button";
-import StudioDialog from "@coremedia/studio-client.ext.base-components/dialogs/StudioDialog";
+import Panel from "@jangaroo/ext-ts/panel/Panel";
+import PanelSkin from "@coremedia/studio-client.ext.ui-components/skins/PanelSkin";
 import InPreviewEditingUtil from "../utils/InPreviewEditingUtil";
 import Labels_properties from "../Labels_properties";
 
-interface FloatingEditorDialogConfig extends Config<StudioDialog> {}
+interface FloatingEditorPanelConfig extends Config<Panel> {}
 
-class FloatingEditorDialog extends StudioDialog {
-  declare Config: FloatingEditorDialogConfig;
+class FloatingEditorPanel extends Panel {
+  declare Config: FloatingEditorPanelConfig;
 
-  static override readonly xtype: string = "com.coremedia.labs.studio.pde.config.floatingEditorDialog";
+  static override readonly xtype: string = "com.coremedia.labs.studio.pde.config.FloatingEditorPanel";
 
   #boundContentExpr: ValueExpression = null;
   #propertyNameExpr: ValueExpression = null;
   breadcrumb: string[] = [];
   showBreadcrumb: boolean = false;
+  static panelId: string = "FloatingPanelId";
 
-  constructor(config: Config<FloatingEditorDialog> = null) {
+  constructor(config: Config<FloatingEditorPanel> = null) {
     // @ts-expect-error Ext JS semantics
     const this$ = this;
     super(
       ConfigUtils.apply(
-        Config(FloatingEditorDialog, {
+        Config(FloatingEditorPanel, {
           title: Labels_properties.FloatingEditorDialog_title,
           stateId: "floatingEditorState",
           cls: "floating-editor",
           stateful: true,
           modal: false,
           width: 400,
-          height: 400,
-          maxHeight: 800,
+          //height: 400,
+          // maxHeight: 800,
           autoScroll: true,
-          ui: WindowSkin.GRID_400.getSkin(),
+          //ui: PanelSkin.FORM_LIGHT.getSkin(),
+          ui: PanelSkin.FORM_200.getSkin(),
           constrainHeader: true,
           closeAction: "hide",
           bodyPadding: 5,
@@ -63,29 +66,6 @@ class FloatingEditorDialog extends StudioDialog {
               afterrender: bind(this$, this$.#focusInputField),
             },
           }),
-          buttons: [
-            Config(TextLinkButton, {
-              text: Labels_properties.FloatingEditorDialog_openInTabAction_text,
-              handler: bind(this$, this$.#openContentInTabAndClose),
-            }),
-            Config(TbFill),
-            Config(SplitButton, {
-              itemId: "finishButton",
-              ui: ButtonSkin.FOOTER_PRIMARY.getSkin(),
-              scale: "small",
-              text: Labels_properties.FloatingEditorDialog_finishAction_text,
-              handler: bind(this$, this$.close),
-              menu: Config(Menu, {
-                items: [
-                  Config(Item, {
-                    text: Labels_properties.FloatingEditorDialog_finishAndPublishAction_text,
-                    handler: bind(this$, this$.#closeAndPublish),
-                    iconCls: ContentActions_properties.Action_approvePublish_icon,
-                  }),
-                ],
-              }),
-            }),
-          ],
           layout: Config(AnchorLayout),
         }),
         config,
@@ -115,7 +95,7 @@ class FloatingEditorDialog extends StudioDialog {
       this.#boundContentExpr = ValueExpressionFactory.createFromValue(null);
       this.#boundContentExpr.addChangeListener((contentExpr: ValueExpression) => {
         contentExpr.extendBy(ContentPropertyNames.NAME).loadValue((contentName) => {
-          this.setTitle(contentName);
+          //this.setTitle(contentName);
         });
 
         contentExpr.extendBy(ContentPropertyNames.TYPE).loadValue((contentType) => {
@@ -161,7 +141,7 @@ class FloatingEditorDialog extends StudioDialog {
 
   updateEditor(): void {
     // console.log(
-    //   "[FloatingEditorDialog] Updating property field.",
+    //   "[FloatingEditorPanel] Updating property field.",
     //   this.#boundContentExpr.getValue(),
     //   this.#propertyNameExpr.getValue(),
     // );
@@ -194,7 +174,7 @@ class FloatingEditorDialog extends StudioDialog {
           this.add(propertyEditor);
         })
         .catch(() => {
-          console.log("[FloatingEditorDialog] No editor found for property: " + propertyName);
+          console.log("[FloatingEditorPanel] No editor found for property: " + propertyName);
         });
     });
   }
@@ -216,4 +196,4 @@ function shorten(str: string, maxLength: number): string {
   return str.length > maxLength ? str.slice(0, maxLength) + "…" : str;
 }
 
-export default FloatingEditorDialog;
+export default FloatingEditorPanel;
