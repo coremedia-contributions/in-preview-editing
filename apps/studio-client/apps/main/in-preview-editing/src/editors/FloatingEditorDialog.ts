@@ -19,6 +19,7 @@ import Menu from "@jangaroo/ext-ts/menu/Menu";
 import Item from "@jangaroo/ext-ts/menu/Item";
 import ApprovePublishAction from "@coremedia/studio-client.ext.cap-base-components/actions/ApprovePublishAction";
 import ContentActions_properties from "@coremedia/studio-client.ext.cap-base-components/actions/ContentActions_properties";
+import Button from "@jangaroo/ext-ts/button/Button";
 import InPreviewEditingUtil from "../utils/InPreviewEditingUtil";
 import Labels_properties from "../Labels_properties";
 
@@ -31,6 +32,7 @@ class FloatingEditorDialog extends StudioDialog {
 
   #boundContentExpr: ValueExpression = null;
   #propertyNameExpr: ValueExpression = null;
+  breadcrumb: string[] = [];
 
   constructor(config: Config<FloatingEditorDialog> = null) {
     // @ts-expect-error Ext JS semantics
@@ -133,7 +135,17 @@ class FloatingEditorDialog extends StudioDialog {
     return this.#propertyNameExpr;
   }
 
-  setContentRef(contentRef: string): void {
+  setContentRef(contentRef: string, clearBreadcrumb: boolean): void {
+    if (clearBreadcrumb) this.breadcrumb = [];
+
+    const index = this.breadcrumb.indexOf(contentRef);
+    if (index < 0) {
+      this.breadcrumb.push(contentRef);
+    } else {
+      this.breadcrumb = this.breadcrumb.slice(0, index + 1);
+    }
+    console.log("Breadcrump " + this.breadcrumb);
+
     // update bound content
     const content = session._.getConnection().getContentRepository().getContent(contentRef);
     this.getBoundContentExpression().setValue(content);
@@ -151,6 +163,20 @@ class FloatingEditorDialog extends StudioDialog {
     //   this.#propertyNameExpr.getValue(),
     // );
     this.removeAll();
+
+    // add breadcrumb
+    this.breadcrumb.forEach((item) => {
+      const content = session._.getConnection().getContentRepository().getContent(item);
+      const crumb = Config(Button, {
+        style: "text",
+        text: content.getName(),
+        handler: () => {
+          this.setContentRef(item, false);
+          this.updateEditor();
+        },
+      });
+      this.add(crumb);
+    });
 
     const propertyName = this.#propertyNameExpr.getValue();
     this.#boundContentExpr.extendBy(ContentPropertyNames.TYPE).loadValue((ct) => {

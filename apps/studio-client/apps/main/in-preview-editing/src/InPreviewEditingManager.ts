@@ -27,11 +27,10 @@ import TranslationStatusUtil from "@coremedia/studio-client.ext.workflow-compone
 import { sitesService, SiteUtil } from "@coremedia/studio-client.multi-site-models";
 import { fetchFromRemoteService } from "@coremedia/studio-client.client-core";
 import InPreviewEditingUtil from "./utils/InPreviewEditingUtil";
-import FloatingEditorDialog from "./editors/FloatingEditorDialog";
+import floatingEditorDialogService from "./service/floatingEditorDialogService";
 
 class InPreviewEditingManager {
   #previewIframe: PreviewIFrame = null;
-  #floatingEditorDialog: FloatingEditorDialog = null;
 
   static readonly MESSAGE_TYPE_CONTENT_METADATA_REQUEST: string = "com.coremedia.pde.content.metadata.request";
   static readonly MESSAGE_TYPE_CONTENT_METADATA_RESPONSE: string = "com.coremedia.pde.content.metadata.response";
@@ -192,7 +191,7 @@ class InPreviewEditingManager {
   }
 
   #showFloatingEditorListener(event: { contentId: string; propertyName: string; coords: DOMRect }): void {
-    const dialog = this.getFloatingEditorDialog();
+    const dialog = floatingEditorDialogService.getFloatingDialog();
 
     const iframeEl = this.#getIFrameEl();
     const posX = iframeEl.getBoundingClientRect().x + 200;
@@ -201,7 +200,7 @@ class InPreviewEditingManager {
     dialog.show();
     dialog.setXY([posX, posY]);
     dialog.setPropertyName(event.propertyName);
-    dialog.setContentRef(event.contentId);
+    dialog.setContentRef(event.contentId, true);
     dialog.updateEditor();
   }
 
@@ -539,13 +538,6 @@ class InPreviewEditingManager {
       InPreviewEditingManager.MESSAGE_TYPE_CONTENT_METRICS_RESPONSE,
       metricsData,
     );
-  }
-
-  getFloatingEditorDialog(): FloatingEditorDialog {
-    if (!this.#floatingEditorDialog) {
-      this.#floatingEditorDialog = new FloatingEditorDialog();
-    }
-    return this.#floatingEditorDialog;
   }
 
   #getIFrameEl(): HTMLIFrameElement {
