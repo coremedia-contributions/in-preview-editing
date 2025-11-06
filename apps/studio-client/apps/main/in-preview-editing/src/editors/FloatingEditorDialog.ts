@@ -20,6 +20,7 @@ import Item from "@jangaroo/ext-ts/menu/Item";
 import ApprovePublishAction from "@coremedia/studio-client.ext.cap-base-components/actions/ApprovePublishAction";
 import ContentActions_properties from "@coremedia/studio-client.ext.cap-base-components/actions/ContentActions_properties";
 import Button from "@jangaroo/ext-ts/button/Button";
+import Label from "@jangaroo/ext-ts/form/Label";
 import InPreviewEditingUtil from "../utils/InPreviewEditingUtil";
 import Labels_properties from "../Labels_properties";
 
@@ -171,17 +172,21 @@ class FloatingEditorDialog extends StudioDialog {
 
     // add breadcrumb
     if (this.showBreadcrumb) {
-      this.breadcrumb.forEach((item) => {
+      this.breadcrumb.forEach((item, index) => {
         const content = session._.getConnection().getContentRepository().getContent(item);
         const crumb = Config(Button, {
           style: "text",
-          text: content.getName(),
+          text: shorten(content.getName(), 20),
+          tooltip: content.getName(),
           handler: () => {
             this.setContentRef(item, false);
             this.updateEditor();
           },
         });
         this.add(crumb);
+        if (index < this.breadcrumb.length - 1) {
+          this.add(Config(Button, { text: "/" }));
+        }
       });
     }
 
@@ -208,6 +213,10 @@ class FloatingEditorDialog extends StudioDialog {
       field.down(defaultFieldSelector)?.focus();
     }
   }
+}
+
+function shorten(str: string, maxLength: number): string {
+  return str.length > maxLength ? str.slice(0, maxLength) + "…" : str;
 }
 
 export default FloatingEditorDialog;
