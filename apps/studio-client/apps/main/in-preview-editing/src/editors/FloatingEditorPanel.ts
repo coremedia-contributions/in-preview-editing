@@ -6,21 +6,15 @@ import session from "@coremedia/studio-client.cap-rest-client/common/session";
 import ContentPropertyNames from "@coremedia/studio-client.cap-rest-client/content/ContentPropertyNames";
 import ContentLocalizationUtil from "@coremedia/studio-client.cap-base-models/content/ContentLocalizationUtil";
 import { bind } from "@jangaroo/runtime";
-import SplitButton from "@jangaroo/ext-ts/button/Split";
-import ButtonSkin from "@coremedia/studio-client.ext.ui-components/skins/ButtonSkin";
-import WindowSkin from "@coremedia/studio-client.ext.ui-components/skins/WindowSkin";
 import AnchorLayout from "@jangaroo/ext-ts/layout/container/Anchor";
 import BaseField from "@jangaroo/ext-ts/form/field/Base";
-import TextLinkButton from "@coremedia-blueprint/studio-client.main.taxonomy-studio/taxonomy/chooser/TextLinkButton";
-import TbFill from "@jangaroo/ext-ts/toolbar/Fill";
 import Component from "@jangaroo/ext-ts/Component";
-import Menu from "@jangaroo/ext-ts/menu/Menu";
-import Item from "@jangaroo/ext-ts/menu/Item";
 import ApprovePublishAction from "@coremedia/studio-client.ext.cap-base-components/actions/ApprovePublishAction";
-import ContentActions_properties from "@coremedia/studio-client.ext.cap-base-components/actions/ContentActions_properties";
 import Button from "@jangaroo/ext-ts/button/Button";
 import Panel from "@jangaroo/ext-ts/panel/Panel";
 import PanelSkin from "@coremedia/studio-client.ext.ui-components/skins/PanelSkin";
+import WorkArea from "@coremedia/studio-client.main.editor-components/sdk/desktop/WorkArea";
+import Content from "@coremedia/studio-client.cap-rest-client/content/Content";
 import InPreviewEditingUtil from "../utils/InPreviewEditingUtil";
 import Labels_properties from "../Labels_properties";
 
@@ -189,6 +183,25 @@ class FloatingEditorPanel extends Panel {
     if (defaultFieldSelector) {
       field.down(defaultFieldSelector)?.focus();
     }
+  }
+
+  protected override initComponent() {
+    super.initComponent();
+    const activecontentvalueexpression = WorkArea.ACTIVE_CONTENT_VALUE_EXPRESSION;
+    activecontentvalueexpression.addChangeListener(() => {
+      if (this.isVisible()) {
+        const contentRef = FloatingEditorPanel.getContentRef(activecontentvalueexpression.getValue());
+        this.setContentRef(contentRef, true);
+        this.setPropertyName("gridform");
+        this.updateEditor();
+        this.show();
+      }
+    });
+  }
+
+  static getContentRef(content: Content) {
+    const contentId: string = content.getId();
+    return contentId.slice(17, contentId.length);
   }
 }
 
