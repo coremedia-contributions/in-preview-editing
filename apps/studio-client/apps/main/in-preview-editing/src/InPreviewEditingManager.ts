@@ -26,8 +26,11 @@ import CreateFromTemplateDialog from "@coremedia-blueprint/studio-client.main.cr
 import TranslationStatusUtil from "@coremedia/studio-client.ext.workflow-components/components/form/translation/TranslationStatusUtil";
 import { sitesService, SiteUtil } from "@coremedia/studio-client.multi-site-models";
 import { fetchFromRemoteService } from "@coremedia/studio-client.client-core";
+import sidePanelManager from "@coremedia/studio-client.main.editor-components/sdk/desktop/sidepanel/sidePanelManager";
 import InPreviewEditingUtil from "./utils/InPreviewEditingUtil";
 import FloatingEditorDialog from "./editors/FloatingEditorDialog";
+import floatingEditorPanelService from "./service/floatingEditorPanelService";
+import FloatingEditorPanel from "./editors/FloatingEditorPanel";
 
 class InPreviewEditingManager {
   #previewIframe: PreviewIFrame = null;
@@ -98,7 +101,8 @@ class InPreviewEditingManager {
         messageService.registerMessageListener(
           iframeEl,
           InPreviewEditingManager.MESSAGE_TYPE_OPEN_CONTENT,
-          bind(this, this.#openContentListener),
+          //bind(this, this.#openContentListener),
+          bind(this, this.#showFloatingEditorPanelListener),
         );
 
         // register show in library listener
@@ -203,6 +207,23 @@ class InPreviewEditingManager {
     dialog.setPropertyName(event.propertyName);
     dialog.setContentRef(event.contentId);
     dialog.updateEditor();
+  }
+
+  #showFloatingEditorPanelListener(event: {
+    contentRef: string;
+    contentId: string;
+    propertyName: string;
+    coords: DOMRect;
+  }): void {
+    const dialog: FloatingEditorPanel = cast(
+      FloatingEditorPanel,
+      sidePanelManager._.getOrCreateComponent(FloatingEditorPanel.panelId),
+    );
+    dialog.setPropertyName("gridform");
+    dialog.setContentRef(event.contentRef, true);
+    dialog.setShowBreadcrumb(true);
+    dialog.updateEditor();
+    dialog.show();
   }
 
   #openContentListener(event: { contentRef: string }) {

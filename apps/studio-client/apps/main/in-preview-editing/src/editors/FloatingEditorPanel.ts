@@ -37,7 +37,7 @@ class FloatingEditorPanel extends Panel {
     super(
       ConfigUtils.apply(
         Config(FloatingEditorPanel, {
-          title: Labels_properties.FloatingEditorDialog_title,
+          title: "Content Inspector",
           stateId: "floatingEditorPanelState",
           cls: "floating-editor",
           stateful: true,
