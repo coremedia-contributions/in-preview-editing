@@ -9,9 +9,12 @@ import ValueExpressionFactory from "@coremedia/studio-client.client-core/data/Va
 import PreviewIFrameToolbar from "@coremedia/studio-client.main.editor-components/sdk/preview/PreviewIFrameToolbar";
 import RichTextPropertyField from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/richtext/RichTextPropertyField";
 import ImageMapEditor from "@coremedia/studio-client.main.image-map-editor-components/ImageMapEditor";
+import featureFlagService from "@coremedia-blueprint/studio-client.main.salesdemo-feature-modifier/service/featureFlagService";
+import FeatureModifier from "@coremedia-blueprint/studio-client.main.salesdemo-feature-modifier/FeatureModifier";
 import AttachInPreviewEditingManagerPlugin from "./plugins/AttachInPreviewEditingManagerPlugin";
 import propertyEditorRegistry from "./editors/propertyEditorRegistry";
 import AddInPreviewEditingTogglePlugin from "./plugins/AddInPreviewEditingTogglePlugin";
+import FeatureFlags_properties from "./FeatureFlags_properties";
 
 interface InPreviewEditingStudioPluginConfig extends Config<StudioPlugin> {}
 
@@ -42,6 +45,13 @@ class InPreviewEditingStudioPlugin extends StudioPlugin {
 
   override init(editorContext: IEditorContext) {
     super.init(editorContext);
+
+    // register feature flags
+    featureFlagService.registerFeatureFlag(
+      FeatureFlags_properties.IN_PREVIEW_EDITING_SHOW_METRICS,
+      FeatureModifier.GROUP_INNOVATION,
+      false,
+    );
 
     // register specific property editors
     propertyEditorRegistry.registerEditor(

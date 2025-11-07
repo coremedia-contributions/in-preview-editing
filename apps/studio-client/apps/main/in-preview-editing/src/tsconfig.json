@@ -20,6 +20,9 @@
       "path": "../../../../../../../navigation-manager/apps/studio-client/apps/main/navigation-manager/src"
     },
     {
+      "path": "../../../../../../../../../apps/studio-client/apps/main/salesdemo-feature-modifier/src"
+    },
+    {
       "path": "../../../../../../../../../apps/studio-client/apps/main/extensions/taxonomy/src"
     }
   ]

@@ -41,8 +41,10 @@ import editorContext from "@coremedia/studio-client.main.editor-components/sdk/e
 import CollectionViewExtension from "@coremedia/studio-client.main.editor-components/sdk/collectionview/CollectionViewExtension";
 import session from "@coremedia/studio-client.cap-rest-client/common/session";
 import OpenNavigationEditorDialogAction from "@coremedia-blueprint/studio-client.main.navigation-manager-studio/actions/OpenNavigationEditorDialogAction";
+import featureFlagService from "@coremedia-blueprint/studio-client.main.salesdemo-feature-modifier/service/featureFlagService";
 import propertyEditorRegistry from "../editors/propertyEditorRegistry";
 import EmptyState from "../editors/EmptyState";
+import FeatureFlags_properties from "../FeatureFlags_properties";
 
 class InPreviewEditingUtil {
   static readonly MESSAGE_TYPE_ACTIVATE_IN_PREVIEW_EDITING: string = "com.coremedia.pde.editing.on";
@@ -65,6 +67,11 @@ class InPreviewEditingUtil {
     );
     const data = {
       lang: LocaleUtil.getLocale(),
+      features: {
+        metrics: featureFlagService.isEnabled(FeatureFlags_properties.IN_PREVIEW_EDITING_SHOW_METRICS)
+          ? "enabled"
+          : "disabled",
+      },
     };
     messageService.sendMessage(
       contentWindow,

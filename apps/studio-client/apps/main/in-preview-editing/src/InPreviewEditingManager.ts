@@ -26,8 +26,10 @@ import CreateFromTemplateDialog from "@coremedia-blueprint/studio-client.main.cr
 import TranslationStatusUtil from "@coremedia/studio-client.ext.workflow-components/components/form/translation/TranslationStatusUtil";
 import { sitesService, SiteUtil } from "@coremedia/studio-client.multi-site-models";
 import { fetchFromRemoteService } from "@coremedia/studio-client.client-core";
+import featureFlagService from "@coremedia-blueprint/studio-client.main.salesdemo-feature-modifier/service/featureFlagService";
 import InPreviewEditingUtil from "./utils/InPreviewEditingUtil";
 import FloatingEditorDialog from "./editors/FloatingEditorDialog";
+import FeatureFlags_properties from "./FeatureFlags_properties";
 
 class InPreviewEditingManager {
   #previewIframe: PreviewIFrame = null;
@@ -88,11 +90,13 @@ class InPreviewEditingManager {
         );
 
         // register content metrics listener
-        messageService.registerMessageListener(
-          iframeEl,
-          InPreviewEditingManager.MESSAGE_TYPE_CONTENT_METRICS_REQUEST,
-          bind(this, this.#contentMetricsListener),
-        );
+        if (featureFlagService.isEnabled(FeatureFlags_properties.IN_PREVIEW_EDITING_SHOW_METRICS)) {
+          messageService.registerMessageListener(
+            iframeEl,
+            InPreviewEditingManager.MESSAGE_TYPE_CONTENT_METRICS_REQUEST,
+            bind(this, this.#contentMetricsListener),
+          );
+        }
 
         // register open content listener
         messageService.registerMessageListener(
