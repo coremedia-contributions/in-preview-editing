@@ -1,5 +1,6 @@
 import Config from "@jangaroo/runtime/Config";
 import ConfigUtils from "@jangaroo/runtime/ConfigUtils";
+import StudioDialog from "@coremedia/studio-client.ext.base-components/dialogs/StudioDialog";
 import ValueExpression from "@coremedia/studio-client.client-core/data/ValueExpression";
 import ValueExpressionFactory from "@coremedia/studio-client.client-core/data/ValueExpressionFactory";
 import session from "@coremedia/studio-client.cap-rest-client/common/session";
@@ -18,8 +19,6 @@ import Menu from "@jangaroo/ext-ts/menu/Menu";
 import Item from "@jangaroo/ext-ts/menu/Item";
 import ApprovePublishAction from "@coremedia/studio-client.ext.cap-base-components/actions/ApprovePublishAction";
 import ContentActions_properties from "@coremedia/studio-client.ext.cap-base-components/actions/ContentActions_properties";
-import Button from "@jangaroo/ext-ts/button/Button";
-import StudioDialog from "@coremedia/studio-client.ext.base-components/dialogs/StudioDialog";
 import InPreviewEditingUtil from "../utils/InPreviewEditingUtil";
 import Labels_properties from "../Labels_properties";
 
@@ -32,8 +31,6 @@ class FloatingEditorDialog extends StudioDialog {
 
   #boundContentExpr: ValueExpression = null;
   #propertyNameExpr: ValueExpression = null;
-  breadcrumb: string[] = [];
-  showBreadcrumb: boolean = false;
 
   constructor(config: Config<FloatingEditorDialog> = null) {
     // @ts-expect-error Ext JS semantics
@@ -42,7 +39,7 @@ class FloatingEditorDialog extends StudioDialog {
       ConfigUtils.apply(
         Config(FloatingEditorDialog, {
           title: Labels_properties.FloatingEditorDialog_title,
-          stateId: "floatingEditorState",
+          stateId: "floatingEditorDialogState",
           cls: "floating-editor",
           stateful: true,
           modal: false,
@@ -50,6 +47,8 @@ class FloatingEditorDialog extends StudioDialog {
           height: 400,
           maxHeight: 800,
           autoScroll: true,
+          x: 200,
+          y: 200,
           ui: WindowSkin.GRID_400.getSkin(),
           constrainHeader: true,
           closeAction: "hide",
@@ -134,17 +133,7 @@ class FloatingEditorDialog extends StudioDialog {
     return this.#propertyNameExpr;
   }
 
-  setContentRef(contentRef: string, clearBreadcrumb: boolean): void {
-    if (clearBreadcrumb) this.breadcrumb = [];
-
-    const index = this.breadcrumb.indexOf(contentRef);
-    if (index < 0) {
-      this.breadcrumb.push(contentRef);
-    } else {
-      this.breadcrumb = this.breadcrumb.slice(0, index + 1);
-    }
-    console.log("Breadcrump " + this.breadcrumb);
-
+  setContentRef(contentRef: string): void {
     // update bound content
     const content = session._.getConnection().getContentRepository().getContent(contentRef);
     this.getBoundContentExpression().setValue(content);
@@ -155,10 +144,6 @@ class FloatingEditorDialog extends StudioDialog {
     this.getPropertyNameExpression().setValue(propertyName);
   }
 
-  setShowBreadcrumb(show: boolean): void {
-    this.showBreadcrumb = show;
-  }
-
   updateEditor(): void {
     // console.log(
     //   "[FloatingEditorDialog] Updating property field.",
@@ -166,26 +151,6 @@ class FloatingEditorDialog extends StudioDialog {
     //   this.#propertyNameExpr.getValue(),
     // );
     this.removeAll();
-
-    // add breadcrumb
-    if (this.showBreadcrumb) {
-      this.breadcrumb.forEach((item, index) => {
-        const content = session._.getConnection().getContentRepository().getContent(item);
-        const crumb = Config(Button, {
-          style: "text",
-          text: shorten(content.getName(), 20),
-          tooltip: content.getName(),
-          handler: () => {
-            this.setContentRef(item, false);
-            this.updateEditor();
-          },
-        });
-        this.add(crumb);
-        if (index < this.breadcrumb.length - 1) {
-          this.add(Config(Button, { text: "/" }));
-        }
-      });
-    }
 
     const propertyName = this.#propertyNameExpr.getValue();
     this.#boundContentExpr.extendBy(ContentPropertyNames.TYPE).loadValue((ct) => {
@@ -210,10 +175,6 @@ class FloatingEditorDialog extends StudioDialog {
       field.down(defaultFieldSelector)?.focus();
     }
   }
-}
-
-function shorten(str: string, maxLength: number): string {
-  return str.length > maxLength ? str.slice(0, maxLength) + "…" : str;
 }
 
 export default FloatingEditorDialog;
