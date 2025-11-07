@@ -29,7 +29,6 @@ import { fetchFromRemoteService } from "@coremedia/studio-client.client-core";
 import sidePanelManager from "@coremedia/studio-client.main.editor-components/sdk/desktop/sidepanel/sidePanelManager";
 import InPreviewEditingUtil from "./utils/InPreviewEditingUtil";
 import FloatingEditorDialog from "./editors/FloatingEditorDialog";
-import floatingEditorPanelService from "./service/floatingEditorPanelService";
 import FloatingEditorPanel from "./editors/FloatingEditorPanel";
 
 class InPreviewEditingManager {
