@@ -1,18 +1,22 @@
 // message types used for communication with Studio
-import { receivedContentMetadata } from "./edit-menu";
+import { receivedContentMetadata, receivedContentMetrics } from "./edit-menu";
 import { activateInPageEditing, deactivateInPageEditing } from "./editing";
 
 export const MESSAGE_TYPE_ACTIVATE_IN_PAGE_EDITING = "com.coremedia.pde.editing.on";
 export const MESSAGE_TYPE_DEACTIVATE_IN_PAGE_EDITING = "com.coremedia.pde.editing.off";
 export const MESSAGE_TYPE_CONTENT_METADATA_REQUEST = "com.coremedia.pde.content.metadata.request";
 export const MESSAGE_TYPE_CONTENT_METADATA_RESPONSE = "com.coremedia.pde.content.metadata.response";
+export const MESSAGE_TYPE_CONTENT_METRICS_REQUEST = "com.coremedia.pde.content.metrics.request";
+export const MESSAGE_TYPE_CONTENT_METRICS_RESPONSE = "com.coremedia.pde.content.metrics.response";
 export const MESSAGE_TYPE_SHOW_EDITOR = "com.coremedia.pde.showEditor";
 export const MESSAGE_TYPE_OPEN_CONTENT = "com.coremedia.pde.openContent";
 export const MESSAGE_TYPE_SHOW_IN_LIBRARY = "com.coremedia.pde.showInLibrary";
 export const MESSAGE_TYPE_OPEN_NAVIGATION_MANAGER = "com.coremedia.pde.openNavigationManager";
+export const MESSAGE_TYPE_CREATE_PAGE_FROM_TEMPLATE = "com.coremedia.pde.createPageFromTemplate";
 export const MESSAGE_TYPE_START_LOCALIZATION = "com.coremedia.pde.startLocalization";
 export const MESSAGE_TYPE_START_PUBLICATION = "com.coremedia.pde.startPublication";
 export const MESSAGE_TYPE_PUBLISH_REQUEST = "com.coremedia.pde.content.publish.request";
+export const MESSAGE_TYPE_ROLLBACK_REQUEST = "com.coremedia.pde.content.rollback.request";
 export const MESSAGE_TYPE_PROPERTY_UPDATE_REQUEST = "com.coremedia.pde.propertyUpdate";
 
 /**
@@ -44,7 +48,7 @@ export function dispatchMessage(event) {
   switch (msgData.type) {
 
     case MESSAGE_TYPE_ACTIVATE_IN_PAGE_EDITING:
-      activateInPageEditing(msgData.body?.lang);
+      activateInPageEditing(msgData.body?.lang, msgData.body?.features);
       break;
 
     case MESSAGE_TYPE_DEACTIVATE_IN_PAGE_EDITING:
@@ -53,6 +57,10 @@ export function dispatchMessage(event) {
 
     case MESSAGE_TYPE_CONTENT_METADATA_RESPONSE:
       receivedContentMetadata(msgData);
+      break;
+
+    case MESSAGE_TYPE_CONTENT_METRICS_RESPONSE:
+      receivedContentMetrics(msgData);
       break;
   }
 }

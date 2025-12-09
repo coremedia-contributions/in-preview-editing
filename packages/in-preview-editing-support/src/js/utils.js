@@ -1,21 +1,51 @@
 export const PDE_METADATA_ATTRIBUTE = "data-cm-metadata";
 export const PDE_EDITING_FLAG = "pdeEditing";
 
+
+/**
+ * Checks whether an element is marked as editable.
+ * An element is considered editable if its `data-cm-metadata` attribute
+ * contains an object with { editable: true }.
+ *
+ * @param {HTMLElement} element
+ * @returns {boolean}
+ */
 export function isMarkedAsEditable(element) {
-  return JSON.parse(element.dataset?.cmMetadata || "[]")
-    .find((i) => i.editable === true);
+  if (!element) return false;
+
+  const meta = element.getAttribute(PDE_METADATA_ATTRIBUTE);
+  if (!meta) return false;
+
+  try {
+    // Parse JSON from the data attribute
+    const parsed = JSON.parse(meta);
+
+    // The metadata is an array; check if any entry has editable: true
+    return Array.isArray(parsed) && parsed.some(item => item.editable === true);
+  } catch (e) {
+    // Invalid JSON → treat as non-editable
+    return false;
+  }
 }
 
+/**
+ * Returns the closest ancestor (including the element itself)
+ * that has the `data-cm-metadata` attribute.
+ *
+ * @param {HTMLElement} element
+ * @returns {HTMLElement|null}
+ */
 export function findClosestMetadataElement(element) {
-  if (!element) {
-    return null;
-  }
-
   let current = element;
-  while (current && !current.hasAttribute(PDE_METADATA_ATTRIBUTE)) {
+
+  while (current) {
+    if (current.hasAttribute && current.hasAttribute(PDE_METADATA_ATTRIBUTE)) {
+      return current;
+    }
     current = current.parentElement;
   }
-  return current;
+
+  return null;
 }
 
 export function findContentId(startNode) {
@@ -77,9 +107,71 @@ function getParentNodesWithMetadata(startElement) {
   return nodes;
 }
 
+export function getContentIdBreadcrumb(startElement) {
+  return getParentNodesWithMetadata(startElement)?.map(getContentIdFromMetadata).filter(Boolean).reverse();
+}
+
+export function getBreadcrumbMetadataNotes(startElement) {
+  return getParentNodesWithMetadata(startElement)?.filter((item) => getContentIdFromMetadata(item)).reverse();
+}
+
+export function findNodeWithContentRefInBreadcrumb(breadcrumbElements, contentId) {
+  return breadcrumbElements.find((item) => getContentIdFromMetadata(item) === contentId) || null;
+}
+
 export function isNavNode(element) {
   let closestNavNode = element.closest("nav") || element.closest("[role=navigation]");
   return closestNavNode !== null;
+}
+
+export function findPlacementElement(element) {
+  return element.closest('div[data-cm-metadata*="properties.placement-"]');
+}
+
+export function findPlacementItemsWrapper(element) {
+  return element.closest('div[data-cm-metadata*="properties.items"]');
+}
+
+export function findAllPlacementItems(placementItemsWrapper) {
+  return getTopLevelMetadataNodes(placementItemsWrapper);
+}
+
+export function findPlacementItemElement(element) {
+  const placementContainer = findPlacementElement(element);
+  if (!placementContainer) {
+    return false;
+  }
+
+  const placementItemsWrapper = findPlacementItemsWrapper(element);
+  const placementItems = findAllPlacementItems(placementItemsWrapper);
+
+  return placementItems.find(node => node.contains(element)) || null;
+}
+
+export function isPlacementItem(element) {
+  return findPlacementItemElement(element) === element;
+}
+
+function getTopLevelMetadataNodes(parent) {
+  const result = [];
+
+  function walk(node) {
+    const childNodes = node?.children;
+    if (childNodes && childNodes.length > 0) {
+      for (const child of childNodes) {
+        if (child.hasAttribute("data-cm-metadata")) {
+          // Found a top-level data node → collect it but don't go deeper
+          result.push(child);
+        } else {
+          // Keep searching inside if no attribute
+          walk(child);
+        }
+      }
+    }
+  }
+
+  walk(parent);
+  return result;
 }
 
 /**
@@ -130,4 +222,19 @@ export function fadeIn(el, baseCls, duration = 500) {
   setTimeout(() => {
     el.classList.remove(`${baseCls}--fade`);
   }, duration);
+}
+
+/**
+ * Checks if the given element is too close to the bottom of the viewport.
+ * @param el element to check
+ * @param offset optional offset in pixels (default: 0)
+ * @returns {boolean}
+ */
+export function isTooCloseToBottom(el, offset = 0) {
+  if (!el) return false;
+  const rect = el.getBoundingClientRect();
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+  // Check if the bottom of the element is within `offset` px of the viewport bottom
+  // console.log(`[PDE] Checking bounding box against viewport height ${viewportHeight} with offset ${offset}: ${rect.bottom >= viewportHeight - offset}`, rect);
+  return rect.bottom >= viewportHeight - offset;
 }
