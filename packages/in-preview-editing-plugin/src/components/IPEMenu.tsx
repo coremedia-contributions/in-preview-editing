@@ -1,23 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
-import ReactDOM from "react-dom";
 import { useTargetElement } from "../context/TargetElementContext.tsx";
+
+interface Props {
+  shadowRoot: ShadowRoot;
+}
 
 interface Position {
   top: number;
   left: number;
 }
 
-const IPEMenu: React.FC = () => {
+const IPEMenu: React.FC<Props> = () => {
   const menuRef = useRef<HTMLDivElement | null>(null);
   const { targetEl } = useTargetElement();
   const [position, setPosition] = useState<Position>({ top: 0, left: 0 });
 
-  const overlayRootRef = useRef<HTMLDivElement | null>(null);
-  if (!overlayRootRef.current) {
-    overlayRootRef.current = document.createElement("div");
-    document.body.appendChild(overlayRootRef.current);
-  }
-  const overlayRoot = overlayRootRef.current;
 
   useEffect(() => {
     if (!targetEl) {
@@ -45,13 +42,16 @@ const IPEMenu: React.FC = () => {
 
   if (!targetEl) return null;
 
-  return ReactDOM.createPortal(
+  // Render directly inside shadow root
+  return (
     <div
       className="ipe-menu"
       ref={menuRef}
       style={{
+        position: "absolute",
         top: position.top,
-        left: position.left
+        left: position.left,
+        zIndex: 999999,
       }}
     >
       <button>Edit</button>
@@ -60,8 +60,7 @@ const IPEMenu: React.FC = () => {
       <button>...</button>
       <div>Element: {targetEl.tagName}</div>
       <div>Data: {targetEl.dataset.cmMetadata}</div>
-    </div>,
-    overlayRoot
+    </div>
   );
 };
 
