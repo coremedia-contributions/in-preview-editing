@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "dist/coremedia.ipe.plugin.iife.js",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite build --watch",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

@@ -1,0 +1,6 @@
+.ipe-highlight-marker {
+  background: var(--ipe-accent-color);
+  position: absolute;
+  pointer-events: none;
+  box-sizing: border-box;
+}

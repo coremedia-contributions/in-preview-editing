@@ -1,31 +1,47 @@
 import { createRoot } from "react-dom/client";
-import App from "./components/App";
-import "./style.css";
+import IPEMenu from "./components/IPEMenu.tsx";
+import { TargetElementProvider } from "./context/TargetElementContext.tsx";
+import { Highlighter } from "./components/Highlighter.tsx";
+
+// CSS imports as strings via Vite ?inline
+import sharedStyles from "./styles/shared.css?inline";
+import pluginStyles from "./styles/plugin.css?inline";
 
 export function initPlugin(): void {
-  // 1. Create host element
+  // Create host element
   const host = document.createElement("coremedia-ipe-plugin");
   document.body.appendChild(host);
 
-  // 2. Attach Shadow DOM
+  // Attach Shadow DOM
   const shadow = host.attachShadow({ mode: "open" });
 
-  // 3. Create mount point
+  // Inject shared CSS into shadow DOM ---
+  const shadowSharedStyle = document.createElement("style");
+  shadowSharedStyle.textContent = sharedStyles;
+  shadow.appendChild(shadowSharedStyle);
+
+  // Inject plugin-specific CSS into shadow DOM ---
+  const shadowPluginStyle = document.createElement("style");
+  shadowPluginStyle.textContent = pluginStyles;
+  shadow.appendChild(shadowPluginStyle);
+
+  // Inject shared CSS into global document for portal menus ---
+  const globalStyle = document.createElement("style");
+  globalStyle.textContent = sharedStyles;
+  document.head.appendChild(globalStyle);
+
+  // Create mount point for React inside shadow DOM
   const mount = document.createElement("div");
   shadow.appendChild(mount);
 
-  // 4. Inject basic reset style
-  const style = document.createElement("style");
-  style.textContent = `
-    :host {
-      all: initial;
-    }
-  `;
-  shadow.appendChild(style);
-
-  // 5. Render React App inside Shadow DOM
+  // Render React App inside Shadow DOM
   const root = createRoot(mount);
-  root.render(<App shadowRoot={shadow} />);
+  root.render(
+    <TargetElementProvider shadowRoot={shadow}>
+      <IPEMenu />
+      <Highlighter shadowRoot={shadow}/>
+    </TargetElementProvider>
+  );
 }
 
 // Auto-run on bundle load

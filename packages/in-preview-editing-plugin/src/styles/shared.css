@@ -1,0 +1,28 @@
+:root {
+  --ipe-accent-color: #12A594;
+  --ipe-accent-color-light: color-mix(in srgb, var(--ipe-accent-color) 33%, white);
+  --ipe-accent-color-dark: color-mix(in srgb, var(--ipe-accent-color) 33%, black);
+
+  --ipe-destructive-color: #ef4444;
+  --ipe-destructive-color-light: color-mix(in srgb, var(--ipe-destructive-color) 33%, white);
+  --ipe-destructive-color-dark: color-mix(in srgb, var(--ipe-destructive-color) 33%, black);
+
+  --ipe-font-family: 'Roboto', 'Segoe UI', 'Trebuchet MS', 'Lucida Grande', 'Helvetica', sans-serif;
+  --ipe-highlight-color: var(--ipe-accent-color);
+  --ipe-highlight-marker-bg: var(--ipe-highlight-color);
+}
+
+.ipe-menu {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  background: var(--ipe-accent-color-light);
+  border: 2px solid var(--ipe-accent-color);
+  box-sizing: border-box;
+  align-items: stretch;
+  outline-style: none;
+  padding: 0;
+  border-bottom: none;
+  z-index: 1000;
+}
