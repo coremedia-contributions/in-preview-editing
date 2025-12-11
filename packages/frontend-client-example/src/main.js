@@ -1,5 +1,5 @@
 import './styles.css';
-import "@coremedia-contributions/in-preview-editing-support";
+import "@coremedia-contributions/in-preview-editing-plugin/dist/coremedia.ipe.plugin.iife.js";
 
 let lang = "en";
 

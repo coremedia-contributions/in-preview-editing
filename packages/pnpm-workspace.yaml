@@ -1,3 +1,4 @@
 packages:
   - 'frontend-client-example'
   - 'in-preview-editing-support'
+  - 'in-preview-editing-plugin'

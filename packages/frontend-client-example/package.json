@@ -11,7 +11,7 @@
   "author": "sebastian.buettner@coremedia.com",
   "license": "CoreMedia Open Source License",
   "dependencies": {
-    "@coremedia-contributions/in-preview-editing-support": "workspace:*"
+    "@coremedia-contributions/in-preview-editing-plugin": "workspace:*"
   },
   "devDependencies": {
     "css-loader": "^7.1.2",
