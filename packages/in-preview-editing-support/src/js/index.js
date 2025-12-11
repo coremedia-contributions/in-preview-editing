@@ -3,6 +3,9 @@ import {
   deactivateInPageEditing,
 } from "./editing";
 import { dispatchMessage } from "./messaging";
+import "../css/variables.css";
+import "../css/utils.css";
+import '../css/fonts.css';
 
 export function init() {
   if (!window.PDE_IN_PREVIEW_EDITING_INITIALIZED) {

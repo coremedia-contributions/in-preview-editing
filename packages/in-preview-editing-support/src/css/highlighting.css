@@ -1,7 +1,7 @@
 .pde-highlight-marker {
   box-sizing: border-box;
   position: absolute;
-  background: lightseagreen;
+  background: var(--pde-highlight-marker-bg);
 }
 
 /* fix z-index for preview element highlighting */

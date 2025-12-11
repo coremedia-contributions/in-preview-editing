@@ -29,8 +29,6 @@ import {
 import { t } from "./translations";
 import { isFeatureEnabled } from "./features";
 
-const HIDE_AFTER_IDLE_SECONDS = 6; // hide edit menu after 6 seconds of inactivity, set to 0 to disable
-
 export let editMenu;
 export let menuElement = null;
 export let placementItemElement = null;
@@ -40,7 +38,6 @@ let isBreadcrumbSelectionActive = false;
 let contextMenu;
 let breadcrumbMenu;
 let currentMetadata = null;
-let idleTimeout;
 let inlineEditingActive = false;
 let preventMouseEvents = false;
 
@@ -137,9 +134,6 @@ export function initEditMenu() {
 
   // add additional actions menu
   initContextMenu();
-
-  // initialize idle timer to close edit menu after a while
-  initIdleTimer();
 }
 
 export function triggerEditMenuUpdate(event) {
@@ -313,7 +307,7 @@ export function showEditMenu(element) {
 }
 
 export function hideEditMenu(element) {
-  if (editMenu) {
+  if (editMenu && !inlineEditingActive && !isContextMenuVisible()) {
     if (editMenu.classList.contains("pde-edit-menu--hidden")) {
       return;
     }
@@ -799,30 +793,6 @@ function postPropertyUpdate(contentId, propertyName, propertyValue) {
     propertyValue: propertyValue,
   };
   sendMessageToParent(MESSAGE_TYPE_PROPERTY_UPDATE_REQUEST, messageData);
-}
-
-function onIdle() {
-  if (!inlineEditingActive && !isContextMenuVisible()) {
-    //console.log("[PDE] Idle timeout reached. Hiding edit menu.");
-    hideEditMenu();
-    hideElementHighlightMarkers();
-  }
-}
-
-function resetIdleTimer() {
-  if (HIDE_AFTER_IDLE_SECONDS > 0) {
-    clearTimeout(idleTimeout);
-    idleTimeout = setTimeout(onIdle, HIDE_AFTER_IDLE_SECONDS * 1000);
-  }
-}
-
-function initIdleTimer() {
-  if (HIDE_AFTER_IDLE_SECONDS <= 0) {
-    return; // do not initialize idle timer if HIDE_AFTER_IDLE_SECONDS is set to 0
-  }
-  // Listen for mouse movement
-  window.addEventListener("mousemove", resetIdleTimer);
-  resetIdleTimer();
 }
 
 // breadcrumb menu
