@@ -14,7 +14,6 @@
     "@coremedia/studio-client.base-models": "catalog:",
     "@coremedia/studio-client.cap-base-models": "catalog:",
     "@coremedia/studio-client.cap-rest-client": "catalog:",
-    "@coremedia/studio-client.cap-rest-client-impl": "catalog:",
     "@coremedia/studio-client.client-core": "catalog:",
     "@coremedia/studio-client.common-icons": "catalog:",
     "@coremedia/studio-client.content-services-api": "catalog:",
