@@ -1,35 +1,60 @@
-* {
-  --ipe-accent-color: #12A594;
-  --ipe-accent-color-light: color-mix(in srgb, var(--ipe-accent-color) 33%, white);
-  --ipe-accent-color-dark: color-mix(in srgb, var(--ipe-accent-color) 33%, black);
+@import "./theme.css";
 
-  --ipe-destructive-color: #ef4444;
-  --ipe-destructive-color-light: color-mix(in srgb, var(--ipe-destructive-color) 33%, white);
-  --ipe-destructive-color-dark: color-mix(in srgb, var(--ipe-destructive-color) 33%, black);
-
-  --ipe-font-family: 'Roboto', 'Segoe UI', 'Trebuchet MS', 'Lucida Grande', 'Helvetica', sans-serif;
-  --ipe-highlight-color: var(--ipe-accent-color);
-  --ipe-highlight-marker-bg: var(--ipe-highlight-color);
+:host {
+  all: initial;
+  font-family: system-ui;
 }
+
+
 
 .ipe-menu {
   position: absolute;
   top: 0;
   left: 0;
-  display: flex;
-  background: var(--ipe-accent-color-light);
-  border: 2px solid var(--ipe-accent-color);
-  box-sizing: border-box;
-  align-items: stretch;
-  outline-style: none;
-  padding: 0;
   z-index: 1000;
+  /*display: flex;*/
+  /*background: var(--ipe-accent-color);*/
+  /*border: 2px solid var(--ipe-accent-color);*/
+  /*box-sizing: border-box;*/
+  /*align-items: stretch;*/
+  /*outline-style: none;*/
+  /*padding: 0;*/
+  /*gap: 2px;*/
+
+  /*button {*/
+  /*  display: inline-flex;*/
+  /*  flex-shrink: 0;*/
+  /*  align-items: center;*/
+  /*  justify-content: center;*/
+  /*  padding: 4px 8px;*/
+  /*  color: var(--ipe-accent-color);*/
+  /*  border: none;*/
+  /*  background-color: var(--ipe-accent-color-light);*/
+
+  /*  &:hover {*/
+  /*    background: var(--ipe-accent-color);*/
+  /*    color: var(--ipe-accent-color-light);*/
+  /*  }*/
+
+  /*  &.ipe-button-icon-only {*/
+  /*    padding: 0;*/
+  /*    aspect-ratio: 1 / 1;*/
+  /*  }*/
+  /*}*/
+
 }
 
-
 .ipe-highlight-marker {
-  background: var(--ipe-accent-color);
   position: absolute;
   pointer-events: none;
   box-sizing: border-box;
+  background: transparent;
+  outline: 2px solid var(--ipe-accent-color);
+  /*box-shadow: 0 3px 9px 4px var(--ipe-accent-color), 0 0 10px 4px var(--ipe-accent-color);*/
+  z-index: 999997;
+}
+
+#ipe-portal-container {
+  position: relative;
+  z-index: 999999;
 }

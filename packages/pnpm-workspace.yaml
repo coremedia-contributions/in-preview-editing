@@ -1,4 +1,30 @@
 packages:
-  - 'frontend-client-example'
-  - 'in-preview-editing-support'
-  - 'in-preview-editing-plugin'
+  - frontend-client-example
+  - in-preview-editing-support
+  - in-preview-editing-plugin
+catalog:
+  "@eslint/js": ^9.39.1
+  "@types/node": ^24.10.1
+  "@types/react": ^19.2.5
+  "@types/react-dom": ^19.2.3
+  "@vitejs/plugin-react": ^5.1.1
+  css-loader: ^7.1.2
+  eslint: ^9.39.1
+  eslint-plugin-react-hooks: ^7.0.1
+  eslint-plugin-react-refresh: ^0.4.24
+  globals: ^16.5.0
+  html-webpack-plugin: ^5.6.3
+  lucide-react: ^0.560.0
+  mini-css-extract-plugin: ^2.9.2
+  radix-ui: ^1.4.3
+  react: ^19.2.0
+  react-dom: ^19.2.0
+  style-loader: ^4.0.0
+  ts-loader: ^9.5.4
+  typescript: ~5.9.3
+  typescript-eslint: ^8.46.4
+  vite: ^7.2.4
+  webpack: ^5.99.9
+  webpack-cli: ^6.0.1
+  webpack-dev-server: ^5.2.1
+  webpack-merge: ^6.0.1

@@ -1,43 +1,35 @@
 import React, { useEffect, useRef } from "react";
-import { useTargetElement } from "../context/TargetElementContext.tsx";
+import { usePluginContext } from "../context/PluginContext.tsx";
+import { markerPadding } from "./Highlighter.tsx";
 
 export const Spotlight: React.FC = () => {
-  const { targetEl } = useTargetElement();
+  const { targetEl } = usePluginContext();
   const overlayRef = useRef<HTMLDivElement>(null);
 
   const updateSpotlight = () => {
-    if (!overlayRef.current) return;
+    const overlay = overlayRef.current;
+    if (!overlay) return;
 
     if (!targetEl) {
-      overlayRef.current.style.clipPath = "";
-      overlayRef.current.style.opacity = "0";
+      overlay.style.clipPath = "";
+      overlay.style.opacity = "0";
       return;
     }
 
     const rect = targetEl.getBoundingClientRect();
-    const padding = 8; // optional, extra spacing around target
+    const top = Math.round(rect.top) - markerPadding - 2;
+    const left = Math.round(rect.left) - markerPadding - 2;
+    const bottom = Math.round(rect.bottom) + markerPadding + 2;
+    const right = Math.round(rect.right) + markerPadding + 2;
 
-    const top = rect.top - padding;
-    const left = rect.left - padding;
-    const width = rect.width + padding * 2;
-    const height = rect.height + padding * 2;
+    const W = window.innerWidth;
+    const H = window.innerHeight;
 
-    // Create a rectangular "hole" using clip-path
-    overlayRef.current.style.clipPath = `
-      path(
-        "M0 0
-         H100vw
-         V100vh
-         H0
-         Z
-         M${left}px ${top}px
-         H${left + width}px
-         V${top + height}px
-         H${left}px
-         Z"
-      )
-    `;
-    overlayRef.current.style.opacity = "1";
+    // path() with evenodd: outer rectangle - inner rectangle (cutout)
+    const clipPath = `path(evenodd, "M 0 0 L ${W} 0 L ${W} ${H} L 0 ${H} Z M ${left} ${top} L ${right} ${top} L ${right} ${bottom} L ${left} ${bottom} Z")`;
+
+    overlay.style.clipPath = clipPath;
+    overlay.style.opacity = "1";
   };
 
   useEffect(() => {
@@ -57,17 +49,15 @@ export const Spotlight: React.FC = () => {
   return (
     <div
       ref={overlayRef}
+      className="ipe-spotlight"
       style={{
         position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100vw",
-        height: "100vh",
-        background: "rgba(0,0,0,0.60)",
+        opacity: "0",
+        inset: 0,
+        background: "rgba(0, 0, 0, 0.65)",
         pointerEvents: "none",
-        transition: "clip-path 0.15s ease-out, opacity 0.15s ease-out",
-        opacity: 0,
-        zIndex: 999998,
+        zIndex: 99,
+        transition: "opacity 0.2s ease",
       }}
     />
   );
