@@ -87,44 +87,44 @@ importers:
         specifier: ^5.2.17
         version: 5.2.17(@types/react@19.2.7)(react@19.2.1)
       lucide-react:
-        specifier: 'catalog:'
+        specifier: ^0.560.0
         version: 0.560.0(react@19.2.1)
       react:
-        specifier: 'catalog:'
+        specifier: ^19.2.0
         version: 19.2.1
       react-dom:
-        specifier: 'catalog:'
+        specifier: ^19.2.0
         version: 19.2.1(react@19.2.1)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
     devDependencies:
       '@eslint/js':
-        specifier: 'catalog:'
+        specifier: ^9.39.1
         version: 9.39.1
       '@types/node':
-        specifier: 'catalog:'
+        specifier: ^24.10.1
         version: 24.10.3
       '@types/react':
-        specifier: 'catalog:'
+        specifier: ^19.2.5
         version: 19.2.7
       '@types/react-dom':
-        specifier: 'catalog:'
+        specifier: ^19.2.3
         version: 19.2.3(@types/react@19.2.7)
       '@vitejs/plugin-react':
-        specifier: 'catalog:'
+        specifier: ^5.1.1
         version: 5.1.2(vite@7.2.7(@types/node@24.10.3)(sass-embedded@1.97.3)(sass@1.97.3)(terser@5.39.2))
       eslint:
-        specifier: 'catalog:'
+        specifier: ^9.39.1
         version: 9.39.1
       eslint-plugin-react-hooks:
-        specifier: 'catalog:'
+        specifier: ^7.0.1
         version: 7.0.1(eslint@9.39.1)
       eslint-plugin-react-refresh:
-        specifier: 'catalog:'
+        specifier: ^0.4.24
         version: 0.4.24(eslint@9.39.1)
       globals:
-        specifier: 'catalog:'
+        specifier: ^16.5.0
         version: 16.5.0
       postcss:
         specifier: ^8.5.8
@@ -136,13 +136,13 @@ importers:
         specifier: ^1.97.3
         version: 1.97.3
       typescript:
-        specifier: 'catalog:'
+        specifier: ~5.9.3
         version: 5.9.3
       typescript-eslint:
-        specifier: 'catalog:'
+        specifier: ^8.46.4
         version: 8.49.0(eslint@9.39.1)(typescript@5.9.3)
       vite:
-        specifier: 'catalog:'
+        specifier: ^7.2.4
         version: 7.2.7(@types/node@24.10.3)(sass-embedded@1.97.3)(sass@1.97.3)(terser@5.39.2)
 
   in-preview-editing-support:
