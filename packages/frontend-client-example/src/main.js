@@ -7,10 +7,10 @@ let lang = "en";
 export function toggleInPreviewEditing() {
   console.log("Toggle In-Preview Editing: ", this.checked);
   if (this.checked) {
-    // window.com.coremedia.pde.activateInPageEditing(lang);
+    window.com.coremedia.pde.activateInPageEditing(lang);
     pdeStatusLabel.innerHTML = "In-Preview Editing: on";
   } else {
-    // window.com.coremedia.pde.deactivateInPageEditing();
+    window.com.coremedia.pde.deactivateInPageEditing();
     pdeStatusLabel.innerHTML = "In-Preview Editing: off";
   }
 }
@@ -29,7 +29,7 @@ langSelect.addEventListener("change", function () {
   console.log("Selected language for in-page editing: ", selectedLang);
   lang = selectedLang;
   if (toggle.checked) {
-    // window.com.coremedia.pde.deactivateInPageEditing();
-    // window.com.coremedia.pde.activateInPageEditing(lang);
+    window.com.coremedia.pde.deactivateInPageEditing();
+    window.com.coremedia.pde.activateInPageEditing(lang);
   }
 });
