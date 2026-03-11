@@ -7,6 +7,7 @@ declare global {
         pde?: {
           activateInPageEditing: (lang?: string) => void;
           deactivateInPageEditing: () => void;
+          destroyPlugin: () => void;
         };
       };
     };

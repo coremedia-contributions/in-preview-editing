@@ -4,6 +4,7 @@
 
 .Popup {
   box-sizing: border-box;
+  min-width: 220px;
   padding-block: 0.25rem;
   border-radius: 0.375rem;
   background-color: canvas;
@@ -12,6 +13,7 @@
   transition:
     transform 150ms,
     opacity 150ms;
+  user-select: none;
 
   &[data-starting-style],
   &[data-ending-style] {
@@ -76,12 +78,14 @@
   user-select: none;
   padding-block: 0.25rem;
   padding-left: 0.5rem;
-  padding-right: 2rem;
+  padding-right: 0.5rem;
   display: flex;
   font-size: 0.875rem;
   line-height: 1rem;
   align-items: center;
   gap: 0.5rem;
+  color: #3f3f3f;
+  fill: #3f3f3f;
 
   &[data-highlighted] {
     z-index: 0;
@@ -105,20 +109,86 @@
   }
 }
 
+.NoIconItem {
+  padding-left: 0.5rem;
+}
+
+.ReadonlyItem {
+  opacity: 0.33;
+
+  &[data-highlighted] {
+    color: inherit;
+    fill: inherit;
+  }
+
+  &[data-highlighted]::before {
+    background-color: inherit;
+  }
+
+}
+
 .GroupLabel {
   cursor: default;
   user-select: none;
   padding-block: 0.25rem;
   padding-left: 0.5rem;
-  padding-right: 2rem;
+  padding-right: 0.5rem;
   font-size: .875rem;
   line-height: 1rem;
   color: var(--color-gray-600);
   font-weight: bold;
 }
 
+.LifecycleStatusLabel {
+  font-size: 0.875rem;
+  float: right;
+  font-weight: normal;
+}
+
+.LocalizationStatusLabel {
+  font-size: 0.875rem;
+  float: right;
+  font-weight: normal;
+}
+
 .Separator {
-  margin: 0.375rem 1rem;
+  margin: 0.375rem 0.5rem;
   height: 1px;
   background-color: var(--color-gray-200);
+}
+
+.ContentInfo {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  padding-block: 0.25rem;
+  padding-left: 0.5rem;
+  padding-right: 2rem;
+  font-size: .875rem;
+}
+
+.Thumbnail {
+  img {
+    width: 50px;
+    border: 1px solid var(--color-gray-200);
+    border-radius: 6px;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+  }
+}
+
+.ContentDetails {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 0.125rem;
+}
+
+.ContentName {
+  font-weight: bold;
+}
+
+.ContentType {
+  color: var(--color-gray-600);
 }

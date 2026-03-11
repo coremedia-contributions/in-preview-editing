@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { usePluginContext } from "../context/PluginContext.tsx";
-import { markerPadding } from "./Highlighter.tsx";
+import { markerBorder, markerPadding } from "./Highlighter.tsx";
 
 export const Spotlight: React.FC = () => {
   const { targetEl } = usePluginContext();
@@ -17,10 +17,10 @@ export const Spotlight: React.FC = () => {
     }
 
     const rect = targetEl.getBoundingClientRect();
-    const top = Math.round(rect.top) - markerPadding - 2;
-    const left = Math.round(rect.left) - markerPadding - 2;
-    const bottom = Math.round(rect.bottom) + markerPadding + 2;
-    const right = Math.round(rect.right) + markerPadding + 2;
+    const top = Math.round(rect.top) - markerPadding - markerBorder;
+    const left = Math.round(rect.left) - markerPadding - markerBorder;
+    const bottom = Math.round(rect.bottom) + markerPadding + markerBorder;
+    const right = Math.round(rect.right) + markerPadding + markerBorder;
 
     const W = window.innerWidth;
     const H = window.innerHeight;
@@ -54,7 +54,7 @@ export const Spotlight: React.FC = () => {
         position: "fixed",
         opacity: "0",
         inset: 0,
-        background: "rgba(0, 0, 0, 0.65)",
+        background: "rgba(0, 0, 0, 0.25)",
         pointerEvents: "none",
         zIndex: 99,
         transition: "opacity 0.2s ease",

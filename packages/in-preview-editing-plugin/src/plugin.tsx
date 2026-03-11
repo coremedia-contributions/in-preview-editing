@@ -4,6 +4,7 @@ import { PluginContextProvider } from "./context/PluginContext.tsx";
 import { Highlighter } from "./components/Highlighter.tsx";
 import { Spotlight } from "./components/Spotlight.tsx";
 import { IPE_ACTIVATE_EVENT, IPE_DEACTIVATE_EVENT, type IPEActivateEventDetail } from "./events/events.ts";
+import { pdeBridge } from "./lib/messaging.ts";
 
 import pluginStyles from "./styles/plugin.css?inline";
 import frontendStyles from "./styles/frontend.css?inline";
@@ -73,6 +74,11 @@ export function initPlugin(): void {
     },
     deactivateInPageEditing: () => {
       document.dispatchEvent(new CustomEvent(IPE_DEACTIVATE_EVENT));
+    },
+    destroyPlugin: () => {
+      root.unmount();
+      host.remove();
+      pdeBridge.destroy();
     },
   };
 }

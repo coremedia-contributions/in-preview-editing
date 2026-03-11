@@ -1,3 +1,9 @@
+import { PostMessageRxBridge } from "./post-message-rx-bridge";
+
+// ---------------------------------------------------------------------------
+// Message-type constants
+// ---------------------------------------------------------------------------
+
 export const MESSAGE_TYPE_ACTIVATE_IN_PAGE_EDITING = "com.coremedia.pde.editing.on";
 export const MESSAGE_TYPE_DEACTIVATE_IN_PAGE_EDITING = "com.coremedia.pde.editing.off";
 export const MESSAGE_TYPE_CONTENT_METADATA_REQUEST = "com.coremedia.pde.content.metadata.request";
@@ -15,17 +21,32 @@ export const MESSAGE_TYPE_PUBLISH_REQUEST = "com.coremedia.pde.content.publish.r
 export const MESSAGE_TYPE_ROLLBACK_REQUEST = "com.coremedia.pde.content.rollback.request";
 export const MESSAGE_TYPE_PROPERTY_UPDATE_REQUEST = "com.coremedia.pde.propertyUpdate";
 
-/**
- * Sends a message to the parent window.
- * @param messageType the type of the message to send
- * @param payload optional payload to send with the message
- */
-export function sendMessageToParent(messageType: string, payload = {}) {
-  const msg = JSON.stringify({
-    type: messageType,
-    body: payload
-  });
+// ---------------------------------------------------------------------------
+// Shared bridge singleton
+// ---------------------------------------------------------------------------
 
-  console.log("[PDE] sending message to parent window: ", msg);
-  window.parent.postMessage(msg, "*");
+/**
+ * Central RxJS PostMessage bridge shared across the plugin.
+ * Use `pdeBridge.on(MESSAGE_TYPE_*)` to subscribe to incoming messages and
+ * `pdeBridge.send()` / `pdeBridge.request()` to communicate with the parent.
+ * Call `pdeBridge.destroy()` when the plugin unmounts to clean up listeners.
+ */
+export const pdeBridge = new PostMessageRxBridge({
+  channel: "com.coremedia.pde",
+  targetWindow: window.parent,
+  targetOrigin: "*",
+  // Accept legacy messages that were sent without a channel field
+  acceptMessagesWithoutChannel: true,
+});
+
+// ---------------------------------------------------------------------------
+// Legacy helper (kept for backwards-compatibility – delegates to the bridge)
+// ---------------------------------------------------------------------------
+
+/**
+ * @deprecated Use `pdeBridge.send()` directly.
+ */
+export function sendMessageToParent(messageType: string, payload: Record<string, unknown> = {}): void {
+  console.log("[PDE] sending message to parent window:", messageType, payload);
+  pdeBridge.send(messageType, payload);
 }

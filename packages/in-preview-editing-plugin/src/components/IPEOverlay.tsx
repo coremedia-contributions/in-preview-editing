@@ -4,10 +4,9 @@ import PDEEditManager from "../lib/edit-manager.ts";
 import ActionsMenu from "./ActionsMenu.tsx";
 import { Toolbar } from "@base-ui/react/toolbar";
 
-import buttonStyles from "../styles/components/Button.module.css";
 import toolbarStyles from "../styles/components/Toolbar.module.css";
 import clsx from "clsx";
-import { markerPadding } from "./Highlighter.tsx";
+import { markerBorder, markerPadding } from "./Highlighter.tsx";
 
 interface Props {
 }
@@ -19,12 +18,12 @@ interface Position {
 
 const IPEOverlay: React.FC<Props> = () => {
   const toolbarRef = useRef<HTMLDivElement | null>(null);
-  const { targetEl, inlineEditActive, setInlineEditActive } = usePluginContext();
+  const { targetEl, contentMetadata, inlineEditActive, setInlineEditActive } = usePluginContext();
   const [position, setPosition] = useState<Position>({ top: 0, left: 0 });
   const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
 
   useEffect(() => {
-    //console.log("Target element changed:", targetEl);
+    console.log("Target element changed:", targetEl);
 
     if (!targetEl) {
       setActionsMenuOpen(false);
@@ -36,9 +35,10 @@ const IPEOverlay: React.FC<Props> = () => {
       const menuHeight = toolbarRef.current?.offsetHeight || 0;
       setPosition({
         top: Math.round(rect.top + window.scrollY) - menuHeight - markerPadding,
-        left: Math.round(rect.left + window.scrollX) - markerPadding - 2, // offset to the left for better alignment with highlight marker
+        left: Math.round(rect.left + window.scrollX) - markerPadding - markerBorder, // offset to the left for better alignment with highlight marker
       });
 
+      // TODO: Auto close menu when switching target elements
       //setActionsMenuOpen(false);
     };
 
@@ -55,9 +55,9 @@ const IPEOverlay: React.FC<Props> = () => {
   if (!targetEl) return null;
 
   function editBtnHandler() {
-    let inline = true; // TODO: Read from property descriptor only enable for string properties
+    const inline = contentMetadata?.propertyType === "STRING"; // TODO: Read from property descriptor only enable for string properties
     PDEEditManager.getInstance().startEditing(targetEl, inline);
-    setInlineEditActive(true);
+    setInlineEditActive(inline);
   }
 
   function cancelBtnHandler() {
@@ -78,12 +78,14 @@ const IPEOverlay: React.FC<Props> = () => {
                     top: position.top,
                     left: position.left,
                   }}>
+      {/*<Toolbar.Button className={clsx(toolbarStyles.Button, buttonStyles.readonly)}>{contentMetadata?.contentName || contentId}</Toolbar.Button>*/}
+      {/*<Toolbar.Separator className={toolbarStyles.Separator} />*/}
       <Toolbar.Group className={toolbarStyles.Group}>
-        {!inlineEditActive && <Toolbar.Button className={toolbarStyles.Button} onClick={editBtnHandler}>Edit</Toolbar.Button>}
+        {!inlineEditActive && <Toolbar.Button className={toolbarStyles.Button} onClick={editBtnHandler}>Edit {contentMetadata?.propertyLabel}</Toolbar.Button>}
         {inlineEditActive && (
           <>
-            <Toolbar.Button className={clsx(toolbarStyles.Button, buttonStyles.destructive)} onClick={cancelBtnHandler}>Cancel</Toolbar.Button>
-            <Toolbar.Button className={toolbarStyles.Button} onClick={saveBtnHandler}>Save</Toolbar.Button>
+            <Toolbar.Button className={toolbarStyles.Button} onClick={saveBtnHandler}>Save {contentMetadata?.propertyLabel}</Toolbar.Button>
+            <Toolbar.Button className={clsx(toolbarStyles.Button)} onClick={cancelBtnHandler}>Cancel</Toolbar.Button>
           </>
         )}
       </Toolbar.Group>

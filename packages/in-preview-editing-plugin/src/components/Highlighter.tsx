@@ -1,14 +1,14 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { usePluginContext } from "../context/PluginContext.tsx";
 
 interface HighlighterProps {
 }
 
-export const markerPadding = 5; // padding around the target element for better visibility
+export const markerPadding = 0; // padding around the target element for better visibility
+export const markerBorder = 2; // outline width of the highlight marker (outline: 2px)
 
 export const Highlighter: React.FC<HighlighterProps> = () => {
-  const { targetEl, shadowRoot } = usePluginContext();
-  const markerRef = useRef<HTMLDivElement | null>(null);
+  const { targetEl, shadowRoot, markerRef } = usePluginContext();
 
   // Create a single marker inside the shadow root
   useEffect(() => {
@@ -16,7 +16,7 @@ export const Highlighter: React.FC<HighlighterProps> = () => {
     el.classList.add("ipe-highlight-marker");
     el.style.visibility = "hidden";
     el.style.position = "absolute";
-    el.style.pointerEvents = "none";
+    //el.style.pointerEvents = "none";
 
     shadowRoot.appendChild(el);
     markerRef.current = el;
@@ -47,6 +47,8 @@ export const Highlighter: React.FC<HighlighterProps> = () => {
         height: `${Math.round(rect.height) + markerPadding*2}px`,
         visibility: "visible",
       });
+
+      console.log("[IPE] Marker coords:", marker.getBoundingClientRect());
     };
 
     update();

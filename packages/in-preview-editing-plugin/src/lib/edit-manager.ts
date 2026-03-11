@@ -29,7 +29,7 @@ class PDEEditManager extends EventTarget {
     return PDEEditManager.instance;
   }
 
-  startEditing(element: HTMLElement | null, inline = false) {
+  startEditing(element: HTMLElement | undefined, inline = false) {
     if (!element) {
       return;
     }
@@ -59,7 +59,7 @@ class PDEEditManager extends EventTarget {
     this.dispatchEvent(new CustomEvent(PDEEditEvents.START_EDIT, { element: element, inline: inline }));
   }
 
-  endEditing = (element: HTMLElement | null, save = false) => {
+  endEditing = (element: HTMLElement | undefined, save = false) => {
     if (!element) {
       return;
     }

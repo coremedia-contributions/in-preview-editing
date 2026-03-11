@@ -1,6 +1,6 @@
 :host {
-  --ipe-accent-color: #14b8a6;
-  --ipe-accent-color-light: color-mix(in srgb, var(--ipe-accent-color) 33%, white);
+  --ipe-accent-color: #006cae;
+  --ipe-accent-color-light: color-mix(in srgb, var(--ipe-accent-color) 25%, white);
   --ipe-accent-color-dark: color-mix(in srgb, var(--ipe-accent-color) 33%, black);
 
   --ipe-destructive-color: #ef4444;

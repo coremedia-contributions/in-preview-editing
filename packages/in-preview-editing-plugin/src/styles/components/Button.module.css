@@ -51,3 +51,11 @@
     color: var(--ipe-destructive-color-light) !important;
   }
 }
+
+.readonly {
+  opacity: 0.75;
+
+  &:hover {
+    background: transparent !important;
+  }
+}

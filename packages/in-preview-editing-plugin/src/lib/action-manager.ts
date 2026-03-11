@@ -1,10 +1,14 @@
 import {
-  sendMessageToParent, MESSAGE_TYPE_OPEN_CONTENT, MESSAGE_TYPE_SHOW_IN_LIBRARY,
+  pdeBridge,
+  MESSAGE_TYPE_OPEN_CONTENT, MESSAGE_TYPE_SHOW_IN_LIBRARY,
   MESSAGE_TYPE_OPEN_NAVIGATION_MANAGER, MESSAGE_TYPE_CREATE_PAGE_FROM_TEMPLATE, MESSAGE_TYPE_START_LOCALIZATION,
   MESSAGE_TYPE_START_PUBLICATION, MESSAGE_TYPE_ROLLBACK_REQUEST, MESSAGE_TYPE_SHOW_EDITOR,
-  MESSAGE_TYPE_PROPERTY_UPDATE_REQUEST, MESSAGE_TYPE_CONTENT_METADATA_REQUEST, MESSAGE_TYPE_CONTENT_METRICS_REQUEST,
+  MESSAGE_TYPE_PROPERTY_UPDATE_REQUEST, MESSAGE_TYPE_CONTENT_METADATA_REQUEST, MESSAGE_TYPE_CONTENT_METADATA_RESPONSE,
+  MESSAGE_TYPE_CONTENT_METRICS_REQUEST, MESSAGE_TYPE_CONTENT_METRICS_RESPONSE,
   MESSAGE_TYPE_PUBLISH_REQUEST
 } from "./messaging";
+
+import { Observable } from "rxjs";
 
 class PDEActionManager extends EventTarget {
 
@@ -23,46 +27,56 @@ class PDEActionManager extends EventTarget {
 
   requestFloatingEditor = (contentId: string, propertyName: string | null = null, elementCoords: DOMRect | null = null) => {
     if (contentId && propertyName && elementCoords) {
-      let messageData = {
-        contentId: contentId,
-        propertyName: propertyName,
-        coords: elementCoords
-      };
-      sendMessageToParent(MESSAGE_TYPE_SHOW_EDITOR, messageData);
+      pdeBridge.send(MESSAGE_TYPE_SHOW_EDITOR, {
+        contentId,
+        propertyName,
+        coords: elementCoords,
+      });
     }
   };
 
-  postPropertyUpdate = (contentId: string, propertyName: string, propertyValue: any) => {
+  postPropertyUpdate = (contentId: string, propertyName: string, propertyValue: string | null | undefined) => {
     if (!contentId || !propertyName || !propertyValue || propertyValue.trim() === "") {
       return;
     }
 
-    const messageData = {
-      contentId: contentId,
-      propertyName: propertyName,
-      propertyValue: propertyValue,
-    };
-
-    sendMessageToParent(MESSAGE_TYPE_PROPERTY_UPDATE_REQUEST, messageData);
+    pdeBridge.send(MESSAGE_TYPE_PROPERTY_UPDATE_REQUEST, {
+      contentId,
+      propertyName,
+      propertyValue,
+    });
   };
 
-  requestContentMetadata = (contentRef: string, propertyName: string, breadcrumbIds: string[] = []) => {
-    if (contentRef && propertyName) {
-      const messageData = {
-        contentRef: contentRef,
-        propertyName: propertyName,
-        breadcrumbIds: breadcrumbIds,
-      };
-      sendMessageToParent(MESSAGE_TYPE_CONTENT_METADATA_REQUEST, messageData);
+  requestContentMetadata = <TResponse = unknown>(
+    contentRef: string,
+    propertyName: string,
+    breadcrumbIds: string[] = [],
+    timeoutMs = 5000,
+  ): Observable<TResponse> | null => {
+    if (!contentRef || !propertyName) {
+      return null;
     }
+
+    return pdeBridge.request<Record<string, unknown>, TResponse>(
+      MESSAGE_TYPE_CONTENT_METADATA_REQUEST,
+      { contentRef, propertyName, breadcrumbIds },
+      { responseType: MESSAGE_TYPE_CONTENT_METADATA_RESPONSE, timeoutMs, skipCorrelation: true },
+    );
+  };
+
+  requestContentMetrics = <TResponse = unknown>(
+    contentRef: string,
+    timeoutMs = 5000,
+  ): Observable<TResponse> => {
+    return pdeBridge.request<Record<string, unknown>, TResponse>(
+      MESSAGE_TYPE_CONTENT_METRICS_REQUEST,
+      { contentRef },
+      { responseType: MESSAGE_TYPE_CONTENT_METRICS_RESPONSE, timeoutMs, skipCorrelation: true },
+    );
   };
 
   requestContentPublication = (contentRef: string, propertyName: string) => {
     this.triggerContentAction(MESSAGE_TYPE_PUBLISH_REQUEST, contentRef, propertyName);
-  };
-
-  requestContentMetrics = (contentRef: string) => {
-    this.triggerContentAction(MESSAGE_TYPE_CONTENT_METRICS_REQUEST, contentRef);
   };
 
   openContent = (contentRef: string) => {
@@ -82,11 +96,11 @@ class PDEActionManager extends EventTarget {
   };
 
   openNavigationManager = () => {
-    sendMessageToParent(MESSAGE_TYPE_OPEN_NAVIGATION_MANAGER, {});
+    pdeBridge.send(MESSAGE_TYPE_OPEN_NAVIGATION_MANAGER);
   };
 
   createPageFromTemplate = () => {
-    sendMessageToParent(MESSAGE_TYPE_CREATE_PAGE_FROM_TEMPLATE, {});
+    pdeBridge.send(MESSAGE_TYPE_CREATE_PAGE_FROM_TEMPLATE);
   };
 
   rollbackContent = (contentRef: string) => {
@@ -94,7 +108,9 @@ class PDEActionManager extends EventTarget {
   };
 
   triggerContentAction = (messageType: string, contentRef: string, propertyName: string | null = null) => {
-    contentRef && sendMessageToParent(messageType, { contentRef: contentRef, propertyName: propertyName });
+    if (contentRef) {
+      pdeBridge.send(messageType, { contentRef, propertyName });
+    }
   };
 
 }
