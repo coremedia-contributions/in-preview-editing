@@ -8,13 +8,16 @@ import ValueExpressionFactory from "@coremedia/studio-client.client-core/data/Va
 import { ContentType, Right } from "@coremedia/studio-client.cap-rest-client";
 import VariantKeyUtil from "@coremedia/studio-client.main.image-editor-components/VariantKeyUtil";
 import Content from "@coremedia/studio-client.cap-rest-client/content/Content";
-import ContentLocalizationUtil from "@coremedia/studio-client.cap-base-models/content/ContentLocalizationUtil";
 import PropertyEditorUtil from "@coremedia/studio-client.main.editor-components/sdk/util/PropertyEditorUtil";
 import thumbnailService from "@coremedia/studio-client.cap-base-models/thumbnails/thumbnailService";
 import toastService from "@coremedia/studio-client.ext.toast-components/toastService";
 import ValidationState from "@coremedia/studio-client.ext.ui-components/mixins/ValidationState";
 import PublicationResult from "@coremedia/studio-client.cap-rest-client/content/results/PublicationResult";
-import { getCroppingOperation, Publisher_properties } from "@coremedia/studio-client.cap-base-models";
+import {
+  contentTypeLocalizationRegistry,
+  getCroppingOperation,
+  Publisher_properties
+} from "@coremedia/studio-client.cap-base-models";
 import StringUtil from "@jangaroo/ext-ts/String";
 import ShowStartTranslationWorkflowWindowAction
   from "@coremedia/studio-client.main.control-room-editor-components/actions/ShowStartTranslationWorkflowWindowAction";
@@ -386,10 +389,11 @@ class InPreviewEditingManager {
         reject();
       } else {
         ValueExpressionFactory.create(ContentPropertyNames.TYPE, content).loadValue((contentType: ContentType) => {
-          const localizedName = ContentLocalizationUtil.localizeDocumentTypeName(contentType.getName());
+          const localization = contentTypeLocalizationRegistry.getLocalization(contentType.getName());
           resolve({
             contentType: contentType.getName(),
-            contentTypeLabel: localizedName
+            contentTypeLabel: localization?.displayName,
+            svgIcon: localization?.svgIcon,
           });
         });
       }
