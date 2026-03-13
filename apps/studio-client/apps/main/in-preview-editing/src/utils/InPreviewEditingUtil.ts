@@ -16,7 +16,7 @@ import DateTimePropertyField from "@coremedia/studio-client.main.editor-componen
 import StringPropertyField from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/StringPropertyField";
 import LinkListPropertyField from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/LinkListPropertyField";
 import markupPropertyFieldConfigMap from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/struct/markup/markupPropertyFieldConfigMap/markupPropertyFieldConfigMap";
-import ContentTypeImpl from "@coremedia/studio-client.cap-rest-client-impl/content/impl/ContentTypeImpl";
+import ContentTypeImpl from "@coremedia/studio-client.cap-rest-client/content/impl/ContentTypeImpl";
 import ValueExpressionFactory from "@coremedia/studio-client.client-core/data/ValueExpressionFactory";
 import ValueExpression from "@coremedia/studio-client.client-core/data/ValueExpression";
 import editorPreferences from "@coremedia/studio-client.cap-base-models/preferences/editorPreferences";
