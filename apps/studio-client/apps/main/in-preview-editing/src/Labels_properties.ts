@@ -1,5 +1,5 @@
 import { SvgIconUtil } from "@coremedia/studio-client.base-models";
-import { openWcsInTab } from "@coremedia/studio-client.common-icons";
+import inPreviewEditingIcon from "./icons/in-preview-editing.svg";
 
 interface Labels_properties {
   FloatingEditorDialog_emptyState_text: string;
@@ -20,7 +20,7 @@ const Labels_properties: Labels_properties = {
   FloatingEditorDialog_finishAndPublishAction_text: "Save & Publish",
   FloatingEditorDialog_openInTabAction_text: "Open in Tab",
   FloatingEditorDialog_title: "Floating Editor",
-  ToggleInPreviewEditingButton_icon: SvgIconUtil.getIconStyleClassForSvgIcon(openWcsInTab),
+  ToggleInPreviewEditingButton_icon: SvgIconUtil.getIconStyleClassForSvgIcon(inPreviewEditingIcon),
   ToggleInPreviewEditingButton_text: "Toggle in-preview editing",
   ToggleInPreviewEditingButton_tooltip: "Toggle in-preview editing",
 };
