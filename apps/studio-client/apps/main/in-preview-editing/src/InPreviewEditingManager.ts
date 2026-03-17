@@ -8,25 +8,33 @@ import ValueExpressionFactory from "@coremedia/studio-client.client-core/data/Va
 import { ContentType, Right } from "@coremedia/studio-client.cap-rest-client";
 import VariantKeyUtil from "@coremedia/studio-client.main.image-editor-components/VariantKeyUtil";
 import Content from "@coremedia/studio-client.cap-rest-client/content/Content";
-import ContentLocalizationUtil from "@coremedia/studio-client.cap-base-models/content/ContentLocalizationUtil";
 import PropertyEditorUtil from "@coremedia/studio-client.main.editor-components/sdk/util/PropertyEditorUtil";
 import thumbnailService from "@coremedia/studio-client.cap-base-models/thumbnails/thumbnailService";
 import toastService from "@coremedia/studio-client.ext.toast-components/toastService";
 import ValidationState from "@coremedia/studio-client.ext.ui-components/mixins/ValidationState";
 import PublicationResult from "@coremedia/studio-client.cap-rest-client/content/results/PublicationResult";
-import { getCroppingOperation, Publisher_properties } from "@coremedia/studio-client.cap-base-models";
+import {
+  contentTypeLocalizationRegistry,
+  getCroppingOperation,
+  Publisher_properties
+} from "@coremedia/studio-client.cap-base-models";
 import StringUtil from "@jangaroo/ext-ts/String";
-import ShowStartTranslationWorkflowWindowAction from "@coremedia/studio-client.main.control-room-editor-components/actions/ShowStartTranslationWorkflowWindowAction";
+import ShowStartTranslationWorkflowWindowAction
+  from "@coremedia/studio-client.main.control-room-editor-components/actions/ShowStartTranslationWorkflowWindowAction";
 import editorContext from "@coremedia/studio-client.main.editor-components/sdk/editorContext";
 import EditorContextImpl from "@coremedia/studio-client.main.editor-components/sdk/EditorContextImpl";
-import GlobalShowStartPublicationWorkflowWindowAction from "@coremedia/studio-client.main.control-room-editor-components/actions/GlobalShowStartPublicationWorkflowWindowAction";
+import GlobalShowStartPublicationWorkflowWindowAction
+  from "@coremedia/studio-client.main.control-room-editor-components/actions/GlobalShowStartPublicationWorkflowWindowAction";
 import OpenDialogAction from "@coremedia/studio-client.ext.ui-components/actions/OpenDialogAction";
 import Config from "@jangaroo/runtime/Config";
-import CreateFromTemplateDialog from "@coremedia-blueprint/studio-client.main.create-from-template-studio-plugin/CreateFromTemplateDialog";
-import TranslationStatusUtil from "@coremedia/studio-client.ext.workflow-components/components/form/translation/TranslationStatusUtil";
+import CreateFromTemplateDialog
+  from "@coremedia-blueprint/studio-client.main.create-from-template-studio-plugin/CreateFromTemplateDialog";
+import TranslationStatusUtil
+  from "@coremedia/studio-client.ext.workflow-components/components/form/translation/TranslationStatusUtil";
 import { sitesService, SiteUtil } from "@coremedia/studio-client.multi-site-models";
 import { fetchFromRemoteService } from "@coremedia/studio-client.client-core";
-import featureFlagService from "@coremedia-blueprint/studio-client.main.salesdemo-feature-modifier/service/featureFlagService";
+import featureFlagService
+  from "@coremedia-blueprint/studio-client.main.salesdemo-feature-modifier/service/featureFlagService";
 import InPreviewEditingUtil from "./utils/InPreviewEditingUtil";
 import FloatingEditorDialog from "./editors/FloatingEditorDialog";
 import FeatureFlags_properties from "./FeatureFlags_properties";
@@ -72,21 +80,21 @@ class InPreviewEditingManager {
         messageService.registerMessageListener(
           iframeEl,
           InPreviewEditingManager.MESSAGE_TYPE_PROPERTY_UPDATE,
-          bind(this, this.#propertyUpdateListener),
+          bind(this, this.#propertyUpdateListener)
         );
 
         // register show floating editor listener
         messageService.registerMessageListener(
           iframeEl,
           InPreviewEditingManager.MESSAGE_TYPE_SHOW_EDITOR,
-          bind(this, this.#showFloatingEditorListener),
+          bind(this, this.#showFloatingEditorListener)
         );
 
         // register content metadata listener
         messageService.registerMessageListener(
           iframeEl,
           InPreviewEditingManager.MESSAGE_TYPE_CONTENT_METADATA_REQUEST,
-          bind(this, this.#contentMetadataListener),
+          bind(this, this.#contentMetadataListener)
         );
 
         // register content metrics listener
@@ -94,7 +102,7 @@ class InPreviewEditingManager {
           messageService.registerMessageListener(
             iframeEl,
             InPreviewEditingManager.MESSAGE_TYPE_CONTENT_METRICS_REQUEST,
-            bind(this, this.#contentMetricsListener),
+            bind(this, this.#contentMetricsListener)
           );
         }
 
@@ -102,49 +110,49 @@ class InPreviewEditingManager {
         messageService.registerMessageListener(
           iframeEl,
           InPreviewEditingManager.MESSAGE_TYPE_OPEN_CONTENT,
-          bind(this, this.#openContentListener),
+          bind(this, this.#openContentListener)
         );
 
         // register show in library listener
         messageService.registerMessageListener(
           iframeEl,
           InPreviewEditingManager.MESSAGE_TYPE_SHOW_IN_LIBRARY,
-          bind(this, this.#showInLibraryListener),
+          bind(this, this.#showInLibraryListener)
         );
 
         // register open navigation manager listener
         messageService.registerMessageListener(
           iframeEl,
           InPreviewEditingManager.MESSAGE_TYPE_OPEN_NAVIGATION_MANAGER,
-          bind(this, this.#openNavigationManagerListener),
+          bind(this, this.#openNavigationManagerListener)
         );
 
         // register create page from template listener
         messageService.registerMessageListener(
           iframeEl,
           InPreviewEditingManager.MESSAGE_TYPE_CREATE_PAGE_FROM_TEMPLATE,
-          bind(this, this.#openCreatePageFromTemplateWizardListener),
+          bind(this, this.#openCreatePageFromTemplateWizardListener)
         );
 
         // register start localization workflow listener
         messageService.registerMessageListener(
           iframeEl,
           InPreviewEditingManager.MESSAGE_TYPE_START_LOCALIZATION,
-          bind(this, this.#openLocalizationWorkflowDialogListener),
+          bind(this, this.#openLocalizationWorkflowDialogListener)
         );
 
         // register start publication workflow listener
         messageService.registerMessageListener(
           iframeEl,
           InPreviewEditingManager.MESSAGE_TYPE_START_PUBLICATION,
-          bind(this, this.#openPublicationWorkflowDialogListener),
+          bind(this, this.#openPublicationWorkflowDialogListener)
         );
 
         // register publish request listener
         messageService.registerMessageListener(
           iframeEl,
           InPreviewEditingManager.MESSAGE_TYPE_PUBLISH_REQUEST,
-          bind(this, this.#contentPublishListener),
+          bind(this, this.#contentPublishListener)
         );
 
         this.activateInPreviewEditingIfEnabled();
@@ -186,7 +194,7 @@ class InPreviewEditingManager {
         propertyExpression.loadValue((oldValue) => {
           if (event.propertyValue !== oldValue) {
             console.log(
-              `[InPreviewEditingManager] Updating content ${content}. (oldValue: ${oldValue}, updatedValue: ${event.propertyValue}`,
+              `[InPreviewEditingManager] Updating content ${content}. (oldValue: ${oldValue}, updatedValue: ${event.propertyValue}`
             );
             propertyExpression.setValue(event.propertyValue);
           }
@@ -224,7 +232,7 @@ class InPreviewEditingManager {
   #openCreatePageFromTemplateWizardListener() {
     console.log("[InPreviewEditingManager] Open create page from template wizard ...");
     new OpenDialogAction({
-      dialogDefaults: Config(CreateFromTemplateDialog, {}),
+      dialogDefaults: Config(CreateFromTemplateDialog, {})
     }).execute();
   }
 
@@ -239,7 +247,7 @@ class InPreviewEditingManager {
     const action = new ShowStartTranslationWorkflowWindowAction({
       contentValueExpression: ValueExpressionFactory.createFromValue(content),
       workflowNameValueExpression: ValueExpressionFactory.createFromValue(null),
-      selectedProcessDefinition: processDefinitions[0],
+      selectedProcessDefinition: processDefinitions[0]
     });
     action.execute();
   }
@@ -247,7 +255,7 @@ class InPreviewEditingManager {
   #openPublicationWorkflowDialogListener(event: { contentRef: string }) {
     const content = session._.getConnection().getContentRepository().getContent(event.contentRef);
     const action = new GlobalShowStartPublicationWorkflowWindowAction({
-      contentValueExpression: ValueExpressionFactory.createFromValue(content),
+      contentValueExpression: ValueExpressionFactory.createFromValue(content)
     });
     action.execute();
   }
@@ -289,7 +297,7 @@ class InPreviewEditingManager {
         this.#loadUserMayPerformPublish(content),
         this.#loadContentThumbnail(content),
         this.#loadPropertyMetadata(content, propertyName),
-        this.#loadBreadcrumb(content, breadcrumbIds),
+        this.#loadBreadcrumb(content, breadcrumbIds)
       ])
         .then((results) => {
           const metadata = Object.assign({ contentRef: contentRef, contentId: content.getId() }, ...results);
@@ -315,7 +323,7 @@ class InPreviewEditingManager {
             const title = Publisher_properties.publicationNotification_approvePublish_succeeded_title;
             const text = StringUtil.format(
               Publisher_properties.publicationNotification_approvePublish_succeeded_single_text,
-              content.getName(),
+              content.getName()
             );
             toastService._.showToast(title, text, ValidationState.SUCCESS);
           } else {
@@ -381,10 +389,11 @@ class InPreviewEditingManager {
         reject();
       } else {
         ValueExpressionFactory.create(ContentPropertyNames.TYPE, content).loadValue((contentType: ContentType) => {
-          const localizedName = ContentLocalizationUtil.localizeDocumentTypeName(contentType.getName());
+          const localization = contentTypeLocalizationRegistry.getLocalization(contentType.getName());
           resolve({
             contentType: contentType.getName(),
-            contentTypeLabel: localizedName,
+            contentTypeLabel: localization?.displayName,
+            svgIcon: localization?.svgIcon,
           });
         });
       }
@@ -450,9 +459,11 @@ class InPreviewEditingManager {
         reject();
       } else {
         ValueExpressionFactory.createFromFunction(() =>
-          thumbnailService._.getThumbnailUri(content, getCroppingOperation(50, 50)),
-        ).loadValue((thumbUri) => {
-          resolve({ contentThumbnail: thumbUri ? `${window.location.origin}/${thumbUri}` : null });
+          thumbnailService._.getThumbnailUri(content, getCroppingOperation(50, 50))
+        ).loadValue(async (thumbUri) => {
+          // convert thumbnail to base64 to avoid CORB issues
+          let base64Thumbnail = await InPreviewEditingUtil.imageUrlToBase64(thumbUri);
+          resolve({ contentThumbnail: base64Thumbnail });
         });
       }
     });
@@ -469,7 +480,7 @@ class InPreviewEditingManager {
             // special case image editor crops
             const propertyLabel = PropertyEditorUtil.getLocalizedLabel(
               contentType.getName(),
-              InPreviewEditingUtil.sanitizePropertyName(propertyName),
+              InPreviewEditingUtil.sanitizePropertyName(propertyName)
             );
             const cropLabel = VariantKeyUtil.getVariantDisplayName(propertyName.split(".").reverse()[0]);
             if (propertyLabel != propertyName) {
@@ -485,7 +496,7 @@ class InPreviewEditingManager {
           resolve({
             propertyName: propertyName,
             propertyLabel: localizedPropertyLabel,
-            propertyType: propertyDescriptor?.type || "unknown",
+            propertyType: propertyDescriptor?.type || "unknown"
           });
         });
       }
@@ -529,7 +540,7 @@ class InPreviewEditingManager {
   #sendContentMetadataResponse(metadata: any): void {
     const contentWindow = this.#previewIframe.getContentWindow();
     const data = {
-      metadata: metadata,
+      metadata: metadata
     };
     console.log("[InPreviewEditingManager] Sending content metadata response: ", data);
     messageService.sendMessage(contentWindow, InPreviewEditingManager.MESSAGE_TYPE_CONTENT_METADATA_RESPONSE, data);
@@ -541,7 +552,7 @@ class InPreviewEditingManager {
     messageService.sendMessage(
       contentWindow,
       InPreviewEditingManager.MESSAGE_TYPE_CONTENT_METRICS_RESPONSE,
-      metricsData,
+      metricsData
     );
   }
 
