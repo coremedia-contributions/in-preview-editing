@@ -58,3 +58,16 @@
   position: relative;
   z-index: 999999;
 }
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loader-animated {
+  animation: rotate var(--loader-animation-speed) linear infinite;
+}

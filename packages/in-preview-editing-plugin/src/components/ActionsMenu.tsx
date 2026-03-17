@@ -14,6 +14,7 @@ import toolbarStyles from "../styles/components/Toolbar.module.css";
 import actionManager from "../lib/action-manager.ts";
 import { usePluginContext } from "../context/PluginContext.tsx";
 import clsx from "clsx";
+import { ChevronRightIcon, Settings2Icon, SquareCheckIcon, SquareIcon } from "lucide-react";
 
 interface Props {
   open?: boolean;
@@ -25,7 +26,10 @@ const ActionsMenu:FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = controlledOpen !== undefined;
   const isOpen = isControlled ? controlledOpen : internalOpen;
-  const { contentId, propertyName, contentMetadata } = usePluginContext();
+  const { contentMetadata, useSpotlight, setUseSpotlight, setShowSettings } = usePluginContext();
+
+  const contentId = contentMetadata?.contentId;
+  const propertyName = contentMetadata?.propertyName;
 
   if (!contentId) return null;
 
@@ -46,7 +50,11 @@ const ActionsMenu:FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
               <div className={menuStyles.ContentInfo}>
                 <div className={menuStyles.Thumbnail}>
                   {contentMetadata?.contentThumbnail && (
-                    <img src={contentMetadata.contentThumbnail} alt={contentMetadata?.contentName} title={contentMetadata?.contentName}/>
+                    <img src={contentMetadata.contentThumbnail}
+                         alt={contentMetadata?.contentName}
+                         title={contentMetadata?.contentName}
+                         onError={(e) => e.target.style.display = "none"}
+                         />
                   )}
                 </div>
                 <div className={menuStyles.ContentDetails}>
@@ -83,19 +91,53 @@ const ActionsMenu:FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
             </Menu.Group>
             <Menu.Separator className={menuStyles.Separator} />
             <Menu.Group>
-              <Menu.GroupLabel className={menuStyles.GroupLabel}>Localization<span className={menuStyles.LocalizationStatusLabel}>{contentMetadata?.translationStatus}</span></Menu.GroupLabel>
-              <Menu.Item className={clsx(menuStyles.Item, menuStyles.ReadonlyItem)}>{contentMetadata?.siteLocale}</Menu.Item>
+              <Menu.GroupLabel className={menuStyles.GroupLabel}>Localization<span className={menuStyles.LocalizationStatusLabel}>{contentMetadata?.translationStatus && contentMetadata?.translationStatus !== "no-master" ? contentMetadata?.translationStatus : ""}</span></Menu.GroupLabel>
+              <Menu.Item className={clsx(menuStyles.Item, menuStyles.NoIconItem, menuStyles.ReadonlyItem)}>{contentMetadata?.siteLocale}</Menu.Item>
               <Menu.Item className={menuStyles.Item}
                          onClick={() => actionManager.getInstance().startLocalizationWorkflow(contentId)}>
                 <SVGIcon svg={localizationWorkflowCircle}/>
                 Localize
               </Menu.Item>
             </Menu.Group>
+            <Menu.Separator className={menuStyles.Separator} />
+            <Menu.SubmenuRoot>
+              <Menu.SubmenuTrigger className={menuStyles.SubmenuTrigger}>
+                Settings
+                <ChevronRightIcon />
+              </Menu.SubmenuTrigger>
+              <Menu.Portal>
+                <Menu.Positioner
+                  className={menuStyles.Positioner}
+                  sideOffset={getOffset}
+                  alignOffset={getOffset}
+                >
+                  <Menu.Popup className={menuStyles.Popup}>
+                    <Menu.CheckboxItem
+                      checked={useSpotlight}
+                      onCheckedChange={setUseSpotlight}
+                      className={menuStyles.CheckboxItem}>
+                      <span className={menuStyles.CheckboxItemIndicator}>
+                        {useSpotlight
+                          ? <SquareCheckIcon className={menuStyles.CheckboxItemIndicatorCheckedIcon}/>
+                          : <SquareIcon className={menuStyles.CheckboxItemIndicatorUncheckedIcon}/>
+                        }
+                      </span>
+                      <span className={menuStyles.CheckboxItemText}>Spotlight</span>
+                    </Menu.CheckboxItem>
+                    <Menu.Item className={menuStyles.Item} onClick={() => setShowSettings && setShowSettings(true)}><Settings2Icon/>more ...</Menu.Item>
+                  </Menu.Popup>
+                </Menu.Positioner>
+              </Menu.Portal>
+            </Menu.SubmenuRoot>
           </Menu.Popup>
         </Menu.Positioner>
       </Menu.Portal>
     </Menu.Root>
   );
+}
+
+function getOffset({ side }: { side: Menu.Positioner.Props['side'] }) {
+  return side === 'top' || side === 'bottom' ? 4 : -4;
 }
 
 export default ActionsMenu;

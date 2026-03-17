@@ -13,6 +13,7 @@ export interface ContentMetadata {
   propertyLabel: string;
   propertyType: string;
   breadcrumb: BreadcrumbItem[];
+  svgIcon: string;
 }
 
 export interface BreadcrumbItem {
@@ -21,4 +22,5 @@ export interface BreadcrumbItem {
   contentName: string;
   contentType: string;
   contentTypeLabel: string;
+  svgIcon: string;
 }

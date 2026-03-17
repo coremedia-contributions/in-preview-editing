@@ -3,7 +3,7 @@ import { usePluginContext } from "../context/PluginContext.tsx";
 import { markerBorder, markerPadding } from "./Highlighter.tsx";
 
 export const Spotlight: React.FC = () => {
-  const { targetEl } = usePluginContext();
+  const { targetEl, useSpotlight, dimmerValue } = usePluginContext();
   const overlayRef = useRef<HTMLDivElement>(null);
 
   const updateSpotlight = () => {
@@ -34,7 +34,7 @@ export const Spotlight: React.FC = () => {
 
   useEffect(() => {
     updateSpotlight();
-  }, [targetEl]);
+  }, [targetEl, useSpotlight, dimmerValue]);
 
   useEffect(() => {
     window.addEventListener("scroll", updateSpotlight, true);
@@ -46,6 +46,10 @@ export const Spotlight: React.FC = () => {
     };
   }, []);
 
+  if (!useSpotlight) {
+    return null;
+  }
+
   return (
     <div
       ref={overlayRef}
@@ -54,7 +58,7 @@ export const Spotlight: React.FC = () => {
         position: "fixed",
         opacity: "0",
         inset: 0,
-        background: "rgba(0, 0, 0, 0.25)",
+        background: `rgba(0, 0, 0, ${dimmerValue ? dimmerValue / 100 : 0.25})`,
         pointerEvents: "none",
         zIndex: 99,
         transition: "opacity 0.2s ease",

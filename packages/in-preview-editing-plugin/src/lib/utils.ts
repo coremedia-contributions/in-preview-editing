@@ -1,4 +1,5 @@
 export const PDE_METADATA_ATTRIBUTE = "data-cm-metadata";
+export const PDE_METADATA_ID_ATTRIBUTE = "data-cm-metadata-id";
 export const PDE_EDITING_FLAG = "pdeEditing";
 
 /**
@@ -151,11 +152,11 @@ export function isPlacementItem(element: HTMLElement) {
   return findPlacementItemElement(element) === element;
 }
 
-function getTopLevelMetadataNodes(parent: Element | null) {
-  const result: Element[] = [];
+function getTopLevelMetadataNodes(parent: HTMLElement | null) {
+  const result: HTMLElement[] = [];
 
-  function walk(node: Element) {
-    const childNodes = node?.children;
+  function walk(node: HTMLElement) {
+    const childNodes = Array.from(node?.children).filter((el) => el instanceof HTMLElement);
     if (childNodes && childNodes.length > 0) {
       for (const child of childNodes) {
         if (child.hasAttribute("data-cm-metadata")) {
@@ -195,48 +196,23 @@ export function getPreviousValue(element: HTMLElement) {
   return element.dataset.pbePrevValue;
 }
 
-export function fadeOut(el: HTMLElement, baseCls: string, duration = 500) {
-  el.classList.add(`${baseCls}--fade`);
-  el.style.opacity = "1";
-
-  // Start fade out
-  requestAnimationFrame(() => {
-    el.style.opacity = "0";
+export function scrollElementIntoView(el: HTMLElement | null | undefined, animate: boolean = true, position: "start" | "center" | "end" = "start") {
+  el?.scrollIntoView({
+    behavior: animate ? "smooth" : "instant",
+    block: position // position in viewport
   });
-
-  // Hide element after transition
-  setTimeout(() => {
-    el.classList.add(`${baseCls}--hidden`);
-  }, duration);
 }
 
-export function fadeIn(el: HTMLElement, baseCls: string, duration = 500) {
-  el.classList.remove(`${baseCls}--hidden`);
-  el.classList.add(`${baseCls}--fade`);
-  el.style.opacity = "0";
-
-  // Start fade in
-  requestAnimationFrame(() => {
-    el.style.opacity = "1";
-  });
-
-  // Remove fade class after transition
-  setTimeout(() => {
-    el.classList.remove(`${baseCls}--fade`);
-  }, duration);
+export function scrollToolbarIntoView(shadowRoot: ShadowRoot) {
+  const toolbar = shadowRoot?.querySelector<HTMLElement>(".ipe-overlay-toolbar");
+  console.log("Scrolling toolbar into view:", toolbar);
+  scrollElementIntoView(toolbar);
 }
 
-/**
- * Checks if the given element is too close to the bottom of the viewport.
- * @param el element to check
- * @param offset optional offset in pixels (default: 0)
- * @returns {boolean}
- */
-export function isTooCloseToBottom(el: HTMLElement, offset = 0) {
-  if (!el) return false;
-  const rect = el.getBoundingClientRect();
-  const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-  // Check if the bottom of the element is within `offset` px of the viewport bottom
-  // console.log(`[PDE] Checking bounding box against viewport height ${viewportHeight} with offset ${offset}: ${rect.bottom >= viewportHeight - offset}`, rect);
-  return rect.bottom >= viewportHeight - offset;
+export function lockScroll() {
+  document.documentElement.style.overflow = "hidden";
+}
+
+export function unlockScroll() {
+  document.documentElement.style.overflow = "";
 }

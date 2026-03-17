@@ -17,7 +17,8 @@
   gap: 0.25rem;
 }
 
-.Button {
+.Button,
+.IconButton {
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -30,7 +31,8 @@
   border: 0;
   border-radius: 0.25rem;
   background-color: transparent;
-  color: var(--color-gray-600);
+  color: #3f3f3f;
+  fill: #3f3f3f;
   user-select: none;
   font-family: inherit;
   font-size: 0.875rem;
@@ -62,6 +64,10 @@
     justify-content: space-between;
     padding: 0 0.75rem;
   }
+}
+
+.IconButton {
+  gap: 0.5rem;
 }
 
 .Separator {

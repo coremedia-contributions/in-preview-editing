@@ -48,7 +48,7 @@ export const Highlighter: React.FC<HighlighterProps> = () => {
         visibility: "visible",
       });
 
-      console.log("[IPE] Marker coords:", marker.getBoundingClientRect());
+      //console.log("[IPE] Marker coords:", marker.getBoundingClientRect());
     };
 
     update();

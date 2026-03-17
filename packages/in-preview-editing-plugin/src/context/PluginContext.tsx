@@ -1,11 +1,15 @@
 import { createContext, type FC, type ReactNode, useContext, useEffect, useRef, useState } from "react";
 import type React from "react";
 import { IPE_ACTIVATE_EVENT, IPE_DEACTIVATE_EVENT } from "../events/events.ts";
-import { findContentId, findPropertyName, getContentIdBreadcrumb, isMarkedAsEditable } from "../lib/utils.ts";
+import {
+  findContentId,
+  findPropertyName,
+  getContentIdBreadcrumb,
+  isMarkedAsEditable
+} from "../lib/utils.ts";
 import PDEActionManager from "../lib/action-manager.ts";
 import type { Subscription } from "rxjs";
 import type { ContentMetadata } from "../types/ContentMetadata.ts";
-import { markerBorder } from "../components/Highlighter.tsx";
 
 export interface PluginContextValue {
   shadowRoot: ShadowRoot;
@@ -23,6 +27,17 @@ export interface PluginContextValue {
   setBreadcrumbIds?: (breadcrumbIds: string[] | undefined) => void;
   contentMetadata?: ContentMetadata;
   setContentMetadata?: (metadata: ContentMetadata) => void;
+  useSpotlight?: boolean;
+  setUseSpotlight?: (useSpotlight: boolean) => void;
+  dimmerValue?: number;
+  setDimmerValue?: (dimmerValue: number) => void;
+  showSidebar?: boolean;
+  setShowSidebar?: (showSidebar: boolean) => void;
+  isLoading: boolean;
+  showSettings?: boolean;
+  setShowSettings?: (showSettings: boolean) => void;
+  accentColor: string;
+  setAccentColor: (accentColor: string) => void;
 }
 
 const PluginContext = createContext<PluginContextValue | undefined>(undefined);
@@ -41,13 +56,16 @@ interface ProviderProps {
 }
 
 export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children }) => {
-  const [isActive, setIsActive] = useState(true);
+  const [isActive, setIsActive] = useState(false);
   const [targetEl, setTargetEl] = useState<HTMLElement | undefined>(undefined);
-  const [contentId, setContentId] = useState<string | undefined>(undefined);
-  const [propertyName, setPropertyName] = useState<string | undefined>(undefined);
-  const [breadcrumbIds, setBreadcrumbIds] = useState<string[] | undefined>(undefined);
   const [inlineEditActive, setInlineEditActive] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const [contentMetadata, setContentMetadata] = useState<ContentMetadata | undefined>(undefined);
+  const [useSpotlight, setUseSpotlight] = useState(false);
+  const [dimmerValue, setDimmerValue] = useState(25);
+  const [showSidebar, setShowSidebar] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [accentColor, setAccentColor] = useState<string>("#ADFF2F");
 
   const inlineEditActiveRef = useRef(inlineEditActive);
   useEffect(() => {
@@ -72,9 +90,6 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
     const onDeactivate = () => {
       setIsActive(false);
       setTargetEl(undefined);
-      setContentId(undefined);
-      setPropertyName(undefined);
-      setBreadcrumbIds(undefined);
       setContentMetadata(undefined);
       metadataSubscriptionRef.current?.unsubscribe();
       metadataSubscriptionRef.current = null;
@@ -103,92 +118,25 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
     listenerAbortControllerRef.current = abortController;
     const { signal } = abortController;
 
-
-    const overMarkerBorder = (e: MouseEvent) => {
-      const marker = markerRef.current;
-      if (marker) {
-        const rect = marker.getBoundingClientRect();
-        const { clientX, clientY } = e;
-        const borderWidth = parseFloat(getComputedStyle(marker).borderWidth) || markerBorder;
-        // Prüfen ob der Pointer im Border-Bereich liegt (außerhalb des inneren Inhaltsbereichs, aber noch innerhalb der äußeren Box)
-        const insideOuter = clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom;
-        const insideInner = clientX >= rect.left + borderWidth && clientX <= rect.right - borderWidth && clientY >= rect.top + borderWidth && clientY <= rect.bottom - borderWidth;
-        return insideOuter && !insideInner;
-      }
-    }
-
     const attachListeners = (el: Element) => {
       if (!(el instanceof HTMLElement)) return;
 
-      el.addEventListener("mouseenter", (e: MouseEvent) => {
+      el.addEventListener("mouseenter", () => {
 
-        const isOverMarkerBorder = overMarkerBorder(e);
-
-        // check if potential new target element overlaps with the current element,
+        // TODO: check if potential new target element overlaps with the current element,
         // in that case, we need to check if the mouse pointer is over the marker borders to prevent allow accessing the overlay toolbar
-        const elementsAtPointer = document.elementsFromPoint(e.clientX, e.clientY);
-        const overlapWithCurrentTarget = targetElRef.current && elementsAtPointer.indexOf(targetElRef.current) > -1;
-
-        console.log(`[IPE] mouseover: `, {
-          newTarget: el,
-          currentTarget: targetElRef.current,
-          markedEditable: isMarkedAsEditable(el),
-          overlap: overlapWithCurrentTarget,
-          isOverMarkerBorder: isOverMarkerBorder,
-          elementsAtPointer: elementsAtPointer,
-          eventCoords: { x: e.clientX, y: e.clientY }
-        });
+        // const elementsAtPointer = document.elementsFromPoint(e.clientX, e.clientY);
+        // const overlapWithCurrentTarget = targetElRef.current && elementsAtPointer.indexOf(targetElRef.current) > -1;
 
         // Skip if we're currently editing inline or if the element is not marked as editable or if the mouse is still within the marker (e.g. due to border)
-        if (inlineEditActiveRef.current || !isMarkedAsEditable(el)) return
+        if (inlineEditActiveRef.current || !isMarkedAsEditable(el)) return;
 
-        const contentId = findContentId(el);
-        const propertyName = findPropertyName(el);
-        const breadcrumbIds = getContentIdBreadcrumb(el);
-
-        console.log("[IPE] set new target element: ", el);
-
+        //console.log("[IPE] set new target element: ", el);
         setTargetEl(el);
-        setContentId(contentId);
-        setPropertyName(propertyName);
-        setBreadcrumbIds(breadcrumbIds);
 
         // Cancel any in-flight request from a previous hover
         metadataSubscriptionRef.current?.unsubscribe();
-
-        const metadata$ = PDEActionManager.getInstance().requestContentMetadata(contentId, propertyName, breadcrumbIds);
-        if (metadata$) {
-          metadataSubscriptionRef.current = metadata$.subscribe({
-            next: (response) => {
-              console.log("[PDE] content metadata response:", response);
-              // TODO: write response fields into context state as needed
-              // @ts-ignore
-              setContentMetadata(response.metadata);
-            },
-            error: (err) => {
-              console.warn("[PDE] content metadata request failed:", err);
-            },
-          });
-        }
-
       }, { signal });
-
-      el.addEventListener("mousemove", (e: MouseEvent) => {
-
-        const elementsAtPointer = document.elementsFromPoint(e.clientX, e.clientY);
-        const overlapWithCurrentTarget = targetElRef.current && elementsAtPointer.indexOf(targetElRef.current) > -1;
-        const markerEl = shadowRoot.elementsFromPoint(e.clientX, e.clientY).find((el) => el === markerRef.current);
-
-        console.log(`[IPE] mousemove: `, {
-          newTarget: el,
-          currentTarget: targetElRef.current,
-          marker: markerEl,
-          elementsAtPointer: elementsAtPointer,
-          overlap: overlapWithCurrentTarget,
-          coords: { x: e.clientX, y: e.clientY },
-        });
-      }, { signal });
-
     };
 
     document.querySelectorAll("[data-cm-metadata]").forEach(attachListeners);
@@ -212,16 +160,53 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
     };
   }, [isActive]);
 
+  useEffect(() => {
+    if (targetEl) {
+      const contentId = findContentId(targetEl);
+      const propertyName = findPropertyName(targetEl);
+      const breadcrumbIds = getContentIdBreadcrumb(targetEl);
+
+      setLoading(true);
+
+      console.log("[IPE] Fetch content metadata for contentId:", contentId, "propertyName:", propertyName, "breadcrumbIds:", breadcrumbIds);
+      const metadata$ = PDEActionManager.getInstance().requestContentMetadata(contentId, propertyName, breadcrumbIds);
+      if (metadata$) {
+        metadataSubscriptionRef.current = metadata$.subscribe({
+          next: (response) => {
+            console.log("[PDE] content metadata response:", response);
+            // TODO: write response fields into context state as needed
+            // @ts-ignore
+            setContentMetadata(response.metadata);
+            setLoading(false);
+          },
+          error: (err) => {
+            console.warn("[PDE] content metadata request failed:", err);
+            setLoading(false);
+          },
+        });
+      }
+    }
+  }, [targetEl]);
+
+  // set accent color as CSS variable on host element to make it available in shadow DOM for styling
+  useEffect(() => {
+    const hostEl = shadowRoot.host as HTMLElement;
+    hostEl.style.setProperty('--ipe-accent-color', accentColor);
+  }, [accentColor, shadowRoot]);
+
   const contextValue = {
     shadowRoot,
     isActive,
     targetEl, setTargetEl,
     markerRef,
-    contentId, setContentId,
-    propertyName, setPropertyName,
-    breadcrumbIds, setBreadcrumbIds,
     contentMetadata, setContentMetadata,
-    inlineEditActive, setInlineEditActive
+    inlineEditActive, setInlineEditActive,
+    useSpotlight, setUseSpotlight,
+    dimmerValue, setDimmerValue,
+    showSidebar, setShowSidebar,
+    isLoading: loading,
+    showSettings, setShowSettings,
+    accentColor, setAccentColor
   };
 
   return (
