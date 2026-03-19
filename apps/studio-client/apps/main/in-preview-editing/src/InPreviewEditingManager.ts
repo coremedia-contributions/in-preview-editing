@@ -357,8 +357,11 @@ class InPreviewEditingManager {
   }
 
   #loadBreadcrumb(content: Content, breadcrumbIds: string[]) {
+    // filter duplicates from breadcrumbIds array
+    const contentIds = [...new Set(breadcrumbIds)];
+
     return new Promise<unknown>((resolve, reject) => {
-      const breadcrumbLoaders = breadcrumbIds.map((contentRef) => {
+      const breadcrumbLoaders = contentIds.map((contentRef) => {
         return new Promise((resolve, reject) => {
           const content = session._.getConnection().getContentRepository().getContent(contentRef);
           if (!content) {
