@@ -28,10 +28,10 @@ const ActionsMenu:FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
   const isOpen = isControlled ? controlledOpen : internalOpen;
   const { contentMetadata, useSpotlight, setUseSpotlight, setShowSettings } = usePluginContext();
 
-  const contentId = contentMetadata?.contentId;
+  const contentRef = contentMetadata?.contentRef;
   const propertyName = contentMetadata?.propertyName;
 
-  if (!contentId) return null;
+  if (!contentRef) return null;
 
   const handleOpenChange = (open: boolean) => {
     if (!isControlled) {
@@ -66,12 +66,12 @@ const ActionsMenu:FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
             </Menu.Group>
             <Menu.Separator className={menuStyles.Separator} />
             <Menu.Item className={menuStyles.Item}
-                       onClick={() => actionManager.getInstance().openContent(contentId)}>
+                       onClick={() => actionManager.getInstance().openContent(contentRef)}>
               <SVGIcon svg={openInNewTab}/>
               Open in Tab
             </Menu.Item>
             <Menu.Item className={menuStyles.Item}
-                       onClick={() => actionManager.getInstance().showInLibrary(contentId)}>
+                       onClick={() => actionManager.getInstance().showInLibrary(contentRef)}>
               <SVGIcon svg={showInLibrary}/>
               Show in Library
             </Menu.Item>
@@ -79,12 +79,12 @@ const ActionsMenu:FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
             <Menu.Group>
               <Menu.GroupLabel className={menuStyles.GroupLabel}>Lifecycle<span className={menuStyles.LifecycleStatusLabel}>{contentMetadata?.status}</span></Menu.GroupLabel>
               <Menu.Item className={clsx(menuStyles.Item, contentMetadata?.userMayPerformPublish || contentMetadata?.status !== "published" ? "" : menuStyles.ReadonlyItem)}
-                         onClick={() => actionManager.getInstance().requestContentPublication(contentId, propertyName || "")}>
+                         onClick={() => actionManager.getInstance().requestContentPublication(contentRef, propertyName || "")}>
                 <SVGIcon svg={directPublication}/>
                 Direct Publication
               </Menu.Item>
               <Menu.Item className={clsx(menuStyles.Item, contentMetadata?.userMayPerformPublish || contentMetadata?.status !== "published" ? "" : menuStyles.ReadonlyItem)}
-                         onClick={() => actionManager.getInstance().startPublicationWorkflow(contentId)}>
+                         onClick={() => actionManager.getInstance().startPublicationWorkflow(contentRef)}>
                 <SVGIcon svg={startPublicationWorkflow}/>
                 Start Publication Workflow
               </Menu.Item>
@@ -94,7 +94,7 @@ const ActionsMenu:FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
               <Menu.GroupLabel className={menuStyles.GroupLabel}>Localization<span className={menuStyles.LocalizationStatusLabel}>{contentMetadata?.translationStatus && contentMetadata?.translationStatus !== "no-master" ? contentMetadata?.translationStatus : ""}</span></Menu.GroupLabel>
               <Menu.Item className={clsx(menuStyles.Item, menuStyles.NoIconItem, menuStyles.ReadonlyItem)}>{contentMetadata?.siteLocale}</Menu.Item>
               <Menu.Item className={menuStyles.Item}
-                         onClick={() => actionManager.getInstance().startLocalizationWorkflow(contentId)}>
+                         onClick={() => actionManager.getInstance().startLocalizationWorkflow(contentRef)}>
                 <SVGIcon svg={localizationWorkflowCircle}/>
                 Localize
               </Menu.Item>
