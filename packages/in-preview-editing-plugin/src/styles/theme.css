@@ -1,5 +1,5 @@
 :host {
-  --ipe-accent-color: #ADFF2F;
+  --ipe-accent-color: lightseagreen;
   --ipe-accent-color-light: color-mix(in srgb, var(--ipe-accent-color) 25%, white);
   --ipe-accent-color-dark: color-mix(in srgb, var(--ipe-accent-color) 33%, black);
 

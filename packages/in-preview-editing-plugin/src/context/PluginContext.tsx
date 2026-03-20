@@ -65,7 +65,7 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
   const [dimmerValue, setDimmerValue] = useState(25);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [accentColor, setAccentColor] = useState<string>("#ADFF2F");
+  const [accentColor, setAccentColor] = useState<string>("lightseagreen");
 
   const inlineEditActiveRef = useRef(inlineEditActive);
   useEffect(() => {
