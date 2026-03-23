@@ -5,7 +5,7 @@ import ActionsMenu from "./ActionsMenu.tsx";
 import { Toolbar } from "@base-ui/react/toolbar";
 import clsx from "clsx";
 import { markerBorder, markerPadding } from "./Highlighter.tsx";
-import { LoaderCircleIcon } from "lucide-react";
+import { LoaderCircleIcon, SidebarIcon } from "lucide-react";
 import toolbarStyles from "../styles/components/Toolbar.module.css";
 import buttonStyles from "../styles/components/Button.module.css";
 import { useTranslation } from "react-i18next";
@@ -20,7 +20,7 @@ interface Position {
 
 const IPEOverlay: React.FC<Props> = () => {
   const toolbarRef = useRef<HTMLDivElement | null>(null);
-  const { targetEl, contentMetadata, inlineEditActive, setInlineEditActive, showSidebar, setShowSidebar, isLoading } = usePluginContext();
+  const { targetEl, contentMetadata, inlineEditActive, setInlineEditActive, showSidebar, setShowSidebar, isLoading, debugMode } = usePluginContext();
   const { t } = useTranslation();
   const [position, setPosition] = useState<Position>({ top: 0, left: 0 });
   const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
@@ -115,13 +115,14 @@ const IPEOverlay: React.FC<Props> = () => {
         </>
       )}
 
-      {/*<Toolbar.Separator className={toolbarStyles.Separator} />*/}
-      {/*<Toolbar.Button className={toolbarStyles.Button} onClick={toggleSidebar}>*/}
-      {/*  <SidebarIcon/>*/}
-      {/*</Toolbar.Button>*/}
-      {/*<Toolbar.Button className={toolbarStyles.Button} onClick={() => setShowSettings(true)}>*/}
-      {/*  <Settings2Icon/>*/}
-      {/*</Toolbar.Button>*/}
+      {debugMode && (
+        <>
+          <Toolbar.Separator className={toolbarStyles.Separator} />
+          <Toolbar.Button className={toolbarStyles.Button} onClick={toggleSidebar}>
+            <SidebarIcon/>
+          </Toolbar.Button>
+        </>
+      )}
 
       {!isLoading && (
         <>

@@ -36,6 +36,7 @@ export interface PluginContextValue {
   setShowSettings: (showSettings: boolean) => void;
   accentColor: string;
   setAccentColor: (accentColor: string) => void;
+  debugMode: boolean;
 }
 
 const PluginContext = createContext<PluginContextValue | undefined>(undefined);
@@ -64,6 +65,7 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
   const [showSidebar, setShowSidebar] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [accentColor, setAccentColor] = useState<string>("lightseagreen");
+  const [debugMode, setDebugMode] = useState(false);
 
   const inlineEditActiveRef = useRef(inlineEditActive);
   useEffect(() => {
@@ -210,6 +212,11 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
     hostEl.style.setProperty('--ipe-accent-color', accentColor);
   }, [accentColor, shadowRoot]);
 
+  useEffect(() => {
+    const stored = localStorage.getItem("ipe_debug");
+    setDebugMode(stored === "true" || stored === "1");
+  }, []);
+
   const contextValue = {
     shadowRoot,
     isActive,
@@ -222,7 +229,8 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
     showSidebar, setShowSidebar,
     isLoading: loading,
     showSettings, setShowSettings,
-    accentColor, setAccentColor
+    accentColor, setAccentColor,
+    debugMode,
   };
 
   return (
