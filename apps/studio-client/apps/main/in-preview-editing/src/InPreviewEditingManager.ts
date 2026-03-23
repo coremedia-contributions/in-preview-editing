@@ -16,7 +16,7 @@ import PublicationResult from "@coremedia/studio-client.cap-rest-client/content/
 import {
   contentTypeLocalizationRegistry,
   getCroppingOperation,
-  Publisher_properties
+  Publisher_properties, updateUserPreferencesProperties, UserPreferencesPropertyPath
 } from "@coremedia/studio-client.cap-base-models";
 import StringUtil from "@jangaroo/ext-ts/String";
 import ShowStartTranslationWorkflowWindowAction
@@ -33,11 +33,8 @@ import TranslationStatusUtil
   from "@coremedia/studio-client.ext.workflow-components/components/form/translation/TranslationStatusUtil";
 import { sitesService, SiteUtil } from "@coremedia/studio-client.multi-site-models";
 import { fetchFromRemoteService } from "@coremedia/studio-client.client-core";
-import featureFlagService
-  from "@coremedia-blueprint/studio-client.main.salesdemo-feature-modifier/service/featureFlagService";
 import InPreviewEditingUtil from "./utils/InPreviewEditingUtil";
 import FloatingEditorDialog from "./editors/FloatingEditorDialog";
-import FeatureFlags_properties from "./FeatureFlags_properties";
 
 class InPreviewEditingManager {
   #previewIframe: PreviewIFrame = null;
@@ -56,6 +53,7 @@ class InPreviewEditingManager {
   static readonly MESSAGE_TYPE_START_LOCALIZATION: string = "com.coremedia.pde.startLocalization";
   static readonly MESSAGE_TYPE_START_PUBLICATION: string = "com.coremedia.pde.startPublication";
   static readonly MESSAGE_TYPE_PUBLISH_REQUEST: string = "com.coremedia.pde.content.publish.request";
+  static readonly MESSAGE_TYPE_UPDATE_USER_PREFERENCES_REQUEST: string = "com.coremedia.pde.updateUserPreferenceRequest";
 
   constructor(previewIFrame: PreviewIFrame) {
     this.#previewIframe = previewIFrame;
@@ -98,13 +96,11 @@ class InPreviewEditingManager {
         );
 
         // register content metrics listener
-        if (featureFlagService.isEnabled(FeatureFlags_properties.IN_PREVIEW_EDITING_SHOW_METRICS)) {
-          messageService.registerMessageListener(
-            iframeEl,
-            InPreviewEditingManager.MESSAGE_TYPE_CONTENT_METRICS_REQUEST,
-            bind(this, this.#contentMetricsListener)
-          );
-        }
+        messageService.registerMessageListener(
+          iframeEl,
+          InPreviewEditingManager.MESSAGE_TYPE_CONTENT_METRICS_REQUEST,
+          bind(this, this.#contentMetricsListener)
+        );
 
         // register open content listener
         messageService.registerMessageListener(
@@ -155,12 +151,19 @@ class InPreviewEditingManager {
           bind(this, this.#contentPublishListener)
         );
 
+        // register update user preferences listener
+        messageService.registerMessageListener(
+          iframeEl,
+          InPreviewEditingManager.MESSAGE_TYPE_UPDATE_USER_PREFERENCES_REQUEST,
+          bind(this, this.#updateUserPreferencesListener)
+        );
+
         this.activateInPreviewEditingIfEnabled();
       }, 10000);
     }
   }
 
-  activateInPreviewEditingIfEnabled(): void {
+  activateInPreviewEditingIfEnabled() {
     // send message to activate in-page editing
     const inPreviewEditingPreferenceExpr = InPreviewEditingUtil.inPreviewEditingPreferenceExpr();
     inPreviewEditingPreferenceExpr.loadValue((inPreviewEditingEnabled) => {
@@ -344,6 +347,26 @@ class InPreviewEditingManager {
     }
   }
 
+  #updateUserPreferencesListener(event: { preferences: object }): void {
+    console.log("[InPreviewEditingManager] Received update user preferences event: ", event);
+    if (!event.preferences) {
+      return;
+    }
+
+    const newPreferences = Object.entries(event.preferences)
+      .map(([path, value]) => [
+        path.split(".") as [string, ...string[]], value] as [UserPreferencesPropertyPath, any]
+      );
+
+    updateUserPreferencesProperties(newPreferences)
+      .then(() => {
+        console.log("[InPreviewEditingManager] User preferences updated successfully");
+      })
+      .catch((e) => {
+        console.log("[InPreviewEditingManager] Unable to update user preferences: ", e);
+      });
+  }
+
   #loadContentName(content: Content) {
     return new Promise((resolve, reject) => {
       if (!content) {
@@ -396,7 +419,7 @@ class InPreviewEditingManager {
           resolve({
             contentType: contentType.getName(),
             contentTypeLabel: localization?.displayName,
-            svgIcon: localization?.svgIcon,
+            svgIcon: localization?.svgIcon
           });
         });
       }
@@ -476,7 +499,8 @@ class InPreviewEditingManager {
     return new Promise((resolve, reject) => {
       if (!content) {
         reject();
-      } if (!propertyName) {
+      }
+      if (!propertyName) {
         resolve({
           propertyName: "",
           propertyLabel: "",

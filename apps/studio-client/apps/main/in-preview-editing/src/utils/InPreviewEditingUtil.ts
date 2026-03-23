@@ -41,10 +41,10 @@ import editorContext from "@coremedia/studio-client.main.editor-components/sdk/e
 import CollectionViewExtension from "@coremedia/studio-client.main.editor-components/sdk/collectionview/CollectionViewExtension";
 import session from "@coremedia/studio-client.cap-rest-client/common/session";
 import OpenNavigationEditorDialogAction from "@coremedia-blueprint/studio-client.main.navigation-manager-studio/actions/OpenNavigationEditorDialogAction";
-import featureFlagService from "@coremedia-blueprint/studio-client.main.salesdemo-feature-modifier/service/featureFlagService";
 import propertyEditorRegistry from "../editors/propertyEditorRegistry";
 import EmptyState from "../editors/EmptyState";
-import FeatureFlags_properties from "../FeatureFlags_properties";
+import { observeUserPreferencesProperty } from "@coremedia/studio-client.cap-base-models";
+import { filter, firstValueFrom, timeout } from "rxjs";
 
 class InPreviewEditingUtil {
   static readonly MESSAGE_TYPE_ACTIVATE_IN_PREVIEW_EDITING: string = "com.coremedia.pde.editing.on";
@@ -59,7 +59,20 @@ class InPreviewEditingUtil {
     );
   }
 
-  static toggleInPageEditing(previewIframe: PreviewIFrame, activate: boolean): void {
+  static async toggleInPageEditing(previewIframe: PreviewIFrame, activate: boolean) {
+    let ipeUserPreferences;
+    try {
+      let userPreferencesObservable = observeUserPreferencesProperty(["ipe"])
+        .pipe(
+          filter(v => v !== undefined),
+          timeout(1000)
+        );
+
+      ipeUserPreferences = await firstValueFrom(userPreferencesObservable);
+    } catch (e) {
+      // ignore
+    }
+
     const contentWindow = previewIframe.getContentWindow();
     console.log(
       `[InPreviewEditingManager] Sending ${activate ? "activate" : "deactivate"} editing message to content window: `,
@@ -68,9 +81,7 @@ class InPreviewEditingUtil {
     const data = {
       lang: LocaleUtil.getLocale(),
       features: {
-        metrics: featureFlagService.isEnabled(FeatureFlags_properties.IN_PREVIEW_EDITING_SHOW_METRICS)
-          ? "enabled"
-          : "disabled",
+        ...ipeUserPreferences
       },
     };
     messageService.sendMessage(

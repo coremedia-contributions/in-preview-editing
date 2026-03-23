@@ -32,7 +32,8 @@
     "@coremedia/studio-client.main.image-editor-components": "catalog:",
     "@coremedia/studio-client.multi-site-models": "catalog:",
     "@jangaroo/ext-ts": "catalog:",
-    "@jangaroo/runtime": "catalog:"
+    "@jangaroo/runtime": "catalog:",
+    "rxjs": "catalog:"
   },
   "devDependencies": {
     "@coremedia/studio-client.ext.eslint-config": "catalog:",
