@@ -26,6 +26,7 @@ import collapsiblePanelStyles from "./styles/components/CollapsiblePanel.module.
 import dialogStyles from "./styles/components/Dialog.module.css?inline";
 import fieldsetStyles from "./styles/components/Fieldset.module.css?inline";
 import SettingsDialog from "./components/SettingsDialog.tsx";
+import type { PluginFeatures } from "./types/PluginFeatures.ts";
 
 
 const FRONTEND_STYLE_ID = "coremedia-ipe-frontend-styles";
@@ -92,7 +93,7 @@ export function initPlugin(): void {
   window.com = window.com ?? {};
   window.com.coremedia = window.com.coremedia ?? {};
   window.com.coremedia.pde = {
-    activateInPageEditing: (lang?: string, features?: object) => {
+    activateInPageEditing: (lang?: string, features?: PluginFeatures) => {
       document.dispatchEvent(
         new CustomEvent<IPEActivateEventDetail>(IPE_ACTIVATE_EVENT, { detail: { lang, features } })
       );

@@ -125,14 +125,14 @@ export function isNavNode(element: HTMLElement) {
 }
 
 export function findPlacementElement(element: HTMLElement) {
-  return element.closest("div[data-cm-metadata*=\"properties.placement-\"]");
+  return element.closest<HTMLElement>("div[data-cm-metadata*=\"properties.placement-\"]");
 }
 
 export function findPlacementItemsWrapper(element: HTMLElement) {
-  return element.closest("div[data-cm-metadata*=\"properties.items\"]");
+  return element.closest<HTMLElement>("div[data-cm-metadata*=\"properties.items\"]");
 }
 
-export function findAllPlacementItems(placementItemsWrapper: Element | null) {
+export function findAllPlacementItems(placementItemsWrapper: HTMLElement | null) {
   return getTopLevelMetadataNodes(placementItemsWrapper);
 }
 
