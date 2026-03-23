@@ -59,7 +59,7 @@ const ActionsMenu: FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
                     <img src={contentMetadata.contentThumbnail}
                          alt={contentMetadata?.contentName}
                          title={contentMetadata?.contentName}
-                         onError={(e) => e.target.style.display = "none"}
+                         onError={(e) => (e.target as HTMLImageElement).style.display = "none"}
                     />
                   )}
                 </div>
