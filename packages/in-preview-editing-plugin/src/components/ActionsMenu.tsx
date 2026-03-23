@@ -1,4 +1,4 @@
-import { Menu } from '@base-ui/react/menu';
+import { Menu } from "@base-ui/react/menu";
 import { usePortalContainer } from "../hooks/usePortalContainer.ts";
 import {
   directPublication,
@@ -15,13 +15,14 @@ import actionManager from "../lib/action-manager.ts";
 import { usePluginContext } from "../context/PluginContext.tsx";
 import clsx from "clsx";
 import { ChevronRightIcon, Settings2Icon, SquareCheckIcon, SquareIcon } from "lucide-react";
+import BreadcrumbSelector from "./BreadcrumbSelector.tsx";
 
 interface Props {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
 
-const ActionsMenu:FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
+const ActionsMenu: FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
   const container = usePortalContainer();
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = controlledOpen !== undefined;
@@ -47,6 +48,9 @@ const ActionsMenu:FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
         <Menu.Positioner className={menuStyles.Positioner} align={"start"} sideOffset={0}>
           <Menu.Popup className={menuStyles.Popup}>
             <Menu.Group>
+
+              <BreadcrumbSelector/>
+
               <div className={menuStyles.ContentInfo}>
                 <div className={menuStyles.Thumbnail}>
                   {contentMetadata?.contentThumbnail && (
@@ -54,7 +58,7 @@ const ActionsMenu:FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
                          alt={contentMetadata?.contentName}
                          title={contentMetadata?.contentName}
                          onError={(e) => e.target.style.display = "none"}
-                         />
+                    />
                   )}
                 </div>
                 <div className={menuStyles.ContentDetails}>
@@ -64,7 +68,6 @@ const ActionsMenu:FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
               </div>
 
             </Menu.Group>
-            <Menu.Separator className={menuStyles.Separator} />
             <Menu.Item className={menuStyles.Item}
                        onClick={() => actionManager.getInstance().openContent(contentRef)}>
               <SVGIcon svg={openInNewTab}/>
@@ -75,35 +78,42 @@ const ActionsMenu:FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
               <SVGIcon svg={showInLibrary}/>
               Show in Library
             </Menu.Item>
-            <Menu.Separator className={menuStyles.Separator} />
+            <Menu.Separator className={menuStyles.Separator}/>
             <Menu.Group>
-              <Menu.GroupLabel className={menuStyles.GroupLabel}>Lifecycle<span className={menuStyles.LifecycleStatusLabel}>{contentMetadata?.status}</span></Menu.GroupLabel>
-              <Menu.Item className={clsx(menuStyles.Item, contentMetadata?.userMayPerformPublish || contentMetadata?.status !== "published" ? "" : menuStyles.ReadonlyItem)}
-                         onClick={() => actionManager.getInstance().requestContentPublication(contentRef, propertyName || "")}>
+              <Menu.GroupLabel className={menuStyles.GroupLabel}>Lifecycle<span
+                className={menuStyles.LifecycleStatusLabel}>{contentMetadata?.status}</span></Menu.GroupLabel>
+              <Menu.Item
+                className={menuStyles.Item}
+                disabled={!(contentMetadata?.userMayPerformPublish && contentMetadata?.status !== "published")}
+                onClick={() => actionManager.getInstance().requestContentPublication(contentRef, propertyName || "")}>
                 <SVGIcon svg={directPublication}/>
                 Direct Publication
               </Menu.Item>
-              <Menu.Item className={clsx(menuStyles.Item, contentMetadata?.userMayPerformPublish || contentMetadata?.status !== "published" ? "" : menuStyles.ReadonlyItem)}
-                         onClick={() => actionManager.getInstance().startPublicationWorkflow(contentRef)}>
+              <Menu.Item
+                className={menuStyles.Item}
+                disabled={!(contentMetadata?.userMayPerformPublish && contentMetadata?.status !== "published")}
+                onClick={() => actionManager.getInstance().startPublicationWorkflow(contentRef)}>
                 <SVGIcon svg={startPublicationWorkflow}/>
                 Start Publication Workflow
               </Menu.Item>
             </Menu.Group>
-            <Menu.Separator className={menuStyles.Separator} />
+            <Menu.Separator className={menuStyles.Separator}/>
             <Menu.Group>
-              <Menu.GroupLabel className={menuStyles.GroupLabel}>Localization<span className={menuStyles.LocalizationStatusLabel}>{contentMetadata?.translationStatus && contentMetadata?.translationStatus !== "no-master" ? contentMetadata?.translationStatus : ""}</span></Menu.GroupLabel>
-              <Menu.Item className={clsx(menuStyles.Item, menuStyles.NoIconItem, menuStyles.ReadonlyItem)}>{contentMetadata?.siteLocale}</Menu.Item>
+              <Menu.GroupLabel className={menuStyles.GroupLabel}>Localization<span
+                className={menuStyles.LocalizationStatusLabel}>{contentMetadata?.translationStatus && contentMetadata?.translationStatus !== "no-master" ? contentMetadata?.translationStatus : ""}</span></Menu.GroupLabel>
+              <Menu.Item
+                className={clsx(menuStyles.Item, menuStyles.NoIconItem, menuStyles.ReadonlyItem)}>{contentMetadata?.siteLocale}</Menu.Item>
               <Menu.Item className={menuStyles.Item}
                          onClick={() => actionManager.getInstance().startLocalizationWorkflow(contentRef)}>
                 <SVGIcon svg={localizationWorkflowCircle}/>
                 Localize
               </Menu.Item>
             </Menu.Group>
-            <Menu.Separator className={menuStyles.Separator} />
+            <Menu.Separator className={menuStyles.Separator}/>
             <Menu.SubmenuRoot>
               <Menu.SubmenuTrigger className={menuStyles.SubmenuTrigger}>
                 Settings
-                <ChevronRightIcon />
+                <ChevronRightIcon/>
               </Menu.SubmenuTrigger>
               <Menu.Portal>
                 <Menu.Positioner
@@ -124,7 +134,9 @@ const ActionsMenu:FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
                       </span>
                       <span className={menuStyles.CheckboxItemText}>Spotlight</span>
                     </Menu.CheckboxItem>
-                    <Menu.Item className={menuStyles.Item} onClick={() => setShowSettings && setShowSettings(true)}><Settings2Icon/>more ...</Menu.Item>
+                    <Menu.Item className={menuStyles.Item}
+                               onClick={() => setShowSettings && setShowSettings(true)}><Settings2Icon/>more
+                      ...</Menu.Item>
                   </Menu.Popup>
                 </Menu.Positioner>
               </Menu.Portal>
@@ -134,10 +146,10 @@ const ActionsMenu:FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
       </Menu.Portal>
     </Menu.Root>
   );
-}
+};
 
-function getOffset({ side }: { side: Menu.Positioner.Props['side'] }) {
-  return side === 'top' || side === 'bottom' ? 4 : -4;
+function getOffset({ side }: { side: Menu.Positioner.Props["side"] }) {
+  return side === "top" || side === "bottom" ? 4 : -4;
 }
 
 export default ActionsMenu;

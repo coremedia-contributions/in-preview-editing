@@ -5,7 +5,6 @@ import ActionsMenu from "./ActionsMenu.tsx";
 import { Toolbar } from "@base-ui/react/toolbar";
 import clsx from "clsx";
 import { markerBorder, markerPadding } from "./Highlighter.tsx";
-import BreadcrumbSelector from "./BreadcrumbSelector.tsx";
 import { LoaderCircleIcon, Settings2Icon, SidebarIcon } from "lucide-react";
 import toolbarStyles from "../styles/components/Toolbar.module.css";
 import buttonStyles from "../styles/components/Button.module.css";
@@ -107,19 +106,16 @@ const IPEOverlay: React.FC<Props> = () => {
               </>
             )}
           </Toolbar.Group>
-
-          <Toolbar.Separator className={toolbarStyles.Separator} />
-          <BreadcrumbSelector/>
         </>
       )}
 
-      <Toolbar.Separator className={toolbarStyles.Separator} />
-      <Toolbar.Button className={toolbarStyles.Button} onClick={toggleSidebar}>
-        <SidebarIcon/>
-      </Toolbar.Button>
-      <Toolbar.Button className={toolbarStyles.Button} onClick={() => setShowSettings(true)}>
-        <Settings2Icon/>
-      </Toolbar.Button>
+      {/*<Toolbar.Separator className={toolbarStyles.Separator} />*/}
+      {/*<Toolbar.Button className={toolbarStyles.Button} onClick={toggleSidebar}>*/}
+      {/*  <SidebarIcon/>*/}
+      {/*</Toolbar.Button>*/}
+      {/*<Toolbar.Button className={toolbarStyles.Button} onClick={() => setShowSettings(true)}>*/}
+      {/*  <Settings2Icon/>*/}
+      {/*</Toolbar.Button>*/}
 
       {!isLoading && (
         <>

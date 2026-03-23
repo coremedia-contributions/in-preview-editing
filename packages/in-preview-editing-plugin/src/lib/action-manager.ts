@@ -49,13 +49,15 @@ class PDEActionManager extends EventTarget {
 
   requestContentMetadata = <TResponse = unknown>(
     contentRef: string,
-    propertyName: string,
+    propertyName: string | null,
     breadcrumbIds: string[] = [],
     timeoutMs = 5000,
   ): Observable<TResponse> | null => {
-    if (!contentRef || !propertyName) {
+    if (!contentRef) {
       return null;
     }
+
+    console.log("[IPE] Requesting content metadata: ", {contentRef, propertyName, breadcrumbIds});
 
     return pdeBridge.request<Record<string, unknown>, TResponse>(
       MESSAGE_TYPE_CONTENT_METADATA_REQUEST,

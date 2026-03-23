@@ -4,7 +4,7 @@ import { IPE_ACTIVATE_EVENT, IPE_DEACTIVATE_EVENT } from "../events/events.ts";
 import {
   findContentId,
   findPropertyName,
-  getContentIdBreadcrumb,
+  getContentIdBreadcrumb, getPropertyNameFromMetadata,
   isMarkedAsEditable
 } from "../lib/utils.ts";
 import PDEActionManager from "../lib/action-manager.ts";
@@ -23,8 +23,6 @@ export interface PluginContextValue {
   setContentId?: (contentId: string | undefined) => void;
   propertyName?: string;
   setPropertyName?: (propertyName: string | undefined) => void;
-  breadcrumbIds?: string[];
-  setBreadcrumbIds?: (breadcrumbIds: string[] | undefined) => void;
   contentMetadata?: ContentMetadata;
   setContentMetadata?: (metadata: ContentMetadata) => void;
   useSpotlight?: boolean;
@@ -163,7 +161,7 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
   useEffect(() => {
     if (targetEl) {
       const contentId = findContentId(targetEl);
-      const propertyName = findPropertyName(targetEl);
+      const propertyName = getPropertyNameFromMetadata(targetEl);
       const breadcrumbIds = getContentIdBreadcrumb(targetEl);
 
       setLoading(true);
