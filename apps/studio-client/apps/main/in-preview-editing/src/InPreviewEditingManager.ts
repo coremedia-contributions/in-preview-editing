@@ -281,10 +281,10 @@ class InPreviewEditingManager {
       });
   }
 
-  #calculateContentMetadata(contentRef: string, propertyName: string, breadcrumbIds: string[]) {
+  #calculateContentMetadata(contentRef: string, propertyName: string | null, breadcrumbIds: string[]) {
     return new Promise<unknown>((resolve, reject) => {
       const content = session._.getConnection().getContentRepository().getContent(contentRef);
-      if (!content || !propertyName) {
+      if (!content) {
         reject();
       }
 
@@ -474,8 +474,14 @@ class InPreviewEditingManager {
 
   #loadPropertyMetadata(content: Content, propertyName: string) {
     return new Promise((resolve, reject) => {
-      if (!content || !propertyName) {
+      if (!content) {
         reject();
+      } if (!propertyName) {
+        resolve({
+          propertyName: "",
+          propertyLabel: "",
+          propertyType: "unknown"
+        });
       } else {
         ValueExpressionFactory.create(ContentPropertyNames.TYPE, content).loadValue((contentType: ContentType) => {
           let localizedPropertyLabel = PropertyEditorUtil.getLocalizedLabel(contentType.getName(), propertyName);
