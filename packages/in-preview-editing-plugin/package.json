@@ -1,12 +1,19 @@
 {
   "name": "@coremedia-contributions/in-preview-editing-plugin",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "main": "dist/coremedia.ipe.plugin.iife.js",
+  "files": [
+    "dist/",
+    "README.md"
+  ],
   "scripts": {
     "dev": "vite build --watch --mode development",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepublishOnly": "pnpm build",
+    "publish:snapshot": "pnpm publish --tag snapshot --no-git-checks",
+    "publish:release": "pnpm publish --no-git-checks --registry https://npm.coremedia.io/"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",

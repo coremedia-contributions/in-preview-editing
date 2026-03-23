@@ -1,3 +1,6 @@
+# npm auth (Credentials nicht in Git!)
+.npmrc
+
 # Logs
 logs
 *.log
