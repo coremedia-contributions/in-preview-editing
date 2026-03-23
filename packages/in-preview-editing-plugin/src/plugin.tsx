@@ -1,4 +1,5 @@
 import { createRoot } from "react-dom/client";
+import "./i18n/i18n";
 import IPEOverlay from "./components/IPEOverlay.tsx";
 import { PluginContextProvider } from "./context/PluginContext.tsx";
 import { Highlighter } from "./components/Highlighter.tsx";
@@ -119,7 +120,7 @@ export function initPlugin(): void {
       document.dispatchEvent(new CustomEvent<IPEActivateEventDetail>(IPE_ACTIVATE_EVENT, {
         detail: {
           lang: message.body.lang,
-          features: {}
+          features: message.body.features,
         }
       }));
       break;

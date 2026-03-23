@@ -5,9 +5,10 @@ import ActionsMenu from "./ActionsMenu.tsx";
 import { Toolbar } from "@base-ui/react/toolbar";
 import clsx from "clsx";
 import { markerBorder, markerPadding } from "./Highlighter.tsx";
-import { LoaderCircleIcon, Settings2Icon, SidebarIcon } from "lucide-react";
+import { LoaderCircleIcon } from "lucide-react";
 import toolbarStyles from "../styles/components/Toolbar.module.css";
 import buttonStyles from "../styles/components/Button.module.css";
+import { useTranslation } from "react-i18next";
 
 interface Props {
 }
@@ -19,7 +20,8 @@ interface Position {
 
 const IPEOverlay: React.FC<Props> = () => {
   const toolbarRef = useRef<HTMLDivElement | null>(null);
-  const { targetEl, contentMetadata, inlineEditActive, setInlineEditActive, showSidebar, setShowSidebar, isLoading, setShowSettings } = usePluginContext();
+  const { targetEl, contentMetadata, inlineEditActive, setInlineEditActive, showSidebar, setShowSidebar, isLoading } = usePluginContext();
+  const { t } = useTranslation();
   const [position, setPosition] = useState<Position>({ top: 0, left: 0 });
   const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
 
@@ -89,7 +91,7 @@ const IPEOverlay: React.FC<Props> = () => {
         <LoaderCircleIcon width={16} height={16}
                     style={{marginRight: ".25rem"}}
                     className="loader-animated"/>
-        Loading ...
+        {t("overlay.loading")}
       </Toolbar.Button>
       }
 
@@ -98,11 +100,15 @@ const IPEOverlay: React.FC<Props> = () => {
           {/*<Toolbar.Button className={clsx(toolbarStyles.Button, buttonStyles.readonly)}>{contentMetadata?.contentName || contentId}</Toolbar.Button>*/}
           {/*<Toolbar.Separator className={toolbarStyles.Separator} />*/}
           <Toolbar.Group className={toolbarStyles.Group}>
-            {!inlineEditActive && <Toolbar.Button className={toolbarStyles.Button} onClick={editBtnHandler}>Edit {contentMetadata?.propertyLabel}</Toolbar.Button>}
+            {!inlineEditActive && <Toolbar.Button className={toolbarStyles.Button} onClick={editBtnHandler}>
+              {contentMetadata?.propertyLabel ? t("overlay.editProperty", { property: contentMetadata?.propertyLabel }) : t("overlay.edit")}
+            </Toolbar.Button>}
             {inlineEditActive && (
               <>
-                <Toolbar.Button className={toolbarStyles.Button} onClick={saveBtnHandler}>Save {contentMetadata?.propertyLabel}</Toolbar.Button>
-                <Toolbar.Button className={clsx(toolbarStyles.Button)} onClick={cancelBtnHandler}>Cancel</Toolbar.Button>
+                <Toolbar.Button className={toolbarStyles.Button} onClick={saveBtnHandler}>
+                  {contentMetadata?.propertyLabel ? t("overlay.saveProperty", { property: contentMetadata?.propertyLabel }) : t("overlay.save")}
+                </Toolbar.Button>
+                <Toolbar.Button className={clsx(toolbarStyles.Button)} onClick={cancelBtnHandler}>{t("overlay.cancel")}</Toolbar.Button>
               </>
             )}
           </Toolbar.Group>

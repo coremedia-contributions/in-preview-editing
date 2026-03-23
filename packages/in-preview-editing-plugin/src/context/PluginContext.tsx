@@ -1,9 +1,9 @@
 import { createContext, type FC, type ReactNode, useContext, useEffect, useRef, useState } from "react";
 import type React from "react";
-import { IPE_ACTIVATE_EVENT, IPE_DEACTIVATE_EVENT } from "../events/events.ts";
+import { IPE_ACTIVATE_EVENT, IPE_DEACTIVATE_EVENT, type IPEActivateEventDetail } from "../events/events.ts";
+import i18next from "../i18n/i18n.ts";
 import {
   findContentId,
-  findPropertyName,
   getContentIdBreadcrumb, getPropertyNameFromMetadata,
   isMarkedAsEditable
 } from "../lib/utils.ts";
@@ -25,15 +25,15 @@ export interface PluginContextValue {
   setPropertyName?: (propertyName: string | undefined) => void;
   contentMetadata?: ContentMetadata;
   setContentMetadata?: (metadata: ContentMetadata) => void;
-  useSpotlight?: boolean;
-  setUseSpotlight?: (useSpotlight: boolean) => void;
-  dimmerValue?: number;
-  setDimmerValue?: (dimmerValue: number) => void;
-  showSidebar?: boolean;
-  setShowSidebar?: (showSidebar: boolean) => void;
+  useSpotlight: boolean;
+  setUseSpotlight: (useSpotlight: boolean) => void;
+  dimmerValue: number;
+  setDimmerValue: (dimmerValue: number) => void;
+  showSidebar: boolean;
+  setShowSidebar: (showSidebar: boolean) => void;
   isLoading: boolean;
-  showSettings?: boolean;
-  setShowSettings?: (showSettings: boolean) => void;
+  showSettings: boolean;
+  setShowSettings: (showSettings: boolean) => void;
   accentColor: string;
   setAccentColor: (accentColor: string) => void;
 }
@@ -82,9 +82,27 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
 
   // Activate / deactivate via window API events
   useEffect(() => {
-    const onActivate = (_e: Event) => {
+
+    const onActivate = (e: Event) => {
+      const event = e as CustomEvent<IPEActivateEventDetail>;
+      const { lang, features } = event.detail ?? {};
+      if (lang) {
+        i18next.changeLanguage(lang);
+      }
+
+      // parse features/config
+      //console.log("[IPE] activate with features:", features);
+      setUseSpotlight(features?.spotlight === true);
+      if (features?.spotlightDimming) {
+        setDimmerValue(features.spotlightDimming);
+      }
+      if (features?.themeColor) {
+        setAccentColor(features.themeColor);
+      }
+
       setIsActive(true);
     };
+
     const onDeactivate = () => {
       setIsActive(false);
       setTargetEl(undefined);

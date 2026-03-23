@@ -5,7 +5,7 @@ import {
   MESSAGE_TYPE_START_PUBLICATION, MESSAGE_TYPE_ROLLBACK_REQUEST, MESSAGE_TYPE_SHOW_EDITOR,
   MESSAGE_TYPE_PROPERTY_UPDATE_REQUEST, MESSAGE_TYPE_CONTENT_METADATA_REQUEST, MESSAGE_TYPE_CONTENT_METADATA_RESPONSE,
   MESSAGE_TYPE_CONTENT_METRICS_REQUEST, MESSAGE_TYPE_CONTENT_METRICS_RESPONSE,
-  MESSAGE_TYPE_PUBLISH_REQUEST
+  MESSAGE_TYPE_PUBLISH_REQUEST, MESSAGE_TYPE_UPDATE_USER_PREFERENCES_REQUEST
 } from "./messaging";
 
 import { Observable } from "rxjs";
@@ -79,6 +79,12 @@ class PDEActionManager extends EventTarget {
 
   requestContentPublication = (contentRef: string, propertyName: string) => {
     this.triggerContentAction(MESSAGE_TYPE_PUBLISH_REQUEST, contentRef, propertyName);
+  };
+
+  postUserPreferencesUpdate = (preferences: object) => {
+    pdeBridge.send(MESSAGE_TYPE_UPDATE_USER_PREFERENCES_REQUEST, {
+      preferences: preferences,
+    });
   };
 
   openContent = (contentRef: string) => {

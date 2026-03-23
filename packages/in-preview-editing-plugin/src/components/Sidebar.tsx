@@ -9,12 +9,14 @@ import { LocateIcon, XIcon } from "lucide-react";
 import toolbarStyles from "../styles/components/Toolbar.module.css";
 import MetadataNodeHolder, { type MetadataNode } from "../lib/metadata-node-holder.ts";
 import CollapsiblePanel from "./CollapsiblePanel.tsx";
+import { useTranslation } from "react-i18next";
 
 interface Props {
 
 }
 
 const Sidebar: FC<Props> = () => {
+  const { t } = useTranslation();
   const container = usePortalContainer();
   const { showSidebar, setShowSidebar, setTargetEl, shadowRoot } = usePluginContext();
   const metadatNodeHolder = MetadataNodeHolder.getInstance();
@@ -42,7 +44,7 @@ const Sidebar: FC<Props> = () => {
     return (
       <CollapsiblePanel key={index}>
         <CollapsiblePanel.Header className={node.markedEditable ? sidebarStyles.EditableNodeItemHeader : sidebarStyles.NodeItemHeader}>
-          {`<${node.element.tagName.toLowerCase()}>`} {node.metadataId ? `#${node.metadataId}` : ""}{node.markedEditable ? " (editable)" : ""}
+          {`<${node.element.tagName.toLowerCase()}>`} {node.metadataId ? `#${node.metadataId}` : ""}{node.markedEditable ? ` ${t("sidebar.editable")}` : ""}
           <span className={sidebarStyles.HeaderSpacer}></span>
           <span className={sidebarStyles.FocusButton} onClick={() => updateTargetEl(node.element)}><LocateIcon width={20} height={20}/></span>
         </CollapsiblePanel.Header>
@@ -65,7 +67,7 @@ const Sidebar: FC<Props> = () => {
         <Dialog.Viewport className={sidebarStyles.Viewport}>
           <Dialog.Popup className={sidebarStyles.Popup}>
             <div className={sidebarStyles.PopupHeader}>
-              <Dialog.Title className={sidebarStyles.Title}>In-Preview Editing</Dialog.Title>
+              <Dialog.Title className={sidebarStyles.Title}>{t("sidebar.title")}</Dialog.Title>
               <div className={sidebarStyles.Actions}>
                 <Dialog.Close className={toolbarStyles.Button}>
                   <XIcon/>
@@ -74,7 +76,7 @@ const Sidebar: FC<Props> = () => {
             </div>
 
             <div>
-              <h2>Metadata Nodes</h2>
+              <h2>{t("sidebar.metadataNodes")}</h2>
             </div>
             <ScrollArea.Root className={sidebarStyles.Body}>
               <ScrollArea.Viewport className={sidebarStyles.BodyViewport}>

@@ -81,6 +81,7 @@ export class PostMessageRxBridge {
       requestId,
     };
 
+    //console.log(`[IPE] Sending message to ${this.targetOrigin}: `, envelope);
     this.targetWindow.postMessage(JSON.stringify(envelope), this.targetOrigin);
     return envelope;
   }
