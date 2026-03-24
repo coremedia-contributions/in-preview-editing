@@ -1,4 +1,4 @@
-![CoreMedia Content Cloud Version](https://img.shields.io/static/v1?message=2412&label=CoreMedia%20Content%20Cloud&style=for-the-badge&labelColor=666666&color=672779 "This badge shows the CoreMedia version(s) this project is compatible with.
+![CoreMedia Content Cloud Version](https://img.shields.io/static/v1?message=12%7C13&label=CoreMedia%20Content%20Cloud&style=for-the-badge&labelColor=666666&color=672779 "This badge shows the CoreMedia version(s) this project is compatible with.
 Please read the versioning section of the project to see what other CoreMedia versions are supported and how to find them.")
 ![Status](https://img.shields.io/static/v1?message=active&label=Status&style=for-the-badge&labelColor=666666&color=2FAC66
 "The status badge describes if the project is maintained. Possible values are active and inactive.
@@ -29,5 +29,5 @@ mvn -f workspace-configuration/extensions com.coremedia.maven:extensions-maven-p
 ## How to enable In-Preview Editing
 1. To enable in-preview editing, you need to add the `InPreviewEditingStudioPlugin` to your Studio plugin configuration. This can be done by following the installation steps above.
     - See [In-Preview-Editing Studio Plugin](apps/studio-client/apps/main/in-preview-editing/README.md) for more details on how to register custom property editors for the editor overlay
-2. As a second step, you need to add the `in-preview-editing-support` package to your frontend client. This package provides the necessary frontend functionality to support in-preview editing in Studio preview.
-    - See [In-Preview-Editing Support](packages/in-preview-editing-support/README.md) for more details on how to install and use this package.
+2. As a second step, you need to add the `in-preview-editing-plugin` package to your frontend. This package provides the necessary frontend functionality to support in-preview editing in Studio preview.
+    - See [In-Preview-Editing Support](packages/in-preview-editing-plugin/README.md) for more details on how to install and use this package.

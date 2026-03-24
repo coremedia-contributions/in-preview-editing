@@ -1,73 +1,36 @@
-# React + TypeScript + Vite
+# In-Preview-Editing Plugin
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Add this package to your frontend to support for in-preview editing in Studio preview. This package serves as the frontend part of the in-preview editing feature, allowing users to edit content directly in the preview.
 
-Currently, two official plugins are available:
+In addition, you need to install the Studio plugin found in `apps/main/in-preview-editing` to enable the feature in Studio.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Installation
+In your frontend, add the following dependency in your `package.json`:
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```json
+{
+  "dependencies": {
+    "@coremedia-contributions/in-preview-editing-plugin": "^2.0.0"
+  }
+}
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Then include the package in your application:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```javascript
+import "@coremedia-contributions/in-preview-editing-plugin";
+```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+See `packages/frontend-client-example` for a frontend client example that uses this package.
+
+## Provide the necessary document metadata
+In your frontend, you need to provide the document necessary metadata for the in-preview editing feature to work. This includes the content id and property name of the content to be edited as well as a flag indicating, that this property can be edited (`{"editable": true}`) in the preview.
+
+For more details on the metadata format, see the [CoreMedia Documentation](https://documentation.coremedia.com/cmcc-12/artifacts/2412.0/webhelp/cae-developer-en/content/DocumentMetadata_FreeMarker.html).
+
+**Example**
+```html
+<div data-cm-metadata="[{&quot;_&quot;:{&quot;$Ref&quot;:&quot;content/1234&quot;}}]">
+  <h1 data-cm-metadata="[{&quot;_&quot;:&quot;properties.title&quot;},{&quot;editable&quot;:true}]">Editable Headline</h1>
+</div>
 ```
