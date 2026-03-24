@@ -30,7 +30,7 @@ For more details on the metadata format, see the [CoreMedia Documentation](https
 
 **Example**
 ```html
-<div data-cm-metadata="[{&quot;_&quot;:{&quot;$Ref&quot;:&quot;content/1234&quot;}}]">
-  <h1 data-cm-metadata="[{&quot;_&quot;:&quot;properties.title&quot;},{&quot;editable&quot;:true}]">Editable Headline</h1>
+<div data-cm-metadata="[{'_':{'$Ref':'content/1234'}}]">
+  <h1 data-cm-metadata="[{'_':'properties.title'},{'editable':true}]">Editable Headline</h1>
 </div>
 ```
