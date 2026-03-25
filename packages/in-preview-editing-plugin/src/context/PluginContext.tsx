@@ -182,6 +182,7 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
   // tab-focus management: When plugin is active, only allow tab navigation between [data-cm-metadata] nodes
   useTabFocusManagement({
     isActive,
+    targetEl,
     setTargetEl,
     shadowHost: shadowRoot.host,
     inlineEditActiveRef,

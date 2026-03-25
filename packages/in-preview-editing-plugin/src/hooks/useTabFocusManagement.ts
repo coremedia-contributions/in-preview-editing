@@ -22,6 +22,7 @@ const FOCUSABLE_SELECTOR = [
 
 interface UseTabFocusManagementOptions {
   isActive: boolean;
+  targetEl: HTMLElement | undefined;
   setTargetEl: (el: HTMLElement | undefined) => void;
   /** The shadow DOM host element (the plugin itself – excluded from management) */
   shadowHost: Element;
@@ -35,6 +36,7 @@ interface UseTabFocusManagementOptions {
  */
 export function useTabFocusManagement({
   isActive,
+  targetEl,
   setTargetEl,
   shadowHost,
   inlineEditActiveRef,
@@ -110,6 +112,16 @@ export function useTabFocusManagement({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive]);
+
+  // Keep currentIndexRef in sync when targetEl changes externally (e.g. via mouse selection)
+  useEffect(() => {
+    if (!targetEl) return;
+    const nodes = getEditableMetadataNodes();
+    const index = nodes.indexOf(targetEl);
+    if (index !== -1) {
+      currentIndexRef.current = index;
+    }
+  }, [targetEl]);
 }
 
 // ---------------------------------------------------------------------------
