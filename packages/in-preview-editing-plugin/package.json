@@ -12,7 +12,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "prepublishOnly": "pnpm build",
-    "publish:snapshot": "pnpm publish --tag snapshot --no-git-checks",
+    "publish:snapshot": "pnpm publish --tag snapshot --no-git-checks --force",
     "publish:release": "pnpm publish --no-git-checks --registry https://npm.coremedia.io/"
   },
   "dependencies": {
