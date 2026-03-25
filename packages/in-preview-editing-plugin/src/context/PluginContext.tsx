@@ -10,6 +10,7 @@ import {
 import PDEActionManager from "../lib/action-manager.ts";
 import type { Subscription } from "rxjs";
 import type { ContentMetadata } from "../types/ContentMetadata.ts";
+import { useTabFocusManagement } from "../hooks/useTabFocusManagement.ts";
 
 export interface PluginContextValue {
   shadowRoot: ShadowRoot;
@@ -177,6 +178,14 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
       observerRef.current = null;
     };
   }, [isActive]);
+
+  // tab-focus management: When plugin is active, only allow tab navigation between [data-cm-metadata] nodes
+  useTabFocusManagement({
+    isActive,
+    setTargetEl,
+    shadowHost: shadowRoot.host,
+    inlineEditActiveRef,
+  });
 
   useEffect(() => {
     if (targetEl) {
