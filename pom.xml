@@ -4,8 +4,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.coremedia.blueprint</groupId>
-  <artifactId>extensions.in-page-editing</artifactId>
+  <artifactId>extensions.in-preview-editing</artifactId>
   <version>1-SNAPSHOT</version>
   <packaging>pom</packaging>
+
+  <modules>
+    <module>apps/studio-server</module>
+  </modules>
 
 </project>
