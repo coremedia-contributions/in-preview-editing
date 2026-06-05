@@ -45,6 +45,7 @@ import propertyEditorRegistry from "../editors/propertyEditorRegistry";
 import EmptyState from "../editors/EmptyState";
 import { observeUserPreferencesProperty } from "@coremedia/studio-client.cap-base-models";
 import { filter, firstValueFrom, timeout } from "rxjs";
+import RemoteServiceMethod from "@coremedia/studio-client.client-core/data/impl/RemoteServiceMethod";
 
 class InPreviewEditingUtil {
   static readonly MESSAGE_TYPE_ACTIVATE_IN_PREVIEW_EDITING: string = "com.coremedia.pde.editing.on";
@@ -277,6 +278,30 @@ class InPreviewEditingUtil {
 
       reader.readAsDataURL(blob);
     });
+  }
+
+  /**
+   * Insert the given content into the given placement.
+   * The content will be inserted at the given position or at the end if no position is given.
+   *
+   * @param context context content
+   * @param contentToInsert content to be inserted in placement
+   * @param placementName name of the placement
+   * @param insertAt optional insertion index
+   */
+  static insertInPlacement(context:Content, contentToInsert: Content, placementName: string, insertAt = -1) {
+    const params = {
+      context: context,
+      contentToInsert: contentToInsert,
+      placementName: placementName,
+      insertAt: insertAt,
+    };
+
+    let remoteServiceMethod = new RemoteServiceMethod("ipe/pagegrid/placement/insert", "POST", true);
+    remoteServiceMethod.request(
+      params,
+      (response) => {console.log("RESPONSE", response)},
+      (error) => {console.log("ERROR", error)});
   }
 
   static #getGenericEditor(descriptor: CapPropertyDescriptor) {
