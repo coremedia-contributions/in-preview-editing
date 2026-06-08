@@ -11,6 +11,7 @@ import PDEActionManager from "../lib/action-manager.ts";
 import type { Subscription } from "rxjs";
 import type { ContentMetadata } from "../types/ContentMetadata.ts";
 import { useTabFocusManagement } from "../hooks/useTabFocusManagement.ts";
+import { useIdleDetection } from "../hooks/useIdleDetection.ts";
 
 export interface PluginContextValue {
   shadowRoot: ShadowRoot;
@@ -187,6 +188,21 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
     shadowHost: shadowRoot.host,
     inlineEditActiveRef,
   });
+
+  // Idle detection: hide overlay, highlighter and spotlight after 5 s without mouse movement.
+  // Inline editing is never interrupted by the idle timer.
+  useIdleDetection(
+    isActive,
+    () => {
+      if (!inlineEditActiveRef.current) {
+        setTargetEl(undefined);
+      }
+    },
+    () => {
+      // mouse woke up — the next mouseenter over an editable element will
+      // restore targetEl automatically via the existing listener setup.
+    },
+  );
 
   useEffect(() => {
     if (targetEl) {
