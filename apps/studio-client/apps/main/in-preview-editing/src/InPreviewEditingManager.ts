@@ -6,9 +6,7 @@ import session from "@coremedia/studio-client.cap-rest-client/common/session";
 import ContentPropertyNames from "@coremedia/studio-client.cap-rest-client/content/ContentPropertyNames";
 import ValueExpressionFactory from "@coremedia/studio-client.client-core/data/ValueExpressionFactory";
 import { ContentType, Right } from "@coremedia/studio-client.cap-rest-client";
-import VariantKeyUtil from "@coremedia/studio-client.main.image-editor-components/VariantKeyUtil";
 import Content from "@coremedia/studio-client.cap-rest-client/content/Content";
-import PropertyEditorUtil from "@coremedia/studio-client.main.editor-components/sdk/util/PropertyEditorUtil";
 import thumbnailService from "@coremedia/studio-client.cap-base-models/thumbnails/thumbnailService";
 import toastService from "@coremedia/studio-client.ext.toast-components/toastService";
 import ValidationState from "@coremedia/studio-client.ext.ui-components/mixins/ValidationState";
@@ -544,43 +542,30 @@ class InPreviewEditingManager {
     });
   }
 
-  #loadPropertyMetadata(content: Content, propertyName: string) {
-    return new Promise((resolve, reject) => {
+  #loadPropertyMetadata(content: Content, propertyPath: string) {
+    return new Promise(async (resolve, reject) => {
       if (!content) {
         reject();
       }
-      if (!propertyName) {
+      if (!propertyPath) {
         resolve({
           propertyName: "",
           propertyLabel: "",
           propertyType: "unknown"
         });
       } else {
-        ValueExpressionFactory.create(ContentPropertyNames.TYPE, content).loadValue((contentType: ContentType) => {
-          let localizedPropertyLabel = PropertyEditorUtil.getLocalizedLabel(contentType.getName(), propertyName);
-          if ((!localizedPropertyLabel || localizedPropertyLabel === propertyName) && propertyName.indexOf(".") > 0) {
-            // special case image editor crops
-            const propertyLabel = PropertyEditorUtil.getLocalizedLabel(
-              contentType.getName(),
-              InPreviewEditingUtil.sanitizePropertyName(propertyName)
-            );
-            const cropLabel = VariantKeyUtil.getVariantDisplayName(propertyName.split(".").reverse()[0]);
-            if (propertyLabel != propertyName) {
-              localizedPropertyLabel = propertyLabel + `${cropLabel ? ` (${cropLabel})` : ""}`;
-            } else if (cropLabel) {
-              localizedPropertyLabel = cropLabel;
-            }
-          }
-
-          // get property descriptor
-          const propertyDescriptor = InPreviewEditingUtil.getPropertyDescriptor(contentType, propertyName);
-
+        try {
+          let localizedPropertyLabel = await InPreviewEditingUtil.getPropertyLabel(content, propertyPath);
+          let propertyDescriptor = await InPreviewEditingUtil.getPropertyDescriptor(content, propertyPath);
           resolve({
-            propertyName: propertyName,
+            propertyName: propertyPath,
             propertyLabel: localizedPropertyLabel,
             propertyType: propertyDescriptor?.type || "unknown"
           });
-        });
+        } catch (e) {
+          console.warn("[InPreviewEditingManager] Unable to load property metadata for property ", propertyPath, ": ", e);
+          reject();
+        }
       }
     });
   }

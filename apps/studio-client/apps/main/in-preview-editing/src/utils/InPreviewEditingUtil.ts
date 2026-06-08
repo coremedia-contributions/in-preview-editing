@@ -6,17 +6,22 @@ import {
   CapPropertyDescriptor,
   CapPropertyDescriptorType,
   ContentType,
-  MarkupPropertyDescriptor,
+  MarkupPropertyDescriptor, Struct
 } from "@coremedia/studio-client.cap-rest-client";
 import Config from "@jangaroo/runtime/Config";
 import BlobPropertyField from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/BlobPropertyField";
-import TextBlobPropertyField from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/TextBlobPropertyField";
-import IntegerPropertyField from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/IntegerPropertyField";
-import DateTimePropertyField from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/DateTimePropertyField";
-import StringPropertyField from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/StringPropertyField";
-import LinkListPropertyField from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/LinkListPropertyField";
-import markupPropertyFieldConfigMap from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/struct/markup/markupPropertyFieldConfigMap/markupPropertyFieldConfigMap";
-import ContentTypeImpl from "@coremedia/studio-client.cap-rest-client/content/impl/ContentTypeImpl";
+import TextBlobPropertyField
+  from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/TextBlobPropertyField";
+import IntegerPropertyField
+  from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/IntegerPropertyField";
+import DateTimePropertyField
+  from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/DateTimePropertyField";
+import StringPropertyField
+  from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/StringPropertyField";
+import LinkListPropertyField
+  from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/LinkListPropertyField";
+import markupPropertyFieldConfigMap
+  from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/struct/markup/markupPropertyFieldConfigMap/markupPropertyFieldConfigMap";
 import ValueExpressionFactory from "@coremedia/studio-client.client-core/data/ValueExpressionFactory";
 import ValueExpression from "@coremedia/studio-client.client-core/data/ValueExpression";
 import editorPreferences from "@coremedia/studio-client.cap-base-models/preferences/editorPreferences";
@@ -25,7 +30,8 @@ import PreviewIFrame from "@coremedia/studio-client.main.editor-components/sdk/p
 import { getServiceAgent } from "@coremedia/service-agent";
 import { createContentFormServiceDescriptor } from "@coremedia/studio-client.content-services-api";
 import PlacementField from "@coremedia/studio-client.main.bpbase-pagegrid-studio-plugin/pagegrid/PlacementField";
-import cmNavigationTreeRelation from "@coremedia/studio-client.main.bpbase-pagegrid-studio-plugin/tree/cmNavigationTreeRelation";
+import cmNavigationTreeRelation
+  from "@coremedia/studio-client.main.bpbase-pagegrid-studio-plugin/tree/cmNavigationTreeRelation";
 import ValidityColumn from "@coremedia-blueprint/studio-client.main.blueprint-forms/forms/columns/ValidityColumn";
 import NameColumn from "@coremedia/studio-client.ext.cap-base-components/columns/NameColumn";
 import TypeIconColumn from "@coremedia/studio-client.ext.cap-base-components/columns/TypeIconColumn";
@@ -33,19 +39,25 @@ import ViewtypeRenderer from "@coremedia-blueprint/studio-client.main.blueprint-
 import StatusColumn from "@coremedia/studio-client.ext.cap-base-components/columns/StatusColumn";
 import DataField from "@coremedia/studio-client.ext.ui-components/store/DataField";
 import Column from "@jangaroo/ext-ts/grid/column/Column";
-import LinkListThumbnailColumn from "@coremedia/studio-client.ext.content-link-list-components/columns/LinkListThumbnailColumn";
+import LinkListThumbnailColumn
+  from "@coremedia/studio-client.ext.content-link-list-components/columns/LinkListThumbnailColumn";
 import PageGridUtil from "@coremedia/studio-client.main.bpbase-pagegrid-studio-plugin/pagegrid/PageGridUtil";
 import ImageMapEditor from "@coremedia/studio-client.main.image-map-editor-components/ImageMapEditor";
 import LocaleUtil from "@coremedia/studio-client.cap-base-models/locale/LocaleUtil";
 import editorContext from "@coremedia/studio-client.main.editor-components/sdk/editorContext";
-import CollectionViewExtension from "@coremedia/studio-client.main.editor-components/sdk/collectionview/CollectionViewExtension";
+import CollectionViewExtension
+  from "@coremedia/studio-client.main.editor-components/sdk/collectionview/CollectionViewExtension";
 import session from "@coremedia/studio-client.cap-rest-client/common/session";
-import OpenNavigationEditorDialogAction from "@coremedia-blueprint/studio-client.main.navigation-manager-studio/actions/OpenNavigationEditorDialogAction";
+import OpenNavigationEditorDialogAction
+  from "@coremedia-blueprint/studio-client.main.navigation-manager-studio/actions/OpenNavigationEditorDialogAction";
 import propertyEditorRegistry from "../editors/propertyEditorRegistry";
 import EmptyState from "../editors/EmptyState";
 import { observeUserPreferencesProperty } from "@coremedia/studio-client.cap-base-models";
 import { filter, firstValueFrom, timeout } from "rxjs";
 import RemoteServiceMethod from "@coremedia/studio-client.client-core/data/impl/RemoteServiceMethod";
+import StructSubBean from "@coremedia/studio-client.cap-rest-client/common/impl/StructSubBean";
+import VariantKeyUtil from "@coremedia/studio-client.main.image-editor-components/VariantKeyUtil";
+import PropertyEditorUtil from "@coremedia/studio-client.main.editor-components/sdk/util/PropertyEditorUtil";
 
 class InPreviewEditingUtil {
   static readonly MESSAGE_TYPE_ACTIVATE_IN_PREVIEW_EDITING: string = "com.coremedia.pde.editing.on";
@@ -56,7 +68,7 @@ class InPreviewEditingUtil {
   static inPreviewEditingPreferenceExpr(): ValueExpression {
     return ValueExpressionFactory.create(
       InPreviewEditingUtil.IN_PREVIEW_EDITING_PREFERENCE,
-      editorPreferences.getPreferences(),
+      editorPreferences.getPreferences()
     );
   }
 
@@ -77,13 +89,13 @@ class InPreviewEditingUtil {
     const contentWindow = previewIframe.getContentWindow();
     console.log(
       `[InPreviewEditingManager] Sending ${activate ? "activate" : "deactivate"} editing message to content window: `,
-      contentWindow,
+      contentWindow
     );
     const data = {
       lang: LocaleUtil.getLocale(),
       features: {
         ...ipeUserPreferences
-      },
+      }
     };
     messageService.sendMessage(
       contentWindow,
@@ -94,12 +106,12 @@ class InPreviewEditingUtil {
       (responseBody: any): void => {
         console.log("[InPreviewEditingManager] Message response response: ", responseBody);
       },
-      previewIframe,
+      previewIframe
     );
   }
 
   static getEditorFor(content: Content, propertyPath: string): Promise<any> {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         if (propertyPath.startsWith("placement-")) {
           // special case for page grid placements
@@ -107,13 +119,13 @@ class InPreviewEditingUtil {
         } else {
           // lookup registered editor for content and property name
           const propertyName = InPreviewEditingUtil.sanitizePropertyName(propertyPath);
+          const propertyLabel = await InPreviewEditingUtil.getPropertyLabel(content, propertyPath);
+
           let editor: Config<any> = propertyEditorRegistry.getEditor(content.getType(), propertyName);
           if (!editor) {
             // try fallback to generic editor
-            const contentType = as(content.getType(), ContentTypeImpl);
-            editor = InPreviewEditingUtil.#getGenericEditor(
-              InPreviewEditingUtil.getPropertyDescriptor(contentType, propertyName),
-            );
+            const propertyDescriptor = await InPreviewEditingUtil.getPropertyDescriptor(content, propertyName);
+            editor = InPreviewEditingUtil.#getGenericEditor(propertyDescriptor);
           }
 
           if (!editor) {
@@ -130,7 +142,7 @@ class InPreviewEditingUtil {
 
           // configure editor
           editor.propertyName = propertyName;
-          editor.fieldLabel = propertyName;
+          editor.fieldLabel = propertyLabel || propertyName;
           editor.bindTo = bindTo;
           editor.forceReadOnlyValueExpression = ValueExpressionFactory.createFromValue(false); // TODO: Take access rights into consideration
 
@@ -176,22 +188,22 @@ class InPreviewEditingUtil {
                 sortable: false,
                 dataIndex: "viewtypeStatus",
                 fixed: true,
-                renderer: ViewtypeRenderer.renderer,
+                renderer: ViewtypeRenderer.renderer
               }),
-              Config(StatusColumn),
+              Config(StatusColumn)
             ],
             fields: [
               Config(DataField, {
                 name: ValidityColumn.STATUS_ID,
                 mapping: "",
-                convert: ValidityColumn.convert,
+                convert: ValidityColumn.convert
               }),
               Config(DataField, {
                 name: "viewtypeStatus",
                 mapping: "",
-                convert: ViewtypeRenderer.convert,
-              }),
-            ],
+                convert: ViewtypeRenderer.convert
+              })
+            ]
           });
 
           resolve(editor);
@@ -203,24 +215,71 @@ class InPreviewEditingUtil {
   }
 
   static sanitizePropertyName(propertyName: string): string {
-    let result = propertyName.replace(`${ContentPropertyNames.PROPERTIES}.`, "");
-    // do not sanitize localSettings
-    if (!result.startsWith("localSettings.")) {
+    let result = propertyName;
+    if (propertyName.startsWith(ContentPropertyNames.PROPERTIES)) {
+      result = result.replace(`${ContentPropertyNames.PROPERTIES}.`, "");
+    }
+    // do not further sanitize "localSettings" or "layout" properties
+    if (!result.startsWith("localSettings.")
+      && !result.startsWith("layout.")) {
       result = result.split(".")[0];
     }
     return result;
   }
 
-  static getPropertyDescriptor(contentType: ContentType, propertyPath: string): CapPropertyDescriptor {
+  static async getPropertyDescriptor(content: Content, propertyPath: string): Promise<CapPropertyDescriptor> {
     console.log(`[PropertyEditorUtil] Retrieving property descriptor for property path '${propertyPath}'.`);
+    const contentType = await ValueExpressionFactory.create<ContentType>(ContentPropertyNames.TYPE, content).loadValue();
     const propertyName = InPreviewEditingUtil.sanitizePropertyName(propertyPath);
-    return contentType.getDescriptor(propertyName);
+    let propertyDescriptor = contentType.getDescriptor(propertyName);
+
+    // special case for CMSection, property descriptor needs to be determined by inner struct properties
+    if (contentType.getName() === "CMSection" && propertyPath.startsWith("layout")) {
+      const sectionPropertyPathArgs = propertyPath.split(".");
+      const sectionPropertiesPath = `${ContentPropertyNames.PROPERTIES}.${sectionPropertyPathArgs.slice(0, sectionPropertyPathArgs.length - 1).join(".")}`;
+      const sectionPropertiesExpr = ValueExpressionFactory.create<Struct>(sectionPropertiesPath, content);
+      const sectionProperties = await sectionPropertiesExpr.loadValue();
+      propertyDescriptor = sectionProperties.getType().getDescriptor(sectionPropertyPathArgs[sectionPropertyPathArgs.length - 1]);
+    }
+
+    return propertyDescriptor;
+  }
+
+  static async getPropertyLabel(content: Content, propertyPath: string): Promise<string> {
+    const contentType = await ValueExpressionFactory.create<ContentType>(ContentPropertyNames.TYPE, content).loadValue();
+    let localizedPropertyLabel = PropertyEditorUtil.getLocalizedLabel(contentType.getName(), propertyPath);
+    if ((!localizedPropertyLabel || localizedPropertyLabel === propertyPath) && propertyPath.indexOf(".") > 0) {
+      // special case image editor crops
+      const propertyLabel = PropertyEditorUtil.getLocalizedLabel(contentType.getName(), InPreviewEditingUtil.sanitizePropertyName(propertyPath));
+      const cropLabel = VariantKeyUtil.getVariantDisplayName(propertyPath.split(".").reverse()[0]);
+      if (propertyLabel != propertyPath) {
+        localizedPropertyLabel = propertyLabel + `${cropLabel ? ` (${cropLabel})` : ""}`;
+      } else if (cropLabel) {
+        localizedPropertyLabel = cropLabel;
+      }
+    }
+
+    // special case for CMSection content, load metadata from inner section struct definition
+    if (contentType.getName() === "CMSection" && propertyPath.startsWith("layout")) {
+      const sectionPropertyPathArgs = propertyPath.split(".");
+      const sectionItemPropertyName = sectionPropertyPathArgs[sectionPropertyPathArgs.length - 1];
+
+      const sectionItemsPath = `${ContentPropertyNames.PROPERTIES}.${sectionPropertyPathArgs.slice(0, 3).join(".")}.items`;
+      const sectionItemsExpr = ValueExpressionFactory.create<StructSubBean[]>(sectionItemsPath, content);
+
+      const sectionItems = await sectionItemsExpr.loadValue();
+      const sectionItem = sectionItems.find((sectionItem) => sectionItem.get("name") === sectionItemPropertyName);
+
+      localizedPropertyLabel = sectionItem.get("label");
+    }
+
+    return localizedPropertyLabel;
   }
 
   static openContentInTab(
     contentUri: string,
     onSuccess: AnyFunction = () => {},
-    onError: AnyFunction = () => {},
+    onError: AnyFunction = () => {}
   ): void {
     if (!contentUri) {
       return;
@@ -242,7 +301,7 @@ class InPreviewEditingUtil {
   static showContentInLibrary(
     contentUri: string,
     onSuccess: AnyFunction = () => {},
-    onError: AnyFunction = () => {},
+    onError: AnyFunction = () => {}
   ): void {
     if (!contentUri) {
       return;
@@ -289,19 +348,19 @@ class InPreviewEditingUtil {
    * @param placementName name of the placement
    * @param insertAt optional insertion index
    */
-  static insertInPlacement(context:Content, contentToInsert: Content, placementName: string, insertAt = -1) {
+  static insertInPlacement(context: Content, contentToInsert: Content, placementName: string, insertAt = -1) {
     const params = {
       context: context,
       contentToInsert: contentToInsert,
       placementName: placementName,
-      insertAt: insertAt,
+      insertAt: insertAt
     };
 
     let remoteServiceMethod = new RemoteServiceMethod("ipe/pagegrid/placement/insert", "POST", true);
     remoteServiceMethod.request(
       params,
-      (response) => {console.log("RESPONSE", response)},
-      (error) => {console.log("ERROR", error)});
+      (response) => {console.log("RESPONSE", response);},
+      (error) => {console.log("ERROR", error);});
   }
 
   static #getGenericEditor(descriptor: CapPropertyDescriptor) {
@@ -309,41 +368,42 @@ class InPreviewEditingUtil {
 
     if (descriptor) {
       switch (descriptor.type) {
-        case CapPropertyDescriptorType.BLOB:
-          const blobPropertyDescriptor = cast(BlobPropertyDescriptor, descriptor);
-          const mimeParts = blobPropertyDescriptor.contentType.split("/");
-          switch (mimeParts[0]) {
-            case "text":
-              propertyField = Config(TextBlobPropertyField);
-              break;
-            default:
-              propertyField = Config(BlobPropertyField);
-              cast(BlobPropertyField, propertyField).contentType = blobPropertyDescriptor.contentType;
-          }
-          break;
-        case CapPropertyDescriptorType.INTEGER:
-          propertyField = Config(IntegerPropertyField);
-          break;
-        case CapPropertyDescriptorType.DATE:
-          propertyField = Config(DateTimePropertyField);
-          as(propertyField, DateTimePropertyField).timeZoneHidden = true;
-          break;
-        case CapPropertyDescriptorType.STRING:
-          propertyField = Config(StringPropertyField);
-          break;
-        case CapPropertyDescriptorType.LINK:
-          propertyField = Config(LinkListPropertyField, {
-            showThumbnails: true,
-          });
-          break;
-        case CapPropertyDescriptorType.MARKUP:
-          const markupGrammar = cast(MarkupPropertyDescriptor, descriptor).grammar;
-          if (markupGrammar) {
-            propertyField = markupPropertyFieldConfigMap.getConfig(markupGrammar);
-          }
+      case CapPropertyDescriptorType.BLOB:
+        const blobPropertyDescriptor = cast(BlobPropertyDescriptor, descriptor);
+        const mimeParts = blobPropertyDescriptor.contentType.split("/");
+        switch (mimeParts[0]) {
+        case "text":
+          propertyField = Config(TextBlobPropertyField);
           break;
         default:
-          propertyField = Config(EmptyState);
+          propertyField = Config(BlobPropertyField);
+          cast(BlobPropertyField, propertyField).contentType = blobPropertyDescriptor.contentType;
+        }
+        break;
+      case CapPropertyDescriptorType.INTEGER:
+        propertyField = Config(IntegerPropertyField);
+        break;
+      case CapPropertyDescriptorType.DATE:
+        propertyField = Config(DateTimePropertyField);
+        as(propertyField, DateTimePropertyField).timeZoneHidden = true;
+        break;
+      case CapPropertyDescriptorType.STRING:
+        propertyField = Config(StringPropertyField);
+        break;
+      case CapPropertyDescriptorType.LINK:
+        propertyField = Config(LinkListPropertyField, {
+          showThumbnails: true
+        });
+        break;
+      case CapPropertyDescriptorType.MARKUP:
+        let markupGrammar = cast(MarkupPropertyDescriptor, descriptor).grammar;
+        if (!markupGrammar) {
+          console.warn("[InPreviewEditingUtil] No grammar defined for markup property descriptor. Using fallback configuration.");
+        }
+        propertyField = markupPropertyFieldConfigMap.getConfig(markupGrammar);
+        break;
+      default:
+        propertyField = Config(EmptyState);
       }
     }
 
