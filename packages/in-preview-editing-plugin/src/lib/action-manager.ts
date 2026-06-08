@@ -5,7 +5,9 @@ import {
   MESSAGE_TYPE_START_PUBLICATION, MESSAGE_TYPE_ROLLBACK_REQUEST, MESSAGE_TYPE_SHOW_EDITOR,
   MESSAGE_TYPE_PROPERTY_UPDATE_REQUEST, MESSAGE_TYPE_CONTENT_METADATA_REQUEST, MESSAGE_TYPE_CONTENT_METADATA_RESPONSE,
   MESSAGE_TYPE_CONTENT_METRICS_REQUEST, MESSAGE_TYPE_CONTENT_METRICS_RESPONSE,
-  MESSAGE_TYPE_PUBLISH_REQUEST, MESSAGE_TYPE_UPDATE_USER_PREFERENCES_REQUEST
+  MESSAGE_TYPE_QUICK_CREATE_TEMPLATES_REQUEST, MESSAGE_TYPE_QUICK_CREATE_TEMPLATES_RESPONSE,
+  MESSAGE_TYPE_PUBLISH_REQUEST, MESSAGE_TYPE_UPDATE_USER_PREFERENCES_REQUEST,
+  MESSAGE_TYPE_INSERT_QUICK_CREATE_CONTENT_IN_PLACEMENT_REQUEST
 } from "./messaging";
 
 import { Observable } from "rxjs";
@@ -57,7 +59,7 @@ class PDEActionManager extends EventTarget {
       return null;
     }
 
-    console.log("[IPE] Requesting content metadata: ", {contentRef, propertyName, breadcrumbIds});
+    console.log("[IPE] Requesting content metadata: ", { contentRef, propertyName, breadcrumbIds });
 
     return pdeBridge.request<Record<string, unknown>, TResponse>(
       MESSAGE_TYPE_CONTENT_METADATA_REQUEST,
@@ -75,6 +77,26 @@ class PDEActionManager extends EventTarget {
       { contentRef },
       { responseType: MESSAGE_TYPE_CONTENT_METRICS_RESPONSE, timeoutMs, skipCorrelation: true },
     );
+  };
+
+  requestQuickCreateTemplates = <TResponse = unknown>(
+    timeoutMs = 5000,
+  ): Observable<TResponse> => {
+    return pdeBridge.request<Record<string, unknown>, TResponse>(
+      MESSAGE_TYPE_QUICK_CREATE_TEMPLATES_REQUEST, {}, {
+        responseType: MESSAGE_TYPE_QUICK_CREATE_TEMPLATES_RESPONSE,
+        timeoutMs,
+        skipCorrelation: true
+      },
+    );
+  };
+
+  requestQuickCreateContentInsertInPlacement = (contentRef: string, templateRef: string, placement: string) => {
+    pdeBridge.send(MESSAGE_TYPE_INSERT_QUICK_CREATE_CONTENT_IN_PLACEMENT_REQUEST, {
+      contentRef,
+      templateRef,
+      placement,
+    });
   };
 
   requestContentPublication = (contentRef: string, propertyName: string) => {

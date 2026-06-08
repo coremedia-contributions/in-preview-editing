@@ -9,6 +9,8 @@ import { LoaderCircleIcon, SidebarIcon } from "lucide-react";
 import toolbarStyles from "../styles/components/Toolbar.module.css";
 import buttonStyles from "../styles/components/Button.module.css";
 import { useTranslation } from "react-i18next";
+import { isPlacement } from "../lib/pagegrid.ts";
+import QuickCreateMenu from "./QuickCreateMenu.tsx";
 
 interface Props {
 }
@@ -24,12 +26,15 @@ const IPEOverlay: React.FC<Props> = () => {
   const { t } = useTranslation();
   const [position, setPosition] = useState<Position>({ top: 0, left: 0 });
   const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
+  const [quickCreateMenuOpen, setQuickCreateMenuOpen] = useState(false);
+  const isPlacementElement = isPlacement(targetEl);
 
   useEffect(() => {
     console.log("Target element changed:", targetEl);
 
     if (!targetEl) {
       setActionsMenuOpen(false);
+      setQuickCreateMenuOpen(false);
       return;
     }
 
@@ -43,6 +48,7 @@ const IPEOverlay: React.FC<Props> = () => {
 
       // TODO: Auto close menu when switching target elements
       setActionsMenuOpen(false);
+      setQuickCreateMenuOpen(false);
     };
 
     requestAnimationFrame(updatePos);
@@ -112,6 +118,9 @@ const IPEOverlay: React.FC<Props> = () => {
               </>
             )}
           </Toolbar.Group>
+          {isPlacementElement && (
+            <QuickCreateMenu open={quickCreateMenuOpen} onOpenChange={setQuickCreateMenuOpen}/>
+          )}
         </>
       )}
 

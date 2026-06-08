@@ -124,35 +124,7 @@ export function isNavNode(element: HTMLElement) {
   return closestNavNode !== null;
 }
 
-export function findPlacementElement(element: HTMLElement) {
-  return element.closest<HTMLElement>("div[data-cm-metadata*=\"properties.placement-\"]");
-}
-
-export function findPlacementItemsWrapper(element: HTMLElement) {
-  return element.closest<HTMLElement>("div[data-cm-metadata*=\"properties.items\"]");
-}
-
-export function findAllPlacementItems(placementItemsWrapper: HTMLElement | null) {
-  return getTopLevelMetadataNodes(placementItemsWrapper);
-}
-
-export function findPlacementItemElement(element: HTMLElement) {
-  const placementContainer = findPlacementElement(element);
-  if (!placementContainer) {
-    return false;
-  }
-
-  const placementItemsWrapper = findPlacementItemsWrapper(element);
-  const placementItems = findAllPlacementItems(placementItemsWrapper);
-
-  return placementItems.find(node => node.contains(element)) || null;
-}
-
-export function isPlacementItem(element: HTMLElement) {
-  return findPlacementItemElement(element) === element;
-}
-
-function getTopLevelMetadataNodes(parent: HTMLElement | null) {
+export function getTopLevelMetadataNodes(parent: HTMLElement | null) {
   const result: HTMLElement[] = [];
 
   function walk(node: HTMLElement) {
