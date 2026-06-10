@@ -12,6 +12,8 @@ import ImageMapEditor from "@coremedia/studio-client.main.image-map-editor-compo
 import AttachInPreviewEditingManagerPlugin from "./plugins/AttachInPreviewEditingManagerPlugin";
 import propertyEditorRegistry from "./editors/propertyEditorRegistry";
 import AddInPreviewEditingTogglePlugin from "./plugins/AddInPreviewEditingTogglePlugin";
+import CKEditor5RichTextPropertyFieldDelegatePlugin
+  from "@coremedia/studio-client.main.editor-components/sdk/premular/fields/richtext/CKEditor5RichTextPropertyFieldDelegatePlugin";
 
 interface InPreviewEditingStudioPluginConfig extends Config<StudioPlugin> {}
 
@@ -70,6 +72,13 @@ class InPreviewEditingStudioPlugin extends StudioPlugin {
       "teaserText",
       Config(RichTextPropertyField, {
         editorType: "withStyles",
+        ...ConfigUtils.append({
+          plugins: [
+            Config(CKEditor5RichTextPropertyFieldDelegatePlugin, {
+              delegatePropertyName: "detailText",
+            }),
+          ],
+        }),
       }),
     );
     propertyEditorRegistry.registerEditor(
