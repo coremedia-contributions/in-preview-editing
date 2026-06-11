@@ -59,6 +59,10 @@
     color: var(--color-gray-900);
   }
 
+  &[data-disabled] {
+    opacity: 0.5;
+  }
+
   &[role='combobox'] {
     min-width: 8rem;
     justify-content: space-between;

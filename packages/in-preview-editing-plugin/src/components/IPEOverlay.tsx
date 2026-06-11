@@ -22,7 +22,7 @@ interface Position {
 
 const IPEOverlay: React.FC<Props> = () => {
   const toolbarRef = useRef<HTMLDivElement | null>(null);
-  const { targetEl, contentMetadata, inlineEditActive, setInlineEditActive, showSidebar, setShowSidebar, isLoading, debugMode } = usePluginContext();
+  const { targetEl, contentMetadata, inlineEditActive, setInlineEditActive, showSidebar, setShowSidebar, isLoading, debugMode, isSectionItemToolbarHovered } = usePluginContext();
   const { t } = useTranslation();
   const [position, setPosition] = useState<Position>({ top: 0, left: 0 });
   const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
@@ -61,7 +61,7 @@ const IPEOverlay: React.FC<Props> = () => {
     };
   }, [targetEl]);
 
-  if (!targetEl) return null;
+  if (!targetEl || isSectionItemToolbarHovered) return null;
 
   function editBtnHandler() {
     const inline = contentMetadata?.propertyType === "STRING"; // TODO: Read from property descriptor only enable for string properties

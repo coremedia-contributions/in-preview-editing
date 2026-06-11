@@ -19,9 +19,6 @@ const SVGIcon: FC<Props> = ({ svg, className = iconStyles.Icon, size = 22}) => {
         const element = node as Element;
         const existingClass = element.attribs.class ?? "";
         const mergedClass = [existingClass, className].filter(Boolean).join(" ");
-
-
-
         return (
           <svg {...element.attribs} className={mergedClass} width={`${size}px`} height={`${size}px`}>
             {domToReact(element.children as DOMNode[])}

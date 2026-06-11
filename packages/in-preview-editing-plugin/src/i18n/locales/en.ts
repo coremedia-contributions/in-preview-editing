@@ -30,6 +30,7 @@ const en = {
       },
     },
     sectionItemActionsMenu: {
+      loading: "In progress ...",
       moveUp: "Move Up",
       moveDown: "Move Down",
       duplicate: "Duplicate",

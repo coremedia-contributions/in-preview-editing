@@ -7,6 +7,10 @@
   align-items: center;
   justify-content: stretch;
   padding: 0.25rem;
+
+  svg {
+    fill: var(--ipe-accent-color-dark);
+  }
 }
 
 .ToggleButton {

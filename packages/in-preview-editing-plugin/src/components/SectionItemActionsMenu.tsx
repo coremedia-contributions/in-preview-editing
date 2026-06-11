@@ -7,7 +7,8 @@ import {
   SECTION_ITEM_MARKER,
   duplicateSectionItem,
   deleteSectionItem,
-  moveSectionItemUp, moveSectionItemDown
+  moveSectionItemUp, moveSectionItemDown, isFirstItemInSection, isLastItemInSection,
+  itemCountInSection
 } from "../lib/section-utils.ts";
 import { usePluginContext } from "../context/PluginContext.tsx";
 import { usePortalContainer } from "../hooks/usePortalContainer.ts";
@@ -15,7 +16,40 @@ import toolbarStyles from "../styles/components/Toolbar.module.css";
 import buttonStyles from "../styles/components/Button.module.css";
 import sectionItemActionsMenuStyles from "../styles/components/SectionItemActionsMenu.module.css";
 import tooltipStyles from "../styles/components/Tooltip.module.css";
-import { CopyPlusIcon, MoveDownIcon, MoveUpIcon, TrashIcon } from "lucide-react";
+import { CopyPlusIcon, LoaderCircleIcon, MoveDownIcon, MoveUpIcon, TrashIcon } from "lucide-react";
+
+interface TooltipButtonProps {
+  label: string;
+  icon: React.ReactNode;
+  onClick: (e: React.MouseEvent) => void;
+  disabled?: boolean;
+  className?: string;
+  container: HTMLElement | null | undefined;
+}
+
+const TooltipButton: React.FC<TooltipButtonProps> = ({ label, icon, onClick, disabled, className, container }) => (
+  <Tooltip.Root>
+    <Tooltip.Trigger
+      render={
+        <Toolbar.Button
+          className={clsx(toolbarStyles.Button, sectionItemActionsMenuStyles.TooltipButton, className)}
+          disabled={disabled}
+          onClick={onClick}>
+          {icon}
+        </Toolbar.Button>
+      }
+    >
+      {label}
+    </Tooltip.Trigger>
+    <Tooltip.Portal container={container}>
+      <Tooltip.Positioner sideOffset={8}>
+        <Tooltip.Popup className={tooltipStyles.Tooltip}>
+          {label}
+        </Tooltip.Popup>
+      </Tooltip.Positioner>
+    </Tooltip.Portal>
+  </Tooltip.Root>
+);
 
 interface SectionItemToolbarProps {
   sectionItem: HTMLElement;
@@ -26,16 +60,15 @@ const SectionItemToolbar: React.FC<SectionItemToolbarProps> = ({ sectionItem }) 
   const { setIsSectionItemToolbarHovered } = usePluginContext();
   const container = usePortalContainer();
   const [position, setPosition] = useState({ top: 0, left: 0 });
+  const [loading, setLoading] = useState<boolean>(false);
 
   const updatePosition = useCallback(() => {
     const rect = sectionItem.getBoundingClientRect();
-    console.log("updatePosition", sectionItem, rect);
     setPosition({
       top: Math.round(rect.bottom + window.scrollY),
       left: Math.round(rect.left + window.scrollX + rect.width / 2),
     });
   }, [sectionItem]);
-
 
   useEffect(() => {
     updatePosition();
@@ -51,30 +84,30 @@ const SectionItemToolbar: React.FC<SectionItemToolbarProps> = ({ sectionItem }) 
 
   const onMoveUpClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    setLoading(true);
     await moveSectionItemUp(sectionItem);
-    // Position updates are driven by the MutationObserver in SectionItemActionsMenu,
-    // which fires once the DOM actually reflects the server-side change.
+    window.setTimeout(() => setLoading(false), 2000);
   };
 
   const onMoveDownClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    setLoading(true);
     await moveSectionItemDown(sectionItem);
-    // Position updates are driven by the MutationObserver in SectionItemActionsMenu,
-    // which fires once the DOM actually reflects the server-side change.
+    window.setTimeout(() => setLoading(false), 2000);
   };
 
   const onDuplicateItemClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    setLoading(true);
     await duplicateSectionItem(sectionItem);
-    // Position updates are driven by the MutationObserver in SectionItemActionsMenu,
-    // which fires once the DOM actually reflects the server-side change.
+    window.setTimeout(() => setLoading(false), 2000);
   };
 
   const onDeleteItemClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    setLoading(true);
     await deleteSectionItem(sectionItem);
-    // Position updates are driven by the MutationObserver in SectionItemActionsMenu,
-    // which fires once the DOM actually reflects the server-side change.
+    window.setTimeout(() => setLoading(false), 2000);
   };
 
   return (
@@ -84,94 +117,53 @@ const SectionItemToolbar: React.FC<SectionItemToolbarProps> = ({ sectionItem }) 
       onMouseEnter={() => setIsSectionItemToolbarHovered(true)}
       onMouseLeave={() => setIsSectionItemToolbarHovered(false)}
     >
-      <Tooltip.Provider>
+      {loading && <Toolbar.Button className={clsx(toolbarStyles.Button, buttonStyles.readonly)}>
+        <LoaderCircleIcon width={16} height={16}
+                          style={{ marginRight: ".25rem" }}
+                          className="loader-animated"/>
+        {t("sectionItemActionsMenu.loading")}
+      </Toolbar.Button>
+      }
 
-        <Tooltip.Root>
-          <Tooltip.Trigger
-            render={
-              <Toolbar.Button
-                className={toolbarStyles.Button}
-                onClick={onMoveUpClick}>
-                <MoveUpIcon />
-              </Toolbar.Button>
-            }
-          >
-            {t("sectionItemActionsMenu.moveUp")}
-          </Tooltip.Trigger>
-          <Tooltip.Portal container={container}>
-            <Tooltip.Positioner sideOffset={8}>
-              <Tooltip.Popup className={tooltipStyles.Tooltip}>
-                {t("sectionItemActionsMenu.moveUp")}
-              </Tooltip.Popup>
-            </Tooltip.Positioner>
-          </Tooltip.Portal>
-        </Tooltip.Root>
+      {!loading && (
+        <Tooltip.Provider>
+          <TooltipButton
+            label={t("sectionItemActionsMenu.moveUp")}
+            icon={<MoveUpIcon/>}
+            onClick={onMoveUpClick}
+            disabled={isFirstItemInSection(sectionItem)}
+            container={container}
+          />
 
-        <Tooltip.Root>
-          <Tooltip.Trigger
-            render={
-              <Toolbar.Button
-                className={toolbarStyles.Button}
-                onClick={onMoveDownClick}>
-                <MoveDownIcon />
-              </Toolbar.Button>
-            }
-          >
-            {t("sectionItemActionsMenu.moveDown")}
-          </Tooltip.Trigger>
-          <Tooltip.Portal container={container}>
-            <Tooltip.Positioner sideOffset={8}>
-              <Tooltip.Popup className={tooltipStyles.Tooltip}>
-                {t("sectionItemActionsMenu.moveDown")}
-              </Tooltip.Popup>
-            </Tooltip.Positioner>
-          </Tooltip.Portal>
-        </Tooltip.Root>
+          <TooltipButton
+            label={t("sectionItemActionsMenu.moveDown")}
+            icon={<MoveDownIcon/>}
+            onClick={onMoveDownClick}
+            disabled={isLastItemInSection(sectionItem)}
+            container={container}
+          />
 
-        <Toolbar.Separator className={toolbarStyles.Separator} />
+          <Toolbar.Separator className={toolbarStyles.Separator}/>
 
-        <Tooltip.Root>
-          <Tooltip.Trigger
-            render={
-              <Toolbar.Button
-                className={toolbarStyles.Button}
-                onClick={onDuplicateItemClick}>
-                <CopyPlusIcon/>
-              </Toolbar.Button>
-            }
-          >
-            {t("sectionItemActionsMenu.duplicate")}
-          </Tooltip.Trigger>
-          <Tooltip.Portal container={container}>
-            <Tooltip.Positioner sideOffset={8}>
-              <Tooltip.Popup className={tooltipStyles.Tooltip}>
-                {t("sectionItemActionsMenu.duplicate")}
-              </Tooltip.Popup>
-            </Tooltip.Positioner>
-          </Tooltip.Portal>
-        </Tooltip.Root>
+          <TooltipButton
+            label={t("sectionItemActionsMenu.duplicate")}
+            icon={<CopyPlusIcon/>}
+            onClick={onDuplicateItemClick}
+            container={container}
+          />
 
-        <Tooltip.Root>
-          <Tooltip.Trigger
-            render={
-              <Toolbar.Button
-                className={clsx(toolbarStyles.Button, buttonStyles.destructive)}
-                onClick={onDeleteItemClick}>
-                <TrashIcon/>
-              </Toolbar.Button>
-            }
-          >
-            {t("sectionItemActionsMenu.delete")}
-          </Tooltip.Trigger>
-          <Tooltip.Portal container={container}>
-            <Tooltip.Positioner sideOffset={8}>
-              <Tooltip.Popup className={tooltipStyles.Tooltip}>
-                {t("sectionItemActionsMenu.delete")}
-              </Tooltip.Popup>
-            </Tooltip.Positioner>
-          </Tooltip.Portal>
-        </Tooltip.Root>
-      </Tooltip.Provider>
+          <Toolbar.Separator className={toolbarStyles.Separator}/>
+
+          <TooltipButton
+            label={t("sectionItemActionsMenu.delete")}
+            icon={<TrashIcon/>}
+            onClick={onDeleteItemClick}
+            disabled={itemCountInSection(sectionItem) === 1}
+            className={buttonStyles.destructive}
+            container={container}
+          />
+        </Tooltip.Provider>
+      )}
     </Toolbar.Root>
   );
 };
@@ -241,7 +233,7 @@ export const SectionItemActionsMenu: React.FC = () => {
   return (
     <>
       {sectionItems.map((item, index) => (
-        <SectionItemToolbar key={index} sectionItem={item} />
+        <SectionItemToolbar key={index} sectionItem={item}/>
       ))}
     </>
   );

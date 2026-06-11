@@ -30,7 +30,11 @@ const de = {
       },
     },
     sectionItemActionsMenu: {
+      loading: "In Bearbeitung ...",
+      moveUp: "Nach oben",
+      moveDown: "Nach unten",
       duplicate: "Duplizieren",
+      delete: "Löschen",
     },
     actionsMenu: {
       openInTab: "In Tab öffnen",
