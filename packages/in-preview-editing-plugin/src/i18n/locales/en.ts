@@ -29,6 +29,12 @@ const en = {
         dimming: "Dimming",
       },
     },
+    sectionItemActionsMenu: {
+      moveUp: "Move Up",
+      moveDown: "Move Down",
+      duplicate: "Duplicate",
+      delete: "Delete",
+    },
     actionsMenu: {
       openInTab: "Open in Tab",
       showInLibrary: "Show in Library",

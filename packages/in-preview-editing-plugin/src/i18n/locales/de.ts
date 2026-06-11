@@ -29,6 +29,9 @@ const de = {
         dimming: "Abdunklung",
       },
     },
+    sectionItemActionsMenu: {
+      duplicate: "Duplizieren",
+    },
     actionsMenu: {
       openInTab: "In Tab öffnen",
       showInLibrary: "In Bibliothek anzeigen",

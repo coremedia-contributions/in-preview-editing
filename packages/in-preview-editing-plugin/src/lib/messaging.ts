@@ -24,6 +24,8 @@ export const MESSAGE_TYPE_PUBLISH_REQUEST = "com.coremedia.pde.content.publish.r
 export const MESSAGE_TYPE_ROLLBACK_REQUEST = "com.coremedia.pde.content.rollback.request";
 export const MESSAGE_TYPE_PROPERTY_UPDATE_REQUEST = "com.coremedia.pde.propertyUpdate";
 export const MESSAGE_TYPE_UPDATE_USER_PREFERENCES_REQUEST = "com.coremedia.pde.updateUserPreferenceRequest";
+export const MESSAGE_TYPE_SECTION_ITEM_ACTION_REQUEST = "com.coremedia.pde.section.item.action.request";
+export const MESSAGE_TYPE_SECTION_ITEM_ACTION_RESPONSE = "com.coremedia.pde.section.item.action.response";
 
 // ---------------------------------------------------------------------------
 // Shared bridge singleton

@@ -1,0 +1,8 @@
+.Toolbar {
+  position: absolute;
+  transform: translateX(-50%);
+  border-radius: 0 0 0.375rem 0.375rem;
+
+  /*needs to be lower than spotlight*/
+  z-index: 98;
+}

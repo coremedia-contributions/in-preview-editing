@@ -39,6 +39,8 @@ export interface PluginContextValue {
   accentColor: string;
   setAccentColor: (accentColor: string) => void;
   debugMode: boolean;
+  isSectionItemToolbarHovered: boolean;
+  setIsSectionItemToolbarHovered: (hovered: boolean) => void;
 }
 
 const PluginContext = createContext<PluginContextValue | undefined>(undefined);
@@ -68,6 +70,7 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
   const [showSettings, setShowSettings] = useState(false);
   const [accentColor, setAccentColor] = useState<string>("lightseagreen");
   const [debugMode, setDebugMode] = useState(false);
+  const [isSectionItemToolbarHovered, setIsSectionItemToolbarHovered] = useState(false);
 
   const inlineEditActiveRef = useRef(inlineEditActive);
   useEffect(() => {
@@ -111,6 +114,7 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
       setIsActive(false);
       setTargetEl(undefined);
       setContentMetadata(undefined);
+      setIsSectionItemToolbarHovered(false);
       metadataSubscriptionRef.current?.unsubscribe();
       metadataSubscriptionRef.current = null;
     };
@@ -257,6 +261,7 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
     showSettings, setShowSettings,
     accentColor, setAccentColor,
     debugMode,
+    isSectionItemToolbarHovered, setIsSectionItemToolbarHovered,
   };
 
   return (

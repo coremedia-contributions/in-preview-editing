@@ -3,14 +3,14 @@ import { usePluginContext } from "../context/PluginContext.tsx";
 import { markerBorder, markerPadding } from "./Highlighter.tsx";
 
 export const Spotlight: React.FC = () => {
-  const { targetEl, useSpotlight, dimmerValue } = usePluginContext();
+  const { targetEl, useSpotlight, dimmerValue, isSectionItemToolbarHovered } = usePluginContext();
   const overlayRef = useRef<HTMLDivElement>(null);
 
   const updateSpotlight = () => {
     const overlay = overlayRef.current;
     if (!overlay) return;
 
-    if (!targetEl) {
+    if (!targetEl || isSectionItemToolbarHovered) {
       overlay.style.clipPath = "";
       overlay.style.opacity = "0";
       return;
@@ -34,7 +34,7 @@ export const Spotlight: React.FC = () => {
 
   useEffect(() => {
     updateSpotlight();
-  }, [targetEl, useSpotlight, dimmerValue]);
+  }, [targetEl, useSpotlight, dimmerValue, isSectionItemToolbarHovered]);
 
   useEffect(() => {
     window.addEventListener("scroll", updateSpotlight, true);

@@ -5,6 +5,7 @@ import { PluginContextProvider } from "./context/PluginContext.tsx";
 import { Highlighter } from "./components/Highlighter.tsx";
 import { Spotlight } from "./components/Spotlight.tsx";
 import Sidebar from "./components/Sidebar.tsx";
+import { SectionItemActionsMenu } from "./components/SectionItemActionsMenu.tsx";
 import { IPE_ACTIVATE_EVENT, IPE_DEACTIVATE_EVENT, type IPEActivateEventDetail } from "./events/events.ts";
 import {
   MESSAGE_TYPE_ACTIVATE_IN_PAGE_EDITING,
@@ -25,6 +26,8 @@ import sidebarStyles from "./styles/components/Sidebar.module.css?inline";
 import collapsiblePanelStyles from "./styles/components/CollapsiblePanel.module.css?inline";
 import dialogStyles from "./styles/components/Dialog.module.css?inline";
 import fieldsetStyles from "./styles/components/Fieldset.module.css?inline";
+import sectionItemActionsMenuStyles from "./styles/components/SectionItemActionsMenu.module.css?inline";
+import tooltipStyles from "./styles/components/Tooltip.module.css?inline";
 import SettingsDialog from "./components/SettingsDialog.tsx";
 import type { PluginFeatures } from "./types/PluginFeatures.ts";
 
@@ -62,8 +65,12 @@ export function initPlugin(): void {
   dialogSheet.replaceSync(dialogStyles);
   const fieldsetSheet = new CSSStyleSheet();
   fieldsetSheet.replaceSync(fieldsetStyles);
+  const sectionItemActionsMenuSheet = new CSSStyleSheet();
+  sectionItemActionsMenuSheet.replaceSync(sectionItemActionsMenuStyles);
+  const tooltipSheet = new CSSStyleSheet();
+  tooltipSheet.replaceSync(tooltipStyles);
 
-  shadow.adoptedStyleSheets = [pluginSheet, buttonSheet, iconSheet, menuSheet, toolbarSheet, breadcrumbSelectorSheet, sidebarSheet, collapsiblePanelSheet, dialogSheet, fieldsetSheet];
+  shadow.adoptedStyleSheets = [pluginSheet, buttonSheet, iconSheet, menuSheet, toolbarSheet, breadcrumbSelectorSheet, sidebarSheet, collapsiblePanelSheet, dialogSheet, fieldsetSheet, sectionItemActionsMenuSheet, tooltipSheet];
 
   // Create mount point for React inside shadow DOM
   const mount = document.createElement("div");
@@ -86,6 +93,7 @@ export function initPlugin(): void {
       <Spotlight/>
       <Sidebar/>
       <SettingsDialog/>
+      <SectionItemActionsMenu/>
     </PluginContextProvider>
   );
 
