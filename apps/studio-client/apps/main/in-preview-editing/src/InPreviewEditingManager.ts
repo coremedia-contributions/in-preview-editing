@@ -59,6 +59,8 @@ class InPreviewEditingManager {
   static readonly MESSAGE_TYPE_QUICK_CREATE_TEMPLATES_REQUEST: string = "com.coremedia.pde.quickcreate.templates.request";
   static readonly MESSAGE_TYPE_QUICK_CREATE_TEMPLATES_RESPONSE: string = "com.coremedia.pde.quickcreate.templates.response";
   static readonly MESSAGE_TYPE_INSERT_QUICK_CREATE_CONTENT_IN_PLACEMENT_REQUEST: string = "com.coremedia.pde.quickcreate.placement.insert.request";
+  static readonly MESSAGE_TYPE_SECTION_ITEM_ACTION_REQUEST: string = "com.coremedia.pde.section.item.action.request";
+  static readonly MESSAGE_TYPE_SECTION_ITEM_ACTION_RESPONSE: string = "com.coremedia.pde.section.item.action.response";
 
   constructor(previewIFrame: PreviewIFrame) {
     this.#previewIframe = previewIFrame;
@@ -119,6 +121,13 @@ class InPreviewEditingManager {
           iframeEl,
           InPreviewEditingManager.MESSAGE_TYPE_INSERT_QUICK_CREATE_CONTENT_IN_PLACEMENT_REQUEST,
           bind(this, this.#quickCreateInsertInPlacementListener)
+        );
+
+        // register section item action listener
+        messageService.registerMessageListener(
+          iframeEl,
+          InPreviewEditingManager.MESSAGE_TYPE_SECTION_ITEM_ACTION_REQUEST,
+          bind(this, this.#sectionItemActionListener)
         );
 
         // register open content listener
@@ -329,6 +338,23 @@ class InPreviewEditingManager {
     } catch (e) {
       console.warn("[InPreviewEditingManager] Error during quick create content insertion: ", e);
     }
+  }
+
+  async #sectionItemActionListener(event: { contentRef: string, sectionItemId: string, action: string }) {
+    try {
+      const contentRepository = session._.getConnection().getContentRepository();
+      const sectionContent = await contentRepository.getContent(event.contentRef).load();
+      const actionResponse = await InPreviewEditingUtil.triggerSectionItemAction(sectionContent, event.sectionItemId, event.action);
+      this.#sendSectionItemActionResponse(actionResponse);
+    } catch (e) {
+      console.warn("[InPreviewEditingManager] Error during section item action handling: ", e);
+    }
+  }
+
+  #sendSectionItemActionResponse(actionResponse: any): void {
+    const contentWindow = this.#previewIframe.getContentWindow();
+    console.log("[InPreviewEditingManager] Sending section item action response: ", actionResponse);
+    messageService.sendMessage(contentWindow, InPreviewEditingManager.MESSAGE_TYPE_SECTION_ITEM_ACTION_RESPONSE, actionResponse);
   }
 
   #calculateContentMetadata(contentRef: string, propertyName: string | null, breadcrumbIds: string[]) {

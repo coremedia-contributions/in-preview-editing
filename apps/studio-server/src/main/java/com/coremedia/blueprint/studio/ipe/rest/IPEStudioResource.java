@@ -1,8 +1,9 @@
 package com.coremedia.blueprint.studio.ipe.rest;
 
-import com.coremedia.blueprint.base.pagegrid.PageGridContentKeywords;
 import com.coremedia.blueprint.studio.ipe.pagegrid.PageGridPlacementService;
 import com.coremedia.blueprint.studio.ipe.pagegrid.PlacementNotFoundException;
+import com.coremedia.blueprint.studio.ipe.sections.SectionNotFoundException;
+import com.coremedia.blueprint.studio.ipe.sections.SectionsService;
 import com.coremedia.cap.content.Content;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import org.slf4j.Logger;
@@ -26,10 +27,11 @@ public class IPEStudioResource {
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final PageGridPlacementService pageGridPlacementService;
+  private final SectionsService sectionsService;
 
-
-  public IPEStudioResource(PageGridPlacementService pageGridPlacementService) {
+  public IPEStudioResource(PageGridPlacementService pageGridPlacementService, SectionsService sectionsService) {
     this.pageGridPlacementService = pageGridPlacementService;
+    this.sectionsService = sectionsService;
   }
 
   /**
@@ -64,6 +66,34 @@ public class IPEStudioResource {
 
     List<Content> placementItems = pageGridPlacementService.getPlacementItems(pageContent, placementName);
     InsertIntoPlacementResponse responseBody = new InsertIntoPlacementResponse(true, placementName, pageContent, placementItems, null);
+    return ResponseEntity.ok(responseBody);
+  }
+
+  @PostMapping(value = "section/item/action")
+  public ResponseEntity<SectionItemActionResponse> sectionItemAction(@RequestBody @NonNull SectionItemActionRequest request) {
+    Content sectionContent = request.sectionContent();
+
+    if (sectionContent.isCheckedOut() && !sectionContent.isCheckedOutByCurrentSession()) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Content " + sectionContent + " is checked out by another user.");
+    }
+
+    try {
+      switch (request.action()) {
+        case DELETE -> sectionsService.deleteSectionItem(sectionContent, request.sectionItemId());
+        case DUPLICATE -> sectionsService.duplicateSectionItem(sectionContent, request.sectionItemId());
+        case MOVE_DOWN -> sectionsService.moveSectionItem(sectionContent, request.sectionItemId(), SectionsService.MoveDirection.DOWN);
+        case MOVE_UP -> sectionsService.moveSectionItem(sectionContent, request.sectionItemId(), SectionsService.MoveDirection.UP);
+      }
+    } catch (SectionNotFoundException e) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+    } catch (IllegalArgumentException e) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+    } catch (Exception e) {
+      LOG.error("Failed to perform action {} on section '{}' of content {}", request.action(), request.sectionItemId(), sectionContent, e);
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error during section item action.");
+    }
+
+    SectionItemActionResponse responseBody = new SectionItemActionResponse(true, request.action(), sectionContent, null);
     return ResponseEntity.ok(responseBody);
   }
 

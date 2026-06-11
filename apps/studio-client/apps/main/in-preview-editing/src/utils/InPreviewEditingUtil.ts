@@ -356,11 +356,44 @@ class InPreviewEditingUtil {
       insertAt: insertAt
     };
 
-    let remoteServiceMethod = new RemoteServiceMethod("ipe/pagegrid/placement/insert", "POST", true);
+    const remoteServiceMethod = new RemoteServiceMethod("ipe/pagegrid/placement/insert", "POST", true);
     remoteServiceMethod.request(
       params,
       (response) => {console.log("RESPONSE", response);},
       (error) => {console.log("ERROR", error);});
+  }
+
+  /**
+   * Trigger action on section item.
+   *
+   * @param content section content containing the item
+   * @param sectionItemId id of the section item
+   * @param action action to perform
+   */
+  static triggerSectionItemAction(content: Content, sectionItemId: string, action: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      try {
+        const params = {
+          sectionContent: content,
+          sectionItemId: sectionItemId,
+          action: action
+        };
+
+        const remoteServiceMethod = new RemoteServiceMethod("ipe/section/item/action", "POST", true);
+        remoteServiceMethod.request(
+          params,
+          (response) => {
+            console.log("RESPONSE", response);
+            resolve(response.getResponseJSON());
+          },
+          (error) => {
+            console.log("ERROR", error);
+            reject(error);
+          });
+      } catch (e) {
+        reject(e);
+      }
+    });
   }
 
   static #getGenericEditor(descriptor: CapPropertyDescriptor) {
