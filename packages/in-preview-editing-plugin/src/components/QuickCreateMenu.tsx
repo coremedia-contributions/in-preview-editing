@@ -9,6 +9,7 @@ import { usePluginContext } from "../context/PluginContext.tsx";
 import { findContentId } from "../lib/utils.ts";
 import actionManager from "../lib/action-manager.ts";
 import { SquarePlusIcon } from "lucide-react";
+import type { QuickCreateTemplate, QuickCreateTemplatesResponse } from "../types/QuickCreateTemplate.ts";
 
 interface Props {
   open?: boolean;
@@ -21,11 +22,11 @@ const QuickCreateMenu: FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = controlledOpen !== undefined;
   const isOpen = isControlled ? controlledOpen : internalOpen;
-  const [templates, setTemplates] = useState([]);
+  const [templates, setTemplates] = useState<QuickCreateTemplate[]>([]);
 
   useEffect(() => {
     console.log("Fetch templates");
-    const templatesObservable = PDEActionManager.getInstance().requestQuickCreateTemplates();
+      const templatesObservable = PDEActionManager.getInstance().requestQuickCreateTemplates<QuickCreateTemplatesResponse>();
     if (templatesObservable) {
       templatesObservable.subscribe({
         next: (response) => {
@@ -47,7 +48,7 @@ const QuickCreateMenu: FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
     onOpenChange?.(open);
   };
 
-  const insertQuickCreateContent = (template) => {
+  const insertQuickCreateContent = (template: QuickCreateTemplate) => {
     if (targetEl) {
       const placementElement = findPlacementElement(targetEl);
       const contentId = findContentId(targetEl);
