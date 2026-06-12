@@ -6,6 +6,7 @@ import { Highlighter } from "./components/Highlighter.tsx";
 import { Spotlight } from "./components/Spotlight.tsx";
 import Sidebar from "./components/Sidebar.tsx";
 import { SectionItemActionsMenu } from "./components/SectionItemActionsMenu.tsx";
+import { DragDropIndicator } from "./components/DragDropIndicator.tsx";
 import { IPE_ACTIVATE_EVENT, IPE_DEACTIVATE_EVENT, type IPEActivateEventDetail } from "./events/events.ts";
 import {
   MESSAGE_TYPE_ACTIVATE_IN_PAGE_EDITING,
@@ -94,6 +95,7 @@ export function initPlugin(): void {
       <Sidebar/>
       <SettingsDialog/>
       <SectionItemActionsMenu/>
+      <DragDropIndicator/>
     </PluginContextProvider>
   );
 

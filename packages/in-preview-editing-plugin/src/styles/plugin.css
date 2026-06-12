@@ -78,3 +78,35 @@
 .loader-animated {
   animation: rotate var(--loader-animation-speed) linear infinite;
 }
+
+/* Drop indicator line rendered during section item drag */
+.ipe-drop-indicator {
+  position: absolute;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--ipe-accent-color);
+  pointer-events: none;
+  z-index: 999999;
+  transition: top 60ms ease, left 60ms ease, width 60ms ease;
+}
+
+.ipe-drop-indicator::before,
+.ipe-drop-indicator::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ipe-accent-color);
+}
+
+.ipe-drop-indicator::before {
+  left: -5px;
+}
+
+.ipe-drop-indicator::after {
+  right: -5px;
+}
+

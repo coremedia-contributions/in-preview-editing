@@ -1,3 +1,19 @@
 .pde-edit-input {
   outline: none;
 }
+
+/* Drag & Drop – section items */
+[data-cm-section-item][draggable="true"] {
+  cursor: grab;
+}
+
+[data-cm-section-item].ipe-dragging {
+  opacity: 0.4;
+  cursor: grabbing;
+}
+
+/* Disable text selection while dragging */
+[data-cm-section].ipe-drag-active * {
+  user-select: none;
+}
+
