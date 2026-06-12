@@ -322,10 +322,11 @@ class InPreviewEditingUtil {
     new OpenNavigationEditorDialogAction().execute();
   }
 
-  static async imageUrlToBase64(url: string): Promise<string> {
+  static async imageUrlToBase64(url: string): Promise<string | null> {
     return new Promise(async (resolve, reject) => {
       if (!url) {
-        reject();
+        resolve(null);
+        return;
       }
       const response = await fetch(url);
       const blob = await response.blob();
