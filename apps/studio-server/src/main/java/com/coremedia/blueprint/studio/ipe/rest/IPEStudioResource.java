@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "ipe", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -83,7 +84,11 @@ public class IPEStudioResource {
         case DUPLICATE -> sectionsService.duplicateSectionItem(sectionContent, request.sectionItemId());
         case MOVE_DOWN -> sectionsService.moveSectionItem(sectionContent, request.sectionItemId(), SectionsService.MoveDirection.DOWN);
         case MOVE_UP -> sectionsService.moveSectionItem(sectionContent, request.sectionItemId(), SectionsService.MoveDirection.UP);
-        case MOVE_TO -> sectionsService.moveSectionItemToIndex(sectionContent, request.sectionItemId(), request.actionParams().get("move_to"));
+        case MOVE_TO -> sectionsService.moveSectionItemToIndex(sectionContent, request.sectionItemId(),
+          Optional.ofNullable(request.actionParams().get("move_to"))
+            .map(Object::toString)
+            .map(Integer::valueOf)
+            .orElseThrow(() -> new IllegalArgumentException("Missing or invalid 'move_to' parameter for MOVE_TO action.")));
       }
     } catch (SectionNotFoundException e) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());

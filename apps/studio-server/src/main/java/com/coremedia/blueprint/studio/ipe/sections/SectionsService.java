@@ -164,7 +164,7 @@ public class SectionsService {
    *                                  or the target index is out of bounds
    * @throws SectionNotFoundException if no section with the given {@code sectionItemId} exists
    */
-  boolean moveSectionItemToIndex(@NonNull Content content, @NonNull String sectionItemId, @NonNull Integer moveTo) {
+  public boolean moveSectionItemToIndex(@NonNull Content content, @NonNull String sectionItemId, @NonNull Integer moveTo) {
     LOG.debug("Moving section item {} to index {} in content {}", sectionItemId, moveTo, content.getId());
 
     Struct layoutStruct = getLayoutStruct(content);
