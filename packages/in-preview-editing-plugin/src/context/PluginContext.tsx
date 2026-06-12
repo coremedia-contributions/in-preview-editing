@@ -41,6 +41,8 @@ export interface PluginContextValue {
   debugMode: boolean;
   isSectionItemToolbarHovered: boolean;
   setIsSectionItemToolbarHovered: (hovered: boolean) => void;
+  isDragging: boolean;
+  setIsDragging: (isDragging: boolean) => void;
 }
 
 const PluginContext = createContext<PluginContextValue | undefined>(undefined);
@@ -71,6 +73,7 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
   const [accentColor, setAccentColor] = useState<string>("lightseagreen");
   const [debugMode, setDebugMode] = useState(false);
   const [isSectionItemToolbarHovered, setIsSectionItemToolbarHovered] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const inlineEditActiveRef = useRef(inlineEditActive);
   useEffect(() => {
@@ -262,6 +265,7 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
     accentColor, setAccentColor,
     debugMode,
     isSectionItemToolbarHovered, setIsSectionItemToolbarHovered,
+    isDragging, setIsDragging,
   };
 
   return (

@@ -8,7 +8,7 @@ export const markerPadding = 0; // padding around the target element for better 
 export const markerBorder = 2; // outline width of the highlight marker (outline: 2px)
 
 export const Highlighter: React.FC<HighlighterProps> = () => {
-  const { targetEl, shadowRoot, markerRef, isSectionItemToolbarHovered } = usePluginContext();
+  const { targetEl, shadowRoot, markerRef, isSectionItemToolbarHovered, isDragging } = usePluginContext();
 
   // Create a single marker inside the shadow root
   useEffect(() => {
@@ -27,16 +27,16 @@ export const Highlighter: React.FC<HighlighterProps> = () => {
     };
   }, [shadowRoot]);
 
-  // Hide marker when the mouse is over a SectionItemActionsMenu toolbar
+  // Hide marker when the mouse is over a SectionItemActionsMenu toolbar or when dragging
   useEffect(() => {
     const marker = markerRef.current;
     if (!marker) return;
-    if (isSectionItemToolbarHovered) {
+    if (isSectionItemToolbarHovered || isDragging) {
       marker.style.visibility = "hidden";
     } else if (targetEl) {
       marker.style.visibility = "visible";
     }
-  }, [isSectionItemToolbarHovered]);
+  }, [isSectionItemToolbarHovered, isDragging]);
 
   // Update marker position when element changes
   useEffect(() => {

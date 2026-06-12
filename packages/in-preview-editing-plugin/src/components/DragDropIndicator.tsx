@@ -11,8 +11,8 @@ import { useSectionDragDrop } from "../hooks/useSectionDragDrop.ts";
  * following the same pattern as <Highlighter />.
  */
 export const DragDropIndicator: React.FC = () => {
-  const { isActive, shadowRoot } = usePluginContext();
-  const { dropTarget, position } = useSectionDragDrop(isActive);
+  const { isActive, shadowRoot, setIsDragging, setTargetEl } = usePluginContext();
+  const { dropTarget, position } = useSectionDragDrop(isActive, setIsDragging, setTargetEl);
   const indicatorRef = useRef<HTMLElement | null>(null);
 
   // Create the indicator element once inside the shadow root

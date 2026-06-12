@@ -21,8 +21,13 @@ const DRAGGING_CLASS = "ipe-dragging";
  *
  * Returns live drag/drop state so a visual indicator can be rendered.
  */
-export function useSectionDragDrop(isActive: boolean): DragDropState {
+export function useSectionDragDrop(
+  isActive: boolean,
+  setIsDragging?: (v: boolean) => void,
+  setTargetEl?: (el: HTMLElement | undefined) => void,
+): DragDropState {
   const dragSourceRef = useRef<HTMLElement | null>(null);
+  const postDragTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Ref mirrors state to avoid stale closures inside event listeners
   const dropStateRef = useRef<DragDropState>({ dropTarget: null, position: "before" });
   const [dropState, setDropState] = useState<DragDropState>({ dropTarget: null, position: "before" });
@@ -46,6 +51,8 @@ export function useSectionDragDrop(isActive: boolean): DragDropState {
         (e: DragEvent) => {
           dragSourceRef.current = item;
           e.dataTransfer!.effectAllowed = "move";
+          setIsDragging?.(true);
+          setTargetEl?.(undefined);
           // Small delay so the browser can capture the element for the ghost image
           // before we visually dim it.
           setTimeout(() => item.classList.add(DRAGGING_CLASS), 0);
@@ -59,6 +66,15 @@ export function useSectionDragDrop(isActive: boolean): DragDropState {
           item.classList.remove(DRAGGING_CLASS);
           dragSourceRef.current = null;
           updateDropState(null, "before");
+          // Keep isDragging true for 5 s after drop to prevent UI flickering
+          // before the section item list has settled after the server-side reorder.
+          if (postDragTimerRef.current !== null) {
+            clearTimeout(postDragTimerRef.current);
+          }
+          postDragTimerRef.current = setTimeout(() => {
+            setIsDragging?.(false);
+            postDragTimerRef.current = null;
+          }, 5000);
         },
         { signal },
       );
@@ -154,6 +170,11 @@ export function useSectionDragDrop(isActive: boolean): DragDropState {
     return () => {
       abortController.abort();
       observer.disconnect();
+
+      if (postDragTimerRef.current !== null) {
+        clearTimeout(postDragTimerRef.current);
+        postDragTimerRef.current = null;
+      }
 
       // Clean up draggable attribute and dragging class from all section items
       document.querySelectorAll<HTMLElement>(`[${SECTION_ITEM_MARKER}]`).forEach((item) => {
