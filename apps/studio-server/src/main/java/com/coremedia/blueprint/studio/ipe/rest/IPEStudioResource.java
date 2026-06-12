@@ -85,10 +85,10 @@ public class IPEStudioResource {
         case MOVE_DOWN -> sectionsService.moveSectionItem(sectionContent, request.sectionItemId(), SectionsService.MoveDirection.DOWN);
         case MOVE_UP -> sectionsService.moveSectionItem(sectionContent, request.sectionItemId(), SectionsService.MoveDirection.UP);
         case MOVE_TO -> sectionsService.moveSectionItemToIndex(sectionContent, request.sectionItemId(),
-          Optional.ofNullable(request.actionParams().get("move_to"))
+          Optional.ofNullable(request.actionParams().get("moveTo"))
             .map(Object::toString)
             .map(Integer::valueOf)
-            .orElseThrow(() -> new IllegalArgumentException("Missing or invalid 'move_to' parameter for MOVE_TO action.")));
+            .orElseThrow(() -> new IllegalArgumentException("Missing or invalid 'moveTo' parameter for MOVE_TO action.")));
       }
     } catch (SectionNotFoundException e) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());

@@ -340,11 +340,11 @@ class InPreviewEditingManager {
     }
   }
 
-  async #sectionItemActionListener(event: { contentRef: string, sectionItemId: string, action: string }) {
+  async #sectionItemActionListener(event: { contentRef: string, sectionItemId: string, action: string, actionParams: {} }) {
     try {
       const contentRepository = session._.getConnection().getContentRepository();
       const sectionContent = await contentRepository.getContent(event.contentRef).load();
-      const actionResponse = await InPreviewEditingUtil.triggerSectionItemAction(sectionContent, event.sectionItemId, event.action);
+      const actionResponse = await InPreviewEditingUtil.triggerSectionItemAction(sectionContent, event.sectionItemId, event.action, event.actionParams);
       this.#sendSectionItemActionResponse(actionResponse);
     } catch (e) {
       console.warn("[InPreviewEditingManager] Error during section item action handling: ", e);

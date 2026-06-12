@@ -371,14 +371,16 @@ class InPreviewEditingUtil {
    * @param content section content containing the item
    * @param sectionItemId id of the section item
    * @param action action to perform
+   * @param actionParams optional action parameters
    */
-  static triggerSectionItemAction(content: Content, sectionItemId: string, action: string): Promise<any> {
+  static triggerSectionItemAction(content: Content, sectionItemId: string, action: string, actionParams = {}): Promise<any> {
     return new Promise((resolve, reject) => {
       try {
         const params = {
           sectionContent: content,
           sectionItemId: sectionItemId,
-          action: action
+          action: action,
+          actionParams: actionParams,
         };
 
         const remoteServiceMethod = new RemoteServiceMethod("ipe/section/item/action", "POST", true);
