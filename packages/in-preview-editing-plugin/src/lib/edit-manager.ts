@@ -37,7 +37,7 @@ class PDEEditManager extends EventTarget {
     if (inline) {
       element.contentEditable = "plaintext-only";
       element.classList.add("pde-edit-input");
-      element.addEventListener("keydown", this.manageEditKeyinput.bind(null, element));
+      element.addEventListener("keydown", this.manageEditKeyInput.bind(null, element));
 
       // save value for restore in case edit is canceled
       let currentValue = getCurrentValue(element);
@@ -66,7 +66,7 @@ class PDEEditManager extends EventTarget {
 
     element.contentEditable = "false";
     element.classList.remove("pde-edit-input");
-    element.removeEventListener("keydown", this.manageEditKeyinput.bind(null, element));
+    element.removeEventListener("keydown", this.manageEditKeyInput.bind(null, element));
 
     this.inlineEditingActive = false;
 
@@ -99,13 +99,18 @@ class PDEEditManager extends EventTarget {
     this.dispatchEvent(new CustomEvent(PDEEditEvents.END_EDIT, { element: element, save: save }));
   };
 
-  manageEditKeyinput = (element: HTMLElement, event: KeyboardEvent) => {
-    console.log(`[PDE] key entered: ${event.key}`, element);
+  manageEditKeyInput = (element: HTMLElement, event: KeyboardEvent) => {
     event.stopPropagation();
 
-    // Prevent Enter from inserting anything
+    // Prevent Enter from inserting anything, but instead use it to save the changes and end editing
     if (event.key === "Enter") {
       event.preventDefault();
+      this.endEditing(element, true);
+    }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      this.endEditing(element, false);
     }
   };
 

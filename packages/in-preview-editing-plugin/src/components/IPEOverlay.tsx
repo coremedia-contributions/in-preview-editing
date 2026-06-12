@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { usePluginContext } from "../context/PluginContext.tsx";
-import PDEEditManager from "../lib/edit-manager.ts";
+import PDEEditManager, { PDEEditEvents } from "../lib/edit-manager.ts";
 import ActionsMenu from "./ActionsMenu.tsx";
 import { Toolbar } from "@base-ui/react/toolbar";
 import clsx from "clsx";
@@ -30,7 +30,16 @@ const IPEOverlay: React.FC<Props> = () => {
   const isPlacementElement = isPlacement(targetEl);
 
   useEffect(() => {
-    console.log("Target element changed:", targetEl);
+    const deactivateInlineEdit = () => setInlineEditActive(false);
+    PDEEditManager.getInstance().addEventListener(PDEEditEvents.END_EDIT, deactivateInlineEdit);
+
+    return () => {
+      PDEEditManager.getInstance().removeEventListener(PDEEditEvents.END_EDIT, deactivateInlineEdit);
+    }
+  }, []);
+
+  useEffect(() => {
+    //console.log("Target element changed:", targetEl);
 
     if (!targetEl) {
       setActionsMenuOpen(false);
