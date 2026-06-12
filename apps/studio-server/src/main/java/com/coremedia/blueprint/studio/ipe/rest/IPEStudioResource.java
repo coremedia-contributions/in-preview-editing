@@ -83,6 +83,7 @@ public class IPEStudioResource {
         case DUPLICATE -> sectionsService.duplicateSectionItem(sectionContent, request.sectionItemId());
         case MOVE_DOWN -> sectionsService.moveSectionItem(sectionContent, request.sectionItemId(), SectionsService.MoveDirection.DOWN);
         case MOVE_UP -> sectionsService.moveSectionItem(sectionContent, request.sectionItemId(), SectionsService.MoveDirection.UP);
+        case MOVE_TO -> sectionsService.moveSectionItemToIndex(sectionContent, request.sectionItemId(), request.actionParams().get("move_to"));
       }
     } catch (SectionNotFoundException e) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());

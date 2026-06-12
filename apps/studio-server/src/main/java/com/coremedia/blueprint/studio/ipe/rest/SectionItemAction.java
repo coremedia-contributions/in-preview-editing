@@ -5,5 +5,6 @@ public enum SectionItemAction {
   DUPLICATE,
   MOVE_DOWN,
   MOVE_UP,
+  MOVE_TO
 }
 

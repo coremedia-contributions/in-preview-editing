@@ -49,16 +49,8 @@ public class SectionsService {
   public boolean deleteSectionItem(@NonNull Content content, @NonNull String sectionItemId) {
     LOG.debug("Deleting section item {} from content {}", sectionItemId, content.getId());
 
-    Struct layoutStruct = CapStructHelper.getStruct(content, LAYOUT_PROPERTY);
-    if (layoutStruct == null) {
-      throw new IllegalArgumentException("No layout struct found on content " + content.getId());
-    }
-
-    @SuppressWarnings("unchecked")
-    List<Struct> sections = (List<Struct>) layoutStruct.get(SECTIONS_PROPERTY);
-    if (sections == null || sections.isEmpty()) {
-      throw new SectionNotFoundException(sectionItemId);
-    }
+    Struct layoutStruct = getLayoutStruct(content);
+    List<Struct> sections = getSections(layoutStruct, sectionItemId);
 
     List<Struct> updatedSections = sections.stream()
       .filter(s -> !sectionItemId.equals(s.get(SECTION_ITEM_ID_PROPERTY)))
@@ -68,16 +60,7 @@ public class SectionsService {
       throw new SectionNotFoundException(sectionItemId);
     }
 
-    StructBuilder layoutBuilder = layoutStruct.builder();
-    layoutBuilder.remove(SECTIONS_PROPERTY);
-    layoutBuilder.declareStructs(SECTIONS_PROPERTY, updatedSections);
-    Struct newLayoutStruct = layoutBuilder.build();
-
-    if (content.isCheckedIn()) {
-      content.checkOut();
-    }
-    content.set(LAYOUT_PROPERTY, newLayoutStruct);
-    content.checkIn();
+    persistSections(content, layoutStruct, updatedSections);
 
     LOG.debug("Successfully deleted section item {} from content {}", sectionItemId, content.getId());
     return true;
@@ -98,31 +81,10 @@ public class SectionsService {
   public boolean duplicateSectionItem(@NonNull Content content, @NonNull String sectionItemId) {
     LOG.debug("Duplicating section item {} in content {}", sectionItemId, content.getId());
 
-    Struct layoutStruct = CapStructHelper.getStruct(content, LAYOUT_PROPERTY);
-    if (layoutStruct == null) {
-      throw new IllegalArgumentException("No layout struct found on content " + content.getId());
-    }
-
-    @SuppressWarnings("unchecked")
-    List<Struct> sections = (List<Struct>) layoutStruct.get(SECTIONS_PROPERTY);
-    if (sections == null || sections.isEmpty()) {
-      throw new SectionNotFoundException(sectionItemId);
-    }
-
-    // Find the source section and its index
-    int sourceIndex = -1;
-    Struct sourceSection = null;
-    for (int i = 0; i < sections.size(); i++) {
-      if (sectionItemId.equals(sections.get(i).get(SECTION_ITEM_ID_PROPERTY))) {
-        sourceIndex = i;
-        sourceSection = sections.get(i);
-        break;
-      }
-    }
-
-    if (sourceSection == null) {
-      throw new SectionNotFoundException(sectionItemId);
-    }
+    Struct layoutStruct = getLayoutStruct(content);
+    List<Struct> sections = getSections(layoutStruct, sectionItemId);
+    int sourceIndex = findSectionIndex(sections, sectionItemId);
+    Struct sourceSection = sections.get(sourceIndex);
 
     // Copy any linked content in the values struct to the same folder as the section content
     Content targetFolder = content.getParent();
@@ -143,16 +105,7 @@ public class SectionsService {
     List<Struct> updatedSections = new ArrayList<>(sections);
     updatedSections.add(sourceIndex + 1, duplicateSection);
 
-    StructBuilder layoutBuilder = layoutStruct.builder();
-    layoutBuilder.remove(SECTIONS_PROPERTY);
-    layoutBuilder.declareStructs(SECTIONS_PROPERTY, updatedSections);
-    Struct newLayoutStruct = layoutBuilder.build();
-
-    if (content.isCheckedIn()) {
-      content.checkOut();
-    }
-    content.set(LAYOUT_PROPERTY, newLayoutStruct);
-    content.checkIn();
+    persistSections(content, layoutStruct, updatedSections);
 
     LOG.debug("Successfully duplicated section item {} as {} in content {}", sectionItemId, newSectionItemId, content.getId());
     return true;
@@ -177,28 +130,9 @@ public class SectionsService {
   public boolean moveSectionItem(@NonNull Content content, @NonNull String sectionItemId, @NonNull MoveDirection direction) {
     LOG.debug("Moving section item {} {} in content {}", sectionItemId, direction, content.getId());
 
-    Struct layoutStruct = CapStructHelper.getStruct(content, LAYOUT_PROPERTY);
-    if (layoutStruct == null) {
-      throw new IllegalArgumentException("No layout struct found on content " + content.getId());
-    }
-
-    @SuppressWarnings("unchecked")
-    List<Struct> sections = (List<Struct>) layoutStruct.get(SECTIONS_PROPERTY);
-    if (sections == null || sections.isEmpty()) {
-      throw new SectionNotFoundException(sectionItemId);
-    }
-
-    // Find the section index
-    int sourceIndex = -1;
-    for (int i = 0; i < sections.size(); i++) {
-      if (sectionItemId.equals(sections.get(i).get(SECTION_ITEM_ID_PROPERTY))) {
-        sourceIndex = i;
-        break;
-      }
-    }
-    if (sourceIndex == -1) {
-      throw new SectionNotFoundException(sectionItemId);
-    }
+    Struct layoutStruct = getLayoutStruct(content);
+    List<Struct> sections = getSections(layoutStruct, sectionItemId);
+    int sourceIndex = findSectionIndex(sections, sectionItemId);
 
     int targetIndex = direction == MoveDirection.UP ? sourceIndex - 1 : sourceIndex + 1;
     if (targetIndex < 0) {
@@ -213,6 +147,92 @@ public class SectionsService {
     Struct moving = updatedSections.remove(sourceIndex);
     updatedSections.add(targetIndex, moving);
 
+    persistSections(content, layoutStruct, updatedSections);
+
+    LOG.debug("Successfully moved section item {} from index {} to {} in content {}", sectionItemId, sourceIndex, targetIndex, content.getId());
+    return true;
+  }
+
+  /**
+   * Moves the section item with the given {@code sectionItemId} to the specified index
+   * in {@code layout.sections}.
+   *
+   * @param content       the CMSection content to modify
+   * @param sectionItemId the unique id of the section to move
+   * @param moveTo        the target index (0-based) within the sections list
+   * @throws IllegalArgumentException if no {@code layout} struct is found on the content,
+   *                                  or the target index is out of bounds
+   * @throws SectionNotFoundException if no section with the given {@code sectionItemId} exists
+   */
+  boolean moveSectionItemToIndex(@NonNull Content content, @NonNull String sectionItemId, @NonNull Integer moveTo) {
+    LOG.debug("Moving section item {} to index {} in content {}", sectionItemId, moveTo, content.getId());
+
+    Struct layoutStruct = getLayoutStruct(content);
+    List<Struct> sections = getSections(layoutStruct, sectionItemId);
+
+    if (moveTo < 0 || moveTo >= sections.size()) {
+      throw new IllegalArgumentException("Target index " + moveTo + " is out of bounds for sections list of size " + sections.size() + ".");
+    }
+
+    int sourceIndex = findSectionIndex(sections, sectionItemId);
+
+    if (sourceIndex == moveTo) {
+      LOG.debug("Section item {} is already at index {}, no move needed", sectionItemId, moveTo);
+      return true;
+    }
+
+    List<Struct> updatedSections = new ArrayList<>(sections);
+    Struct moving = updatedSections.remove(sourceIndex);
+    updatedSections.add(moveTo, moving);
+
+    persistSections(content, layoutStruct, updatedSections);
+
+    LOG.debug("Successfully moved section item {} from index {} to {} in content {}", sectionItemId, sourceIndex, moveTo, content.getId());
+    return true;
+  }
+
+  /**
+   * Returns the {@code layout} struct of the given content, or throws if absent.
+   */
+  @NonNull
+  private Struct getLayoutStruct(@NonNull Content content) {
+    Struct layoutStruct = CapStructHelper.getStruct(content, LAYOUT_PROPERTY);
+    if (layoutStruct == null) {
+      throw new IllegalArgumentException("No layout struct found on content " + content.getId());
+    }
+    return layoutStruct;
+  }
+
+  /**
+   * Returns the {@code sections} StructList from the given layout struct, or throws if absent or empty.
+   */
+  @SuppressWarnings("unchecked")
+  @NonNull
+  private List<Struct> getSections(@NonNull Struct layoutStruct, @NonNull String sectionItemId) {
+    List<Struct> sections = (List<Struct>) layoutStruct.get(SECTIONS_PROPERTY);
+    if (sections == null || sections.isEmpty()) {
+      throw new SectionNotFoundException(sectionItemId);
+    }
+    return sections;
+  }
+
+  /**
+   * Returns the index of the section with the given {@code sectionItemId}, or throws if not found.
+   */
+  private int findSectionIndex(@NonNull List<Struct> sections, @NonNull String sectionItemId) {
+    for (int i = 0; i < sections.size(); i++) {
+      if (sectionItemId.equals(sections.get(i).get(SECTION_ITEM_ID_PROPERTY))) {
+        return i;
+      }
+    }
+    throw new SectionNotFoundException(sectionItemId);
+  }
+
+  /**
+   * Saves the updated sections list back into the layout struct of the given content,
+   * checking the content out if necessary and checking it back in afterwards.
+   */
+  private void persistSections(@NonNull Content content, @NonNull Struct layoutStruct, @NonNull List<Struct> updatedSections) {
     StructBuilder layoutBuilder = layoutStruct.builder();
     layoutBuilder.remove(SECTIONS_PROPERTY);
     layoutBuilder.declareStructs(SECTIONS_PROPERTY, updatedSections);
@@ -223,9 +243,6 @@ public class SectionsService {
     }
     content.set(LAYOUT_PROPERTY, newLayoutStruct);
     content.checkIn();
-
-    LOG.debug("Successfully moved section item {} from index {} to {} in content {}", sectionItemId, sourceIndex, targetIndex, content.getId());
-    return true;
   }
 
   /**
