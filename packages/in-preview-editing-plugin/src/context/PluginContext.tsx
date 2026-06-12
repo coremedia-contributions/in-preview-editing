@@ -152,7 +152,7 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
 
         // TODO: check if potential new target element overlaps with the current element,
         // in that case, we need to check if the mouse pointer is over the marker borders to prevent allow accessing the overlay toolbar
-        // const elementsAtPointer = document.elementsFromPoint(e.clientX, e.clientY);
+        //const elementsAtPointer = document.elementsFromPoint(e.clientX, e.clientY);
         // const overlapWithCurrentTarget = targetElRef.current && elementsAtPointer.indexOf(targetElRef.current) > -1;
 
         // Skip if we're currently editing inline or if the element is not marked as editable or if the mouse is still within the marker (e.g. due to border)
@@ -168,12 +168,42 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
 
     document.querySelectorAll("[data-cm-metadata]").forEach(attachListeners);
 
+    // add special listeners to elements that might overlap with editable elements and thus interfere with mouseenter events
+    const attachBubbleEventListener = (el: Element) => {
+      if (!(el instanceof HTMLElement)) return;
+      el.addEventListener("mouseenter", (originalEvent:MouseEvent) => {
+        const elements = document.elementsFromPoint(
+          originalEvent.clientX,
+          originalEvent.clientY
+        ).filter(el => el instanceof HTMLElement);
+        let editableElements = elements.filter((el:HTMLElement) => isMarkedAsEditable(el));
+        // set first editable element as new target
+        if (editableElements && editableElements.length > 0) {
+          setTargetEl(editableElements[0]);
+        }
+      });
+    };
+
+    let overlapElements = document.querySelectorAll("[data-ipe-overlap-ignore]");
+    overlapElements.forEach(attachBubbleEventListener);
+
     observerRef.current = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         mutation.addedNodes.forEach((node) => {
-          if (!(node instanceof Element)) return;
-          if (node.hasAttribute("data-cm-metadata")) attachListeners(node);
+          if (!(node instanceof Element)) {
+            return;
+          }
+
+          if (node.hasAttribute("data-cm-metadata")) {
+            attachListeners(node);
+          }
           node.querySelectorAll("[data-cm-metadata]").forEach(attachListeners);
+
+          if (node.hasAttribute("data-ipe-overlap-ignore")) {
+            attachBubbleEventListener(node);
+          }
+          node.querySelectorAll("[data-ipe-overlap-ignore]").forEach(attachBubbleEventListener);
+
         });
       });
     });
