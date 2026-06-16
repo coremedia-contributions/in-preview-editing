@@ -30,6 +30,7 @@ public class SectionsService {
   private static final String ITEM_TYPE_PROPERTY = "type";
   private static final String ITEM_NAME_PROPERTY = "name";
   private static final String LINK_ITEM_TYPE = "link";
+  private static final String PROPERTIES_PROPERTY = "properties";
 
   private final ContentRepository contentRepository;
 
@@ -249,6 +250,8 @@ public class SectionsService {
    * Iterates over all {@code link}-type items in the section's schema, copies each referenced
    * content item to {@code targetFolder}, and returns an updated {@code values} struct
    * pointing to the copies. Returns the original struct unchanged if no links are found.
+   * <p>
+   * Link values are stored at {@code values.properties.<name>} (not directly at {@code values.<name>}).
    */
   @SuppressWarnings("unchecked")
   @Nullable
@@ -263,7 +266,13 @@ public class SectionsService {
       return valuesStruct;
     }
 
-    StructBuilder valuesBuilder = valuesStruct.builder();
+    // Link values are stored nested under values.properties.<name>
+    Struct propertiesStruct = (Struct) valuesStruct.get(PROPERTIES_PROPERTY);
+    if (propertiesStruct == null) {
+      return valuesStruct;
+    }
+
+    StructBuilder propertiesBuilder = propertiesStruct.builder();
     boolean modified = false;
 
     for (Struct itemSchema : itemSchemas) {
@@ -274,7 +283,7 @@ public class SectionsService {
         continue;
       }
 
-      List<Content> linkedContents = (List<Content>) valuesStruct.get(itemName);
+      List<Content> linkedContents = (List<Content>) propertiesStruct.get(itemName);
       if (linkedContents == null || linkedContents.isEmpty()) {
         continue;
       }
@@ -305,14 +314,22 @@ public class SectionsService {
 
       LOG.debug("Copied {} linked content item(s) for property '{}' to folder {}", copiedContents.size(), itemName, targetFolder.getPath());
 
-      // Replace the link list in values with the copied content
-      valuesBuilder.remove(itemName);
-      valuesBuilder.declareLinks(itemName, contentRepository.getContentContentType(), Collections.emptyList());
-      copiedContents.forEach(c -> valuesBuilder.add(itemName, c));
+      // Replace the link list in properties with the copied content
+      propertiesBuilder.remove(itemName);
+      propertiesBuilder.declareLinks(itemName, contentRepository.getContentContentType(), Collections.emptyList());
+      copiedContents.forEach(c -> propertiesBuilder.add(itemName, c));
       modified = true;
     }
 
-    return modified ? valuesBuilder.build() : valuesStruct;
+    if (!modified) {
+      return valuesStruct;
+    }
+
+    // Rebuild valuesStruct with the updated properties sub-struct
+    StructBuilder valuesBuilder = valuesStruct.builder();
+    valuesBuilder.remove(PROPERTIES_PROPERTY);
+    valuesBuilder.declareStruct(PROPERTIES_PROPERTY, propertiesBuilder.build());
+    return valuesBuilder.build();
   }
 
 }
