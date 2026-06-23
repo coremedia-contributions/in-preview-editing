@@ -108,6 +108,11 @@ class InPreviewEditingUtil {
       },
       previewIframe
     );
+
+    if (activate) {
+      // set focus on iframe to make sure key events are routed to the iframe and not to the studio app
+      previewIframe?.getEl()?.focus();
+    }
   }
 
   static getEditorFor(content: Content, propertyPath: string): Promise<any> {
