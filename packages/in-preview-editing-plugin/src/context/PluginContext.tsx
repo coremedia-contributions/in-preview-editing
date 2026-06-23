@@ -43,6 +43,7 @@ export interface PluginContextValue {
   setIsSectionItemToolbarHovered: (hovered: boolean) => void;
   isDragging: boolean;
   setIsDragging: (isDragging: boolean) => void;
+  isTargetLocked: boolean;
 }
 
 const PluginContext = createContext<PluginContextValue | undefined>(undefined);
@@ -74,6 +75,13 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
   const [debugMode, setDebugMode] = useState(false);
   const [isSectionItemToolbarHovered, setIsSectionItemToolbarHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [isTargetLocked, setIsTargetLocked] = useState(false);
+
+  // Ref so event-listener closures always see the current locked state without re-registering
+  const isTargetLockedRef = useRef(false);
+  useEffect(() => {
+    isTargetLockedRef.current = isTargetLocked;
+  }, [isTargetLocked]);
 
   const inlineEditActiveRef = useRef(inlineEditActive);
   useEffect(() => {
@@ -118,6 +126,8 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
       setTargetEl(undefined);
       setContentMetadata(undefined);
       setIsSectionItemToolbarHovered(false);
+      setIsTargetLocked(false);
+      isTargetLockedRef.current = false;
       metadataSubscriptionRef.current?.unsubscribe();
       metadataSubscriptionRef.current = null;
     };
@@ -145,6 +155,22 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
     listenerAbortControllerRef.current = abortController;
     const { signal } = abortController;
 
+    // Track alt-lock state — lock target element while Alt is held
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Alt" && !e.repeat) {
+        isTargetLockedRef.current = true;
+        setIsTargetLocked(true);
+      }
+    };
+    const onKeyUp = (e: KeyboardEvent) => {
+      if (e.key === "Alt") {
+        isTargetLockedRef.current = false;
+        setIsTargetLocked(false);
+      }
+    };
+    document.addEventListener("keydown", onKeyDown, { signal });
+    document.addEventListener("keyup", onKeyUp, { signal });
+
     const attachListeners = (el: Element) => {
       if (!(el instanceof HTMLElement)) return;
 
@@ -157,6 +183,9 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
 
         // Skip if we're currently editing inline or if the element is not marked as editable or if the mouse is still within the marker (e.g. due to border)
         if (inlineEditActiveRef.current || !isMarkedAsEditable(el)) return;
+
+        // Skip if target is locked via spacebar
+        if (isTargetLockedRef.current) return;
 
         //console.log("[IPE] set new target element: ", el);
         setTargetEl(el);
@@ -172,6 +201,9 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
     const attachBubbleEventListener = (el: Element) => {
       if (!(el instanceof HTMLElement)) return;
       el.addEventListener("mouseenter", (originalEvent:MouseEvent) => {
+        // Skip if target is locked via alt key
+        if (isTargetLockedRef.current) return;
+
         const elements = document.elementsFromPoint(
           originalEvent.clientX,
           originalEvent.clientY
@@ -296,6 +328,7 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
     debugMode,
     isSectionItemToolbarHovered, setIsSectionItemToolbarHovered,
     isDragging, setIsDragging,
+    isTargetLocked,
   };
 
   return (
