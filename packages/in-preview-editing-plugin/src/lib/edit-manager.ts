@@ -1,9 +1,10 @@
 import {
-  getCurrentValue,
+  getCurrentTextValue,
   getPropertyNameFromMetadata,
   findContentId,
-  getPreviousValue,
-  findPropertyName, getContentIdBreadcrumb
+  findPropertyName,
+  getContentIdBreadcrumb,
+  restorePreviousTextValue,
 } from "./utils";
 import PDEActionManager from "./action-manager.ts";
 
@@ -40,7 +41,7 @@ class PDEEditManager extends EventTarget {
       element.addEventListener("keydown", this.manageEditKeyInput.bind(null, element));
 
       // save value for restore in case edit is canceled
-      let currentValue = getCurrentValue(element);
+      let currentValue = getCurrentTextValue(element);
       if (currentValue) {
         element.dataset.pbePrevValue = currentValue;
       }
@@ -71,7 +72,7 @@ class PDEEditManager extends EventTarget {
     this.inlineEditingActive = false;
 
     if (save) {
-      let updatedValue = element.childNodes[0]?.nodeValue;
+      let updatedValue = getCurrentTextValue(element);
 
       // calculate property name
       const propertyName = getPropertyNameFromMetadata(element);
@@ -81,10 +82,7 @@ class PDEEditManager extends EventTarget {
       PDEActionManager.getInstance().postPropertyUpdate(contentId, propertyName, updatedValue);
     } else {
       // edit canceled, restore previous value
-      const previousValue = getPreviousValue(element);
-      if (previousValue && element.childNodes?.length > 0) {
-        element.childNodes[0].nodeValue = previousValue;
-      }
+      restorePreviousTextValue(element);
     }
 
     const contentId = findContentId(element);

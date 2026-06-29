@@ -160,10 +160,43 @@ export function getScrollPosition() {
   };
 }
 
-export function getCurrentValue(element: Element) {
-  return element.childNodes[0]?.nodeValue;
+/**
+ * Returns the current text value of the given element.
+ *
+ * @param element target element
+ */
+export function getCurrentTextValue(element: Element) {
+  const textNode = Array.from(element.childNodes).find(
+    (node) => node.nodeType === Node.TEXT_NODE
+  );
+  return textNode?.nodeValue ?? undefined;
 }
 
+/**
+ * Restores the previous text value of the given element, if it exists.
+ * The previous value is stored in the element's dataset under the key 'pbePrevValue'.
+ *
+ * @param element target element
+ */
+export function restorePreviousTextValue(element: HTMLElement) {
+  const previousValue = getPreviousValue(element);
+  if (!previousValue) return;
+
+  const textNode = Array.from(element.childNodes).find(
+    (node) => node.nodeType === Node.TEXT_NODE
+  );
+  if (textNode) {
+    textNode.nodeValue = previousValue;
+  }
+}
+
+/**
+ * Returns the previous value of the given element, if it exists.
+ * The previous value is stored in the element's dataset under the key 'pbePrevValue'.
+ *
+ * @param element target element
+ * @return previous text value or undefined
+ */
 export function getPreviousValue(element: HTMLElement) {
   return element.dataset.pbePrevValue;
 }
