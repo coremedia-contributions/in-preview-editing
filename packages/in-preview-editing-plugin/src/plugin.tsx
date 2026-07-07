@@ -122,7 +122,18 @@ export function initPlugin(): void {
   window.addEventListener("message", (event) => {
     let message = event.data;
     if (typeof message === "string") {
-      message = JSON.parse(event.data);
+      try {
+        message = JSON.parse(event.data);
+      } catch (_) {
+        // Not a JSON message (e.g. plain string messages from unrelated
+        // third-party scripts like reCAPTCHA). Ignore it.
+        return;
+      }
+    }
+
+    // Ignore anything that is not a message object with a type.
+    if (!message || typeof message !== "object") {
+      return;
     }
 
     switch (message.type) {
