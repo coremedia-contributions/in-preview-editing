@@ -34,13 +34,10 @@ import cmNavigationTreeRelation
   from "@coremedia/studio-client.main.bpbase-pagegrid-studio-plugin/tree/cmNavigationTreeRelation";
 import ValidityColumn from "@coremedia-blueprint/studio-client.main.blueprint-forms/forms/columns/ValidityColumn";
 import NameColumn from "@coremedia/studio-client.ext.cap-base-components/columns/NameColumn";
-import TypeIconColumn from "@coremedia/studio-client.ext.cap-base-components/columns/TypeIconColumn";
 import ViewtypeRenderer from "@coremedia-blueprint/studio-client.main.blueprint-forms/util/ViewtypeRenderer";
 import StatusColumn from "@coremedia/studio-client.ext.cap-base-components/columns/StatusColumn";
 import DataField from "@coremedia/studio-client.ext.ui-components/store/DataField";
 import Column from "@jangaroo/ext-ts/grid/column/Column";
-import LinkListThumbnailColumn
-  from "@coremedia/studio-client.ext.content-link-list-components/columns/LinkListThumbnailColumn";
 import PageGridUtil from "@coremedia/studio-client.main.bpbase-pagegrid-studio-plugin/pagegrid/PageGridUtil";
 import ImageMapEditor from "@coremedia/studio-client.main.image-map-editor-components/ImageMapEditor";
 import LocaleUtil from "@coremedia/studio-client.cap-base-models/locale/LocaleUtil";
@@ -58,6 +55,8 @@ import RemoteServiceMethod from "@coremedia/studio-client.client-core/data/impl/
 import StructSubBean from "@coremedia/studio-client.cap-rest-client/common/impl/StructSubBean";
 import VariantKeyUtil from "@coremedia/studio-client.main.image-editor-components/VariantKeyUtil";
 import PropertyEditorUtil from "@coremedia/studio-client.main.editor-components/sdk/util/PropertyEditorUtil";
+import LinkListThumbnailWithTypeColumn
+  from "@coremedia/studio-client.ext.content-link-list-components/columns/LinkListThumbnailWithTypeColumn";
 
 class InPreviewEditingUtil {
   static readonly MESSAGE_TYPE_ACTIVATE_IN_PREVIEW_EDITING: string = "com.coremedia.pde.editing.on";
@@ -183,8 +182,7 @@ class InPreviewEditingUtil {
             linkType: "CMTeasable",
             collapsible: false,
             columns: [
-              Config(LinkListThumbnailColumn),
-              Config(TypeIconColumn),
+              Config(LinkListThumbnailWithTypeColumn),
               Config(NameColumn),
               Config(ValidityColumn),
               Config(Column, {
