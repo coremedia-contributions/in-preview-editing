@@ -19,10 +19,16 @@ const SettingsDialog: FC = () => {
     dimmerValue,
     setDimmerValue,
     accentColor,
-    setAccentColor
+    setAccentColor,
+    setIsContextMenuOpen
   } = usePluginContext();
 
   const predefinedColors = ["#ADFF2F", "lightseagreen", "orange", "magenta", "purple", "blue"];
+
+  const handleOpenChange = (open: boolean) => {
+    setShowSettings(open);
+    setIsContextMenuOpen(open);
+  };
 
   const saveAndClose = () => {
     const newPreferences = {
@@ -31,11 +37,11 @@ const SettingsDialog: FC = () => {
       "ipe.spotlightDimming": dimmerValue
     };
     actionManager.getInstance().postUserPreferencesUpdate(newPreferences);
-    setShowSettings(false);
+    handleOpenChange(false);
   };
 
   return (
-    <Dialog.Root open={showSettings} onOpenChange={setShowSettings}>
+    <Dialog.Root open={showSettings} onOpenChange={handleOpenChange}>
       <Dialog.Portal container={container}>
         <Dialog.Backdrop className={dialogStyles.Backdrop}/>
         <Dialog.Popup className={dialogStyles.Popup}>

@@ -29,7 +29,7 @@ const ActionsMenu: FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = controlledOpen !== undefined;
   const isOpen = isControlled ? controlledOpen : internalOpen;
-  const { contentMetadata, setShowSettings } = usePluginContext();
+  const { contentMetadata, setShowSettings, setIsContextMenuOpen } = usePluginContext();
 
   const contentRef = contentMetadata?.contentRef;
   const propertyName = contentMetadata?.propertyName;
@@ -40,6 +40,7 @@ const ActionsMenu: FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
     if (!isControlled) {
       setInternalOpen(open);
     }
+    setIsContextMenuOpen(open);
     onOpenChange?.(open);
   };
 

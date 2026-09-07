@@ -44,6 +44,8 @@ export interface PluginContextValue {
   isDragging: boolean;
   setIsDragging: (isDragging: boolean) => void;
   isTargetLocked: boolean;
+  isContextMenuOpen: boolean;
+  setIsContextMenuOpen: (isContextMenuOpen: boolean) => void;
 }
 
 const PluginContext = createContext<PluginContextValue | undefined>(undefined);
@@ -76,6 +78,7 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
   const [isSectionItemToolbarHovered, setIsSectionItemToolbarHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isTargetLocked, setIsTargetLocked] = useState(false);
+  const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
 
   // Ref so event-listener closures always see the current locked state without re-registering
   const isTargetLockedRef = useRef(false);
@@ -271,6 +274,7 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
       // mouse woke up — the next mouseenter over an editable element will
       // restore targetEl automatically via the existing listener setup.
     },
+    () => isContextMenuOpen,
   );
 
   useEffect(() => {
@@ -329,6 +333,8 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
     isSectionItemToolbarHovered, setIsSectionItemToolbarHovered,
     isDragging, setIsDragging,
     isTargetLocked,
+    isContextMenuOpen,
+    setIsContextMenuOpen,
   };
 
   return (
@@ -337,6 +343,4 @@ export const PluginContextProvider: FC<ProviderProps> = ({ shadowRoot, children 
     </PluginContext.Provider>
   );
 };
-
-
 

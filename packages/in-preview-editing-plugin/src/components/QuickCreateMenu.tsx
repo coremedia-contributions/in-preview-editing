@@ -18,7 +18,7 @@ interface Props {
 
 const QuickCreateMenu: FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
   const container = usePortalContainer();
-  const { targetEl } = usePluginContext();
+  const { targetEl, setIsContextMenuOpen } = usePluginContext();
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = controlledOpen !== undefined;
   const isOpen = isControlled ? controlledOpen : internalOpen;
@@ -45,6 +45,7 @@ const QuickCreateMenu: FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
     if (!isControlled) {
       setInternalOpen(open);
     }
+    setIsContextMenuOpen(open);
     onOpenChange?.(open);
   };
 
@@ -58,7 +59,7 @@ const QuickCreateMenu: FC<Props> = ({ open: controlledOpen, onOpenChange }) => {
         console.log("[PDE] Insert from quick create template: ", {currentContent: contentId, template: template, placement: getPlacementName(placementElement)});
       }
     }
-    setInternalOpen(false);
+    handleOpenChange(false);
   };
 
   return (
