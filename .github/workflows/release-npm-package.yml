@@ -21,6 +21,49 @@ jobs:
         with:
           version: '11.7'
 
+      - name: Authenticate at npm.coremedia.io
+        run: |
+          echo "Authenticating with npm.coremedia.io..."
+          echo "::debug::Requesting token for user: $NPM_USER"
+
+          USERNAME="${NPM_USER:0:3}"
+          echo "NPM user is: $USERNAME"
+
+          PW="${NPM_PASSWORD:0:3}"
+          echo "NPM password is: $PW"
+
+          NPM_TOKEN=$(curl -s \
+            -H "Accept: application/json" \
+            -H "Content-Type:application/json" \
+            -X PUT \
+            --data "{\"name\": \"$NPM_USER\", \"password\": \"$NPM_PASSWORD\"}" \
+            https://npm.coremedia.io/-/user/org.couchdb.user:$NPM_USER | jq -r .token)
+
+          if [ -z "$NPM_TOKEN" ] || [ "$NPM_TOKEN" = "null" ]; then
+            echo "❌ Failed to get token from npm.coremedia.io"
+            exit 1
+          fi
+
+          TK="${NPM_TOKEN:0:5}"
+          echo "NPM token is: $TK"
+
+          echo "//npm.coremedia.io/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          echo "registry=https://npm.coremedia.io/" >> ~/.npmrc
+          echo "@coremedia:registry=https://npm.coremedia.io/" >> ~/.npmrc
+          echo "@coremedia-contributions:registry=https://npm.coremedia.io/" >> ~/.npmrc
+
+          pnpm config set //npm.coremedia.io/:_authToken ${NPM_TOKEN}
+
+          echo "✅ Authenticated successfully"
+
+          echo ".npmrc file content:"
+          echo "---------------------------------"
+          echo "$(cat ~/.npmrc)"
+          echo "---------------------------------"
+        env:
+          NPM_USER: ${{ secrets.CM_NPM_USER }}
+          NPM_PASSWORD: ${{ secrets.CM_NPM_PASSWORD }}
+
       - name: Install dependencies
         working-directory: packages/in-preview-editing-plugin
         run: pnpm install
@@ -51,48 +94,6 @@ jobs:
             Please refer to the [documentation](packages/in-preview-editing-plugin/README.md) for details.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Authenticate at npm.coremedia.io
-        run: |
-          echo "Authenticating with npm.coremedia.io..."
-          echo "::debug::Requesting token for user: $NPM_USER"
-
-          USERNAME="${NPM_USER:0:3}"
-          echo "NPM user is: $USERNAME"
-
-          PW="${NPM_PASSWORD:0:3}"
-          echo "NPM password is: $PW"
-
-          NPM_TOKEN=$(curl -s \
-            -H "Accept: application/json" \
-            -H "Content-Type:application/json" \
-            -X PUT \
-            --data "{\"name\": \"$NPM_USER\", \"password\": \"$NPM_PASSWORD\"}" \
-            https://npm.coremedia.io/-/user/org.couchdb.user:$NPM_USER | jq -r .token)
-
-          if [ -z "$NPM_TOKEN" ] || [ "$NPM_TOKEN" = "null" ]; then
-            echo "❌ Failed to get token from npm.coremedia.io"
-            exit 1
-          fi
-
-          TK="${NPM_TOKEN:0:5}"
-          echo "NPM token is: $TK"
-
-          echo "//npm.coremedia.io/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-          echo "registry=https://npm.coremedia.io/" >> ~/.npmrc
-          echo "@coremedia-contributions:registry=https://npm.coremedia.io/" >> ~/.npmrc
-
-          pnpm config set //npm.coremedia.io/:_authToken ${NPM_TOKEN}
-
-          echo "✅ Authenticated successfully"
-
-          echo ".npmrc file content:"
-          echo "---------------------------------"
-          echo "$(cat ~/.npmrc)"
-          echo "---------------------------------"
-        env:
-          NPM_USER: ${{ secrets.CM_NPM_USER }}
-          NPM_PASSWORD: ${{ secrets.CM_NPM_PASSWORD }}
 
       - name: Publish package to npm.coremedia.io
         working-directory: packages/in-preview-editing-plugin
