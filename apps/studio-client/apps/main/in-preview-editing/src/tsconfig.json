@@ -17,15 +17,6 @@
       "path": "../../../../../../../../../apps/studio-client/apps/main/extensions/create-from-template/src"
     },
     {
-      "path": "../../../../../../../navigation-manager/apps/studio-client/apps/main/navigation-manager/src"
-    },
-    {
-      "path": "../../../../../../../quick-create-from-template/apps/studio-client/apps/main/quick-create-from-template/src"
-    },
-    {
-      "path": "../../../../../../../../../apps/studio-client/apps/main/salesdemo-feature-modifier/src"
-    },
-    {
       "path": "../../../../../../../../../apps/studio-client/apps/main/extensions/taxonomy/src"
     }
   ]

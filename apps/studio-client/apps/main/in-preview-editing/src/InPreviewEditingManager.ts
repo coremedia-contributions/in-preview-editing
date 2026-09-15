@@ -33,10 +33,6 @@ import { sitesService, SiteUtil } from "@coremedia/studio-client.multi-site-mode
 import { fetchFromRemoteService } from "@coremedia/studio-client.client-core";
 import InPreviewEditingUtil from "./utils/InPreviewEditingUtil";
 import FloatingEditorDialog from "./editors/FloatingEditorDialog";
-import QuickCreateFromTemplateUtil
-  , {
-  QuickCreateTemplate
-} from "@coremedia-blueprint/studio-client.main.quick-create-from-template-studio-plugin/utils/QuickCreateFromTemplateUtil";
 
 class InPreviewEditingManager {
   #previewIframe: PreviewIFrame = null;
@@ -50,14 +46,11 @@ class InPreviewEditingManager {
   static readonly MESSAGE_TYPE_SHOW_EDITOR: string = "com.coremedia.pde.showEditor";
   static readonly MESSAGE_TYPE_OPEN_CONTENT: string = "com.coremedia.pde.openContent";
   static readonly MESSAGE_TYPE_SHOW_IN_LIBRARY: string = "com.coremedia.pde.showInLibrary";
-  static readonly MESSAGE_TYPE_OPEN_NAVIGATION_MANAGER: string = "com.coremedia.pde.openNavigationManager";
   static readonly MESSAGE_TYPE_CREATE_PAGE_FROM_TEMPLATE: string = "com.coremedia.pde.createPageFromTemplate";
   static readonly MESSAGE_TYPE_START_LOCALIZATION: string = "com.coremedia.pde.startLocalization";
   static readonly MESSAGE_TYPE_START_PUBLICATION: string = "com.coremedia.pde.startPublication";
   static readonly MESSAGE_TYPE_PUBLISH_REQUEST: string = "com.coremedia.pde.content.publish.request";
   static readonly MESSAGE_TYPE_UPDATE_USER_PREFERENCES_REQUEST: string = "com.coremedia.pde.updateUserPreferenceRequest";
-  static readonly MESSAGE_TYPE_QUICK_CREATE_TEMPLATES_REQUEST: string = "com.coremedia.pde.quickcreate.templates.request";
-  static readonly MESSAGE_TYPE_QUICK_CREATE_TEMPLATES_RESPONSE: string = "com.coremedia.pde.quickcreate.templates.response";
   static readonly MESSAGE_TYPE_INSERT_QUICK_CREATE_CONTENT_IN_PLACEMENT_REQUEST: string = "com.coremedia.pde.quickcreate.placement.insert.request";
   static readonly MESSAGE_TYPE_SECTION_ITEM_ACTION_REQUEST: string = "com.coremedia.pde.section.item.action.request";
   static readonly MESSAGE_TYPE_SECTION_ITEM_ACTION_RESPONSE: string = "com.coremedia.pde.section.item.action.response";
@@ -109,20 +102,6 @@ class InPreviewEditingManager {
           bind(this, this.#contentMetricsListener)
         );
 
-        // register quick create templates listener
-        messageService.registerMessageListener(
-          iframeEl,
-          InPreviewEditingManager.MESSAGE_TYPE_QUICK_CREATE_TEMPLATES_REQUEST,
-          bind(this, this.#quickCreateTemplatesListener)
-        );
-
-        // register quick create insert in placement listener
-        messageService.registerMessageListener(
-          iframeEl,
-          InPreviewEditingManager.MESSAGE_TYPE_INSERT_QUICK_CREATE_CONTENT_IN_PLACEMENT_REQUEST,
-          bind(this, this.#quickCreateInsertInPlacementListener)
-        );
-
         // register section item action listener
         messageService.registerMessageListener(
           iframeEl,
@@ -142,13 +121,6 @@ class InPreviewEditingManager {
           iframeEl,
           InPreviewEditingManager.MESSAGE_TYPE_SHOW_IN_LIBRARY,
           bind(this, this.#showInLibraryListener)
-        );
-
-        // register open navigation manager listener
-        messageService.registerMessageListener(
-          iframeEl,
-          InPreviewEditingManager.MESSAGE_TYPE_OPEN_NAVIGATION_MANAGER,
-          bind(this, this.#openNavigationManagerListener)
         );
 
         // register create page from template listener
@@ -256,10 +228,6 @@ class InPreviewEditingManager {
     InPreviewEditingUtil.showContentInLibrary(event.contentRef);
   }
 
-  #openNavigationManagerListener() {
-    InPreviewEditingUtil.openNavigationManager();
-  }
-
   #openCreatePageFromTemplateWizardListener() {
     console.log("[InPreviewEditingManager] Open create page from template wizard ...");
     new OpenDialogAction({
@@ -310,34 +278,6 @@ class InPreviewEditingManager {
         console.log("[InPreviewEditingManager] Error while loading content metrics: ", e);
         this.#sendContentMetricsResponse({ metrics: null });
       });
-  }
-
-  #quickCreateTemplatesListener(event: {}) {
-    console.log("[InPreviewEditingManager] Received quick create templates request event: ", event);
-    QuickCreateFromTemplateUtil.loadTemplates()
-      .then(bind(this, this.#sendQuickCreateTemplatesResponse))
-      .catch(() => {
-        this.#sendQuickCreateTemplatesResponse([]);
-      });
-  }
-
-  async #quickCreateInsertInPlacementListener(event: { contentRef: string, templateRef: string, placement: string }) {
-    console.log("[InPreviewEditingManager] Received quick create insert in placement request event: ", event);
-
-    try {
-      const contentRepository = session._.getConnection().getContentRepository();
-      const parentContent = await contentRepository.getContent(event.contentRef).load();
-      const targetFolder = await parentContent.getParent().load();
-      const templateContent = await contentRepository.getContent(event.templateRef).load();
-      const createdContent = await QuickCreateFromTemplateUtil.createFromTemplate(targetFolder, templateContent);
-
-      if (createdContent) {
-        InPreviewEditingUtil.insertInPlacement(parentContent, createdContent[0], event.placement);
-      }
-
-    } catch (e) {
-      console.warn("[InPreviewEditingManager] Error during quick create content insertion: ", e);
-    }
   }
 
   async #sectionItemActionListener(event: { contentRef: string, sectionItemId: string, action: string, actionParams: {} }) {
@@ -646,22 +586,6 @@ class InPreviewEditingManager {
       contentWindow,
       InPreviewEditingManager.MESSAGE_TYPE_CONTENT_METRICS_RESPONSE,
       metricsData
-    );
-  }
-
-  #sendQuickCreateTemplatesResponse(templates: QuickCreateTemplate[]): void {
-    const contentWindow = this.#previewIframe.getContentWindow();
-
-    const templateData = templates.map((template) => (
-      { name: template.description, templateContent: template.templateContent.getUriPath() }
-    )).sort((a, b) => a.name.localeCompare(b.name));
-
-    const messageData = { templates: templateData };
-    console.log("[InPreviewEditingManager] Sending quick create templates response: ", messageData);
-    messageService.sendMessage(
-      contentWindow,
-      InPreviewEditingManager.MESSAGE_TYPE_QUICK_CREATE_TEMPLATES_RESPONSE,
-      messageData
     );
   }
 

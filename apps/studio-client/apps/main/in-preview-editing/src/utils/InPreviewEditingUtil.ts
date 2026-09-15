@@ -45,8 +45,6 @@ import editorContext from "@coremedia/studio-client.main.editor-components/sdk/e
 import CollectionViewExtension
   from "@coremedia/studio-client.main.editor-components/sdk/collectionview/CollectionViewExtension";
 import session from "@coremedia/studio-client.cap-rest-client/common/session";
-import OpenNavigationEditorDialogAction
-  from "@coremedia-blueprint/studio-client.main.navigation-manager-studio/actions/OpenNavigationEditorDialogAction";
 import propertyEditorRegistry from "../editors/propertyEditorRegistry";
 import EmptyState from "../editors/EmptyState";
 import { observeUserPreferencesProperty } from "@coremedia/studio-client.cap-base-models";
@@ -319,10 +317,6 @@ class InPreviewEditingUtil {
         onError && onError();
       }
     });
-  }
-
-  static openNavigationManager(): void {
-    new OpenNavigationEditorDialogAction().execute();
   }
 
   static async imageUrlToBase64(url: string): Promise<string | null> {
