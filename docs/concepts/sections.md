@@ -1,17 +1,40 @@
-# Section Item Drag & Drop
+# Sections
+
+Sections are editable container areas in the host document that group one or more section items.  
+Items are identified with `data-cm-section-item` and belong to a section marked with
+`data-cm-section`. The in-preview-editing plugin uses these markers to provide item-level actions
+directly in the page preview while keeping section boundaries intact.
+
+The section concept currently supports two core interactions:
+
+- **Editing actions** such as duplicating an item.
+- **Drag & drop reordering** of items inside the same section.
+
+## Section Item Metadata
+
+Section items can be marked with the data attribute `data-cm-section-item` in the DOM.
+
+## Section Item Edit Actions
+
+**Duplicate section**
+
+The plugin adds a `+` button after each section item, which allows duplicating the section item.
+The duplicated section item is added after the original one.
+
+## Section Item Drag & Drop
 
 The plugin supports reordering section items via native HTML5 Drag & Drop. Items marked with
 `data-cm-section-item` can be dragged and dropped within their enclosing `data-cm-section`
 element. Cross-section moves are intentionally prevented.
 
-## DOM Markers
+### DOM Markers
 
 | Attribute | Element | Purpose |
 |---|---|---|
 | `data-cm-section` | Container | Defines the boundary within which items can be reordered |
 | `data-cm-section-item` | Item | Identifies a draggable item; its attribute value is used as the item ID |
 
-## Architecture Overview
+### Architecture Overview
 
 ```
 Host Document                         Shadow DOM (plugin)
@@ -29,9 +52,9 @@ The `useSectionDragDrop` hook bridges this gap by attaching native drag event li
 directly onto the host elements while all visual feedback (drop indicator line) is rendered
 inside the Shadow DOM — the same pattern used by the `Highlighter` component.
 
-## How It Works
+### How It Works
 
-### 1. Activation
+#### 1. Activation
 
 When the plugin activates (`isActive = true`), the `useSectionDragDrop` hook:
 
@@ -44,7 +67,7 @@ When the plugin activates (`isActive = true`), the `useSectionDragDrop` hook:
 On deactivation, the `AbortController` is aborted, the observer is disconnected, and
 `draggable` / `ipe-dragging` are removed from all items.
 
-### 2. Drag Start
+#### 2. Drag Start
 
 ```
 dragstart
@@ -54,7 +77,7 @@ dragstart
        (timeout ensures the browser can capture the ghost image first)
 ```
 
-### 3. Drag Over
+#### 3. Drag Over
 
 On every `dragover` event over a potential target item:
 
@@ -65,7 +88,7 @@ On every `dragover` event over a potential target item:
 3. Drop state (`dropTarget` + `position`) is written to both a React state (triggers indicator
    re-render) and a ref (available in the stale-closure-safe `drop` handler).
 
-### 4. Drop & Index Calculation
+#### 4. Drop & Index Calculation
 
 When the `drop` event fires:
 
@@ -86,7 +109,7 @@ Otherwise `moveSectionItemToIndex(source, finalIndex)` is called, which dispatch
 `SECTION_ITEM_ACTION_REQUEST` message to the Studio backend with action `MOVE_TO` and
 the computed `moveTo` index.
 
-#### Index Calculation Examples
+##### Index Calculation Examples
 
 | Scenario | Items | from → to | finalIndex |
 |---|---|---|---|
@@ -95,9 +118,9 @@ the computed `moveTo` index.
 | Move middle item down | `[A, B, C, D]` | 1 → after C (idx 2) | 2 |
 | Move middle item up | `[A, B, C, D]` | 2 → before B (idx 1) | 1 |
 
-### 5. Visual Feedback
+#### 5. Visual Feedback
 
-#### Drop Indicator (Shadow DOM)
+##### Drop Indicator (Shadow DOM)
 
 `DragDropIndicator` creates a single `<div class="ipe-drop-indicator">` directly in the
 shadow root (no React portal, no host-document leakage). When `dropTarget` is set, the div
@@ -108,7 +131,7 @@ is positioned absolutely:
 
 The line is styled with `--ipe-accent-color` so it inherits the configured theme colour.
 
-#### Dragged Element (Host Document)
+##### Dragged Element (Host Document)
 
 The `.ipe-dragging` class is applied to the source element via `frontend.css`
 (injected into the host document's `<head>`):
@@ -118,7 +141,7 @@ The `.ipe-dragging` class is applied to the source element via `frontend.css`
 [data-cm-section-item].ipe-dragging     { opacity: 0.4; cursor: grabbing; }
 ```
 
-## Sequence Diagram
+### Sequence Diagram
 
 ```
 User                Host DOM               useSectionDragDrop       Backend
@@ -135,7 +158,7 @@ User                Host DOM               useSectionDragDrop       Backend
  │                     │◀─ DOM update ──────────────────────────────────│
 ```
 
-## Files
+### Files
 
 | File | Role |
 |---|---|
@@ -145,7 +168,7 @@ User                Host DOM               useSectionDragDrop       Backend
 | `src/styles/frontend.css` | Host-document styles: `cursor: grab`, `.ipe-dragging` opacity |
 | `src/styles/plugin.css` | Shadow-DOM styles: `.ipe-drop-indicator` line with dot endpoints |
 
-## Backend Contract
+### Backend Contract
 
 The drop dispatches a `SECTION_ITEM_ACTION_REQUEST` message with:
 
@@ -165,4 +188,3 @@ applied (i.e. the final position of the item in the section's item list).
 
 The Studio backend must implement handling for the `MOVE_TO` action in the section item
 action handler.
-

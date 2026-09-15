@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * Provides methods to manipulate the {@code layout.sections} StructList of a CMSection content.
+ */
 public class SectionsService {
 
   private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -42,7 +45,7 @@ public class SectionsService {
    * Deletes the section item with the given {@code sectionItemId} from the {@code layout.sections}
    * StructList of the provided content.
    *
-   * @param content   the CMSection content to modify
+   * @param content       the CMSection content to modify
    * @param sectionItemId the unique id of the section to delete
    * @throws IllegalArgumentException if no {@code layout} struct is found on the content
    * @throws SectionNotFoundException if no section with the given {@code sectionItemId} exists
@@ -74,7 +77,7 @@ public class SectionsService {
    * are copied from the source. Any linked content referenced in {@code values} is copied
    * to the same folder as the section content, and the duplicate points to the new copies.
    *
-   * @param content   the CMSection content to modify
+   * @param content       the CMSection content to modify
    * @param sectionItemId the unique id of the section to duplicate
    * @throws IllegalArgumentException if no {@code layout} struct is found on the content
    * @throws SectionNotFoundException if no section with the given {@code sectionItemId} exists
@@ -193,7 +196,7 @@ public class SectionsService {
   }
 
   /**
-   * Returns the {@code layout} struct of the given content, or throws if absent.
+   * Returns the {@code layout} struct of the given content, or throws {@link IllegalArgumentException} if absent.
    */
   @NonNull
   private Struct getLayoutStruct(@NonNull Content content) {
@@ -205,7 +208,7 @@ public class SectionsService {
   }
 
   /**
-   * Returns the {@code sections} StructList from the given layout struct, or throws if absent or empty.
+   * Returns the {@code sections} StructList from the given layout struct, or throws {@link SectionNotFoundException} if absent or empty.
    */
   @SuppressWarnings("unchecked")
   @NonNull
@@ -218,7 +221,7 @@ public class SectionsService {
   }
 
   /**
-   * Returns the index of the section with the given {@code sectionItemId}, or throws if not found.
+   * Returns the index of the section with the given {@code sectionItemId}, or throws {@link SectionNotFoundException} if not found.
    */
   private int findSectionIndex(@NonNull List<Struct> sections, @NonNull String sectionItemId) {
     for (int i = 0; i < sections.size(); i++) {
@@ -231,7 +234,7 @@ public class SectionsService {
 
   /**
    * Saves the updated sections list back into the layout struct of the given content,
-   * checking the content out if necessary and checking it back in afterwards.
+   * checking the content out if necessary and checking it back in afterward.
    */
   private void persistSections(@NonNull Content content, @NonNull Struct layoutStruct, @NonNull List<Struct> updatedSections) {
     StructBuilder layoutBuilder = layoutStruct.builder();
@@ -306,7 +309,7 @@ public class SectionsService {
           }
           return copy;
         })
-        .collect(Collectors.toList());
+        .toList();
 
       if (copiedContents.isEmpty()) {
         continue;
