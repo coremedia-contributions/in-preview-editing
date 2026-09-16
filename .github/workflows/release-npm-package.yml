@@ -48,7 +48,6 @@ jobs:
           echo "NPM token is: $TK"
 
           echo "//npm.coremedia.io/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-          echo "registry=https://npm.coremedia.io/" >> ~/.npmrc
           echo "@coremedia:registry=https://npm.coremedia.io/" >> ~/.npmrc
           echo "@coremedia-contributions:registry=https://npm.coremedia.io/" >> ~/.npmrc
 
